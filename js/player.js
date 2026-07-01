@@ -32,8 +32,6 @@ function initPlayerEngine() {
   shakaPlayerInstance.load(mediaItem.url || "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8").catch(err => console.error(err));
   
   video.addEventListener("timeupdate", onVideoTimeUpdateSync);
-  
-  // تفعيل وإظهار البار الـ OSD فوراً عند عمل سكرول (Scroll) بالماوس أو الريموت الماجيك
   window.addEventListener("wheel", () => { showOSD(); });
 }
 
@@ -57,7 +55,7 @@ function onVideoTimeUpdateSync() {
     localStorage.setItem(`timestamp_media_${mediaItem.id || 201}`, video.currentTime);
     localStorage.setItem(`progress_ratio_media_${mediaItem.id || 201}`, pct);
 
-    // مراقبة آخر 60 ثانية واقتراح الحلقة القادمة باسمها الصريح بالتزامن مع الـ OSD بالملي
+    // فحص واقتراح الحلقة القادمة بآخر 60 ثانية والربط بالـ OSD بالملي لإخفائه تلقائياً
     const timeLeft = video.duration - video.currentTime;
     if (timeLeft <= 60 && timeLeft > 2) {
       if (document.getElementById("controls-panel").style.opacity === "1") {
@@ -93,7 +91,7 @@ function changeOSDSeekStep() {
 }
 
 function navigateEpisodesStream(direction) {
-  alert(direction > 0 ? "جاري قفز وتشغيل الحلقة التالية رأسياً..." : "جاري تشغيل الحلقة السابقة...");
+  alert(direction > 0 ? "الانتقال الفوري للحلقة التالية رأسياً من السيرفر..." : "الانتقال للحلقة السابقة...");
   window.location.reload();
 }
 
@@ -105,13 +103,13 @@ function formatSecondsToTimeStr(secs) {
   return `${h}:${m}:${s}`;
 }
 
-// السيطرة على الاتجاهات الأربعة لريموت LG وفصلها لتعمل كأوامر صريحة
+// فصل كامل وفعال لأزرار ريموت LG الماجيك الأربعة
 document.addEventListener("keydown", (e) => {
   showOSD();
   // يمين ويسار للتقديم والتأخير
   if (e.key === "ArrowLeft") { video.currentTime -= seekDuration; e.preventDefault(); }
   if (e.key === "ArrowRight") { video.currentTime += seekDuration; e.preventDefault(); }
-  // فوق وتحت للانتقال للحلقة التالية والسابقة فورا
+  // فوق وتحت للحلقة القادمة والسابقة
   if (e.key === "ArrowUp") { navigateEpisodesStream(1); e.preventDefault(); }
   if (e.key === "ArrowDown") { navigateEpisodesStream(-1); e.preventDefault(); }
   
@@ -125,7 +123,7 @@ function showOSD() {
   if (timeLeft <= 60 && timeLeft > 2) nextPopup.style.display = "block";
   
   clearTimeout(osdTimeout);
-  // اختفاء تلقائي ناعم بعد 3 ثوانٍ بالضبط من الثبات كالمطلوب بالملي
+  // التلاشي والاختفاء التلقائي بعد 3 ثوانٍ بالضبط من ثبات السكرول أو الحركة كالاتفاق
   osdTimeout = setTimeout(() => {
     document.getElementById("controls-panel").style.opacity = "0";
     nextPopup.style.display = "none";
