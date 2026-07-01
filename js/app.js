@@ -1,10 +1,26 @@
 let channels = [];
 let filtered = [];
+let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+
 let categories = ["All", "Sports", "Movies", "News"];
 let currentCategory = "All";
 let selectedIndex = 0;
 
-let epg = {}; // هيتملأ من الإنترنت
+// EPG بسيط
+const epgData = {
+  "Sports": [
+    { time: "10:00", title: "Football Live" },
+    { time: "12:00", title: "Sports News" }
+  ],
+  "Movies": [
+    { time: "11:00", title: "Action Movie" },
+    { time: "13:00", title: "Comedy Film" }
+  ],
+  "News": [
+    { time: "09:00", title: "Morning News" },
+    { time: "18:00", title: "Evening Update" }
+  ]
+};
 
 // تحميل M3U
 function loadPlaylist() {
@@ -19,15 +35,14 @@ function loadPlaylist() {
 
       renderCategories();
       renderChannels();
-
-      // نحاول نجيب EPG لو موجود
-      loadEPG(url);
+      renderFavorites();
+      renderEPG();
 
     });
 
 }
 
-// M3U parser
+// parser
 function parseM3U(data) {
 
   const lines = data.split("\n");
@@ -48,54 +63,6 @@ function parseM3U(data) {
       result.push({ name, url, category });
 
     }
-
-  }
-
-  return result;
-}
-
-// 🔥 محاولة تحميل EPG (XMLTV)
-function loadEPG(m3uUrl) {
-
-  // بعض السيرفرات بتكون جنبها epg.xml
-  const epgUrl = m3uUrl.replace("playlist.m3u", "epg.xml");
-
-  fetch(epgUrl)
-    .then(res => res.text())
-    .then(data => {
-
-      epg = parseXMLTV(data);
-      renderEPG();
-
-    })
-    .catch(() => {
-      console.log("EPG not found, using fallback");
-      epg = {};
-      renderEPG();
-    });
-
-}
-
-// XMLTV parser (تبسيط)
-function parseXMLTV(xml) {
-
-  const parser = new DOMParser();
-  const xmlDoc = parser.parseFromString(xml, "text/xml");
-
-  const programmes = xmlDoc.getElementsByTagName("programme");
-
-  const result = {};
-
-  for (let i = 0; i < programmes.length; i++) {
-
-    const prog = programmes[i];
-
-    const title = prog.getElementsByTagName("title")[0]?.textContent;
-    const channel = prog.getAttribute("channel");
-
-    if (!result[channel]) result[channel] = [];
-
-    result[channel].push(title);
 
   }
 
@@ -149,14 +116,23 @@ function renderChannels() {
     const div = document.createElement("div");
     div.className = "card";
 
-    div.innerText = ch.name;
+    const isFav = favorites.some(f => f.url === ch.url);
 
-    if (index === selectedIndex) {
-      div.style.outline = "2px solid #1f6feb";
-    }
+    div.innerHTML = `
+      <div class="fav">${isFav ? "★" : "☆"}</div>
+      <div>▶ ${ch.name}</div>
+    `;
 
+    // تشغيل
     div.onclick = function () {
-      openChannel(ch);
+      localStorage.setItem("current", JSON.stringify(ch));
+      window.location.href = "player.html";
+    };
+
+    // مفضلة
+    div.querySelector(".fav").onclick = function (e) {
+      e.stopPropagation();
+      toggleFavorite(ch);
     };
 
     container.appendChild(div);
@@ -165,31 +141,39 @@ function renderChannels() {
 
 }
 
-// open player
-function openChannel(ch) {
+// favorites
+function toggleFavorite(ch) {
 
-  localStorage.setItem("current", JSON.stringify(ch));
-  window.location.href = "player.html";
+  const index = favorites.findIndex(f => f.url === ch.url);
+
+  if (index === -1) {
+    favorites.push(ch);
+  } else {
+    favorites.splice(index, 1);
+  }
+
+  localStorage.setItem("favorites", JSON.stringify(favorites));
+
+  renderFavorites();
+  renderChannels();
 
 }
 
-// EPG عرض حقيقي أو fallback
-function renderEPG() {
+function renderFavorites() {
 
-  const box = document.getElementById("epg");
+  const box = document.getElementById("favorites");
   box.innerHTML = "";
 
-  const current = filtered[selectedIndex];
-
-  if (!current) return;
-
-  const channelEPG = epg[current.name] || ["No EPG available"];
-
-  channelEPG.forEach(item => {
+  favorites.forEach(ch => {
 
     const div = document.createElement("div");
-    div.className = "epg-item";
-    div.innerText = item;
+    div.className = "card";
+    div.innerText = "⭐ " + ch.name;
+
+    div.onclick = function () {
+      localStorage.setItem("current", JSON.stringify(ch));
+      window.location.href = "player.html";
+    };
 
     box.appendChild(div);
 
@@ -197,29 +181,22 @@ function renderEPG() {
 
 }
 
-// remote control
-document.addEventListener("keydown", function(e) {
+// EPG
+function renderEPG() {
 
-  if (!filtered.length) return;
+  const box = document.getElementById("epg");
+  box.innerHTML = "";
 
-  if (e.key === "ArrowDown") {
-    selectedIndex++;
-    if (selectedIndex >= filtered.length) selectedIndex = 0;
-    renderChannels();
-    renderEPG();
-  }
+  const data = epgData[currentCategory] || [];
 
-  if (e.key === "ArrowUp") {
-    selectedIndex--;
-    if (selectedIndex < 0) selectedIndex = filtered.length - 1;
-    renderChannels();
-    renderEPG();
-  }
+  data.forEach(item => {
 
-  if (e.key === "Enter") {
-    if (filtered[selectedIndex]) {
-      openChannel(filtered[selectedIndex]);
-    }
-  }
+    const div = document.createElement("div");
+    div.className = "epg-item";
+    div.innerText = `${item.time} - ${item.title}`;
 
-});
+    box.appendChild(div);
+
+  });
+
+}
