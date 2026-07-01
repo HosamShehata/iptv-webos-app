@@ -51,7 +51,6 @@
       overflow-y: auto;
     }
 
-    /* 🔥 GRID TV STYLE */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -64,12 +63,27 @@
       border-radius: 10px;
       cursor: pointer;
       transition: 0.2s;
+      position: relative;
       text-align: center;
     }
 
     .card:hover {
       background: #1f6feb;
       transform: scale(1.05);
+    }
+
+    .fav {
+      position: absolute;
+      top: 6px;
+      right: 10px;
+      color: gold;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .section-title {
+      margin: 10px 0;
+      color: #aaa;
     }
 
     .epg-box {
@@ -83,11 +97,6 @@
       padding: 6px;
       border-bottom: 1px solid #222;
       font-size: 13px;
-    }
-
-    .title {
-      margin-bottom: 10px;
-      color: #aaa;
     }
   </style>
 
@@ -105,11 +114,14 @@
 
   <div class="content">
 
-    <div class="title">📺 Channels</div>
+    <div class="section-title">📺 Channels</div>
     <div id="channels" class="grid"></div>
 
+    <div class="section-title">⭐ Favorites</div>
+    <div id="favorites" class="grid"></div>
+
     <div class="epg-box">
-      <div class="title">📺 EPG</div>
+      <div class="section-title">📺 EPG</div>
       <div id="epg"></div>
     </div>
 
