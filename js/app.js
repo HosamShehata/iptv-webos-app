@@ -3,16 +3,16 @@ let filtered = [];
 let categories = ["الكل"];
 let currentCategory = "الكل";
 
-[span_0](start_span)// الأقسام الأساسية في القائمة الجانبية[span_0](end_span)
-const sidebarItems = ["home", "live", "movies", "series", "favorites"];
+// مصفوفة الأقسام المكتوبة بالـ HTML
+const sidebarItems = ["home", "live", "movies", "series", "favorites", "history"];
 
-let focusMode = "sidebar"; // الأنماط المتاحة: sidebar | categories | channels
-let sidebarIndex = 1;      // واقف افتراضياً على "البث المباشر"
+let focusMode = "sidebar"; 
+let sidebarIndex = 1;      // الوقوف افتراضياً على البث المباشر لإظهار قنوات البث الفوري
 let catIndex = 0;
 let channelIndex = 0;
-let columnsCount = 4;      // عدد الأعمدة الافتراضي في الشبكة ويتم تحديثه ديناميكياً
+let columnsCount = 4;      
 
-[span_1](start_span)// دالة تحميل قائمة القنوات[span_1](end_span)
+// تحميل الفايل
 function loadPlaylist() {
   const url = document.getElementById("m3uUrl").value;
   if (!url) return;
@@ -30,7 +30,7 @@ function loadPlaylist() {
     .catch(err => console.error("Error loading playlist:", err));
 }
 
-[span_2](start_span)// دالة تفكيك ملف الـ M3U واستخراج المجموعات (group-title) بشكل ذكي[span_2](end_span)
+// البارسير الذكي لتصنيف القنوات والمسلسلات والأفلام ومجموعاتها
 function parseM3U(data) {
   const lines = data.split("\n");
   const result = [];
@@ -38,19 +38,25 @@ function parseM3U(data) {
   for (let i = 0; i < lines.length; i++) {
     if (lines[i].startsWith("#EXTINF")) {
       const infoLine = lines[i];
+      const name = (infoLine.split(",")[1] || "عنوان غير معروف").trim();
       
-      // استخراج التصنيف بناءً على تاغ group-title المعتمد في ملفات IPTV
       let category = "أخرى";
       const groupMatch = infoLine.match(/group-title="([^"]+)"/);
       if (groupMatch) {
-        category = groupMatch[1];
-      } else {
-        const namePart = infoLine.split(",")[1] || "";
-        if (namePart.toLowerCase().includes("sport")) category = "الرياضة";
-        if (namePart.toLowerCase().includes("news")) category = "الأخبار";
+        category = groupMatch[1].trim();
       }
 
-      // البحث عن أول سطر غير فارغ تالي يحتوي على رابط البث
+      // تحديد نوع الداتا بناءً على اسم الجروب والكلمات المفتاحية
+      let type = "live"; 
+      const lowerName = name.toLowerCase();
+      const lowerCat = category.toLowerCase();
+
+      if (lowerCat.includes("movie") || lowerCat.includes("film") || lowerCat.includes("أفلام") || lowerCat.includes("افلام")) {
+        type = "movie";
+      } else if (lowerCat.includes("series") || lowerCat.includes("مسلسلات") || lowerName.includes("s01") || lowerName.includes("e01")) {
+        type = "series";
+      }
+
       let url = "";
       for (let j = i + 1; j < lines.length; j++) {
         if (lines[j].trim() && !lines[j].startsWith("#")) {
@@ -60,34 +66,41 @@ function parseM3U(data) {
       }
 
       if (url) {
-        const name = infoLine.split(",")[1] || "قناة غير معروفة";
-        result.push({ name: name.trim(), url, category: category.trim() });
+        result.push({ name, url, category, type });
       }
     }
   }
   return result;
 }
 
-// استخراج كافة التصنيفات الفرعية الفريدة من القنوات المتوفرة
+// فحص واستخراج الأقسام حسب الاختيار من القائمة الجانبية
 function extractCategories() {
+  const activeSection = sidebarItems[sidebarIndex];
   const set = new Set(["الكل"]);
-  channels.forEach(ch => set.add(ch.category));
-  categories = Array.from(set);
+
+  channels.forEach(ch => {
+    if (activeSection === "live" && ch.type === "live") set.add(ch.category);
+    if (activeSection === "movies" && ch.type === "movie") set.add(ch.category);
+    if (activeSection === "series" && ch.type === "series") set.add(ch.category);
+  });
+
+  if (activeSection === "home" || activeSection === "history" || activeSection === "favorites") {
+    categories = ["الكل"];
+  } else {
+    categories = Array.from(set);
+  }
 }
 
-// رندرة وتحديث القائمة الجانبية
 function renderSidebar() {
-  const items = document.querySelectorAll(".menu-item");
-  items.forEach((item, idx) => {
+  document.querySelectorAll(".menu-item").forEach((item, idx) => {
     item.classList.toggle("focused", focusMode === "sidebar" && idx === sidebarIndex);
   });
 }
 
-[span_3](start_span)// رندرة وتحديث شريط التصنيفات الفرعية العلوية[span_3](end_span)
 function renderCategories() {
   const box = document.getElementById("categories");
   box.innerHTML = "";
-  categories.forEach((cat, i) => {
+  categories.forEach((cat) => {
     const div = document.createElement("div");
     div.className = "category-item";
     div.innerText = cat;
@@ -95,44 +108,70 @@ function renderCategories() {
   });
 }
 
-[span_4](start_span)[span_5](start_span)// رندرة القنوات في الشبكة (Grid) مع تفعيل الفلترة والبحث[span_4](end_span)[span_5](end_span)
+// رندرة الكروت مع إدراج نظام الـ Continue Watching
 function renderChannels() {
   const search = document.getElementById("search").value.toLowerCase();
   const container = document.getElementById("channels");
   container.innerHTML = "";
 
-  filtered = channels.filter(ch => {
-    const matchCategory = currentCategory === "الكل" || ch.category === currentCategory;
-    const matchSearch = ch.name.toLowerCase().includes(search);
-    return matchCategory && matchSearch;
-  });
+  const activeSection = sidebarItems[sidebarIndex];
+  
+  let history = JSON.parse(localStorage.getItem("watch_history")) || [];
+  let favorites = JSON.parse(localStorage.getItem("favorites_list")) || [];
+
+  if (activeSection === "home") {
+    // الصفحة الرئيسية تعرض آخر المشاهدات عالمياً
+    filtered = history.slice(0, 6); 
+  } else if (activeSection === "history") {
+    filtered = history;
+  } else if (activeSection === "favorites") {
+    filtered = favorites;
+  } else {
+    filtered = channels.filter(ch => {
+      const matchSection = (activeSection === "live" && ch.type === "live") ||
+                           (activeSection === "movies" && ch.type === "movie") ||
+                           (activeSection === "series" && ch.type === "series");
+      const matchCategory = currentCategory === "الكل" || ch.category === currentCategory;
+      const matchSearch = ch.name.toLowerCase().includes(search);
+      return matchSection && matchCategory && matchSearch;
+    });
+
+    // رفع المشاهدات مؤخراً الخاصة بالقسم في المقدمة
+    if (currentCategory === "الكل" && !search) {
+      const sectionHistory = history.filter(h => h.type === (activeSection === "live" ? "live" : activeSection === "movies" ? "movie" : "series"));
+      filtered = [...sectionHistory, ...filtered.filter(f => !sectionHistory.some(h => h.url === f.url))];
+    }
+  }
+
+  if (filtered.length === 0) {
+    container.innerHTML = "<div style='padding:20px; color:#666;'>لا يوجد محتوى متوفر حالياً</div>";
+    return;
+  }
 
   filtered.forEach((ch) => {
     const div = document.createElement("div");
     div.className = "card";
-    div.innerText = ch.name;
+    
+    const isInHistory = history.some(h => h.url === ch.url);
+    div.innerText = isInHistory ? `⏱️ ${ch.name}` : ch.name;
+
     container.appendChild(div);
   });
   
-  // حساب عدد الأعمدة بناءً على عرض الشاشة الحالي لتسهيل حركة الريموت الرأسية
   if (container.clientWidth) {
     columnsCount = Math.floor(container.clientWidth / 240) || 1; 
   }
 }
 
-[span_6](start_span)// تحديث كلاس الـ .focused للعنصر النشط حالياً لتمييزه على الشاشة[span_6](end_span)
 function updateFocus() {
-  // القائمة الجانبية
   document.querySelectorAll(".menu-item").forEach((el, i) => {
     el.classList.toggle("focused", focusMode === "sidebar" && i === sidebarIndex);
   });
 
-  // التصنيفات
   document.querySelectorAll(".category-item").forEach((el, i) => {
     el.classList.toggle("focused", focusMode === "categories" && i === catIndex);
   });
 
-  // كروت القنوات
   const cards = document.querySelectorAll(".card");
   cards.forEach((el, i) => {
     const isFocused = focusMode === "channels" && i === channelIndex;
@@ -143,23 +182,24 @@ function updateFocus() {
   });
 }
 
-[span_7](start_span)// الانتقال لصفحة المشغل عند فتح القناة[span_7](end_span)
 function openChannel(ch) {
+  let history = JSON.parse(localStorage.getItem("watch_history")) || [];
+  history = history.filter(h => h.url !== ch.url);
+  history.unshift(ch); 
+  
+  if (history.length > 50) history.pop();
+  
+  localStorage.setItem("watch_history", JSON.stringify(history));
   localStorage.setItem("current", JSON.stringify(ch));
   window.location.href = "player.html";
 }
 
-[span_8](start_span)// نظام التحكم الشامل والمطور بأزرار الريموت المتوافق مع شاشات الـ TV[span_8](end_span)
+// ريموت الكنترول والملاحة الذكية
 document.addEventListener("keydown", function(e) {
-  const cards = document.querySelectorAll(".card");
-  
   if (e.key === "ArrowLeft") {
     if (focusMode === "channels") {
-      if (channelIndex % columnsCount === 0) {
-        focusMode = "sidebar"; // الانتقال للقائمة الجانبية إذا كان في أول عمود
-      } else {
-        channelIndex = Math.max(0, channelIndex - 1);
-      }
+      if (channelIndex % columnsCount === 0) focusMode = "sidebar";
+      else channelIndex = Math.max(0, channelIndex - 1);
     } else if (focusMode === "categories") {
       if (catIndex === 0) focusMode = "sidebar";
       else catIndex = Math.max(0, catIndex - 1);
@@ -182,25 +222,22 @@ document.addEventListener("keydown", function(e) {
   if (e.key === "ArrowDown") {
     if (focusMode === "sidebar") {
       sidebarIndex = Math.min(sidebarIndex + 1, sidebarItems.length - 1);
+      resetContentPosition();
     } else if (focusMode === "categories") {
       focusMode = "channels";
       channelIndex = 0;
     } else if (focusMode === "channels") {
-      if (channelIndex + columnsCount < filtered.length) {
-        channelIndex += columnsCount; // النزول لـ السطر التالي مباشرة في الـ Grid
-      }
+      if (channelIndex + columnsCount < filtered.length) channelIndex += columnsCount;
     }
   }
 
   if (e.key === "ArrowUp") {
     if (focusMode === "sidebar") {
       sidebarIndex = Math.max(0, sidebarIndex - 1);
+      resetContentPosition();
     } else if (focusMode === "channels") {
-      if (channelIndex - columnsCount >= 0) {
-        channelIndex -= columnsCount; // الصعود للسطر السابق في الـ Grid
-      } else {
-        focusMode = "categories"; // الصعود للتصنيفات العلوية لو كان في أول سطر للشبكة
-      }
+      if (channelIndex - columnsCount >= 0) channelIndex -= columnsCount;
+      else focusMode = "categories";
     }
   }
 
@@ -210,7 +247,6 @@ document.addEventListener("keydown", function(e) {
     }
   }
 
-  // تحديث وعرض قنوات التصنيف المحدد تلقائياً عند تغيير اختيار التصنيف العلوى
   if (focusMode === "categories" && categories[catIndex] !== currentCategory) {
     currentCategory = categories[catIndex];
     channelIndex = 0;
@@ -220,7 +256,15 @@ document.addEventListener("keydown", function(e) {
   updateFocus();
 });
 
-// تحميل تلقائي تجريبي عند إقلاع الصفحة لتجربة الأداء
+function resetContentPosition() {
+  currentCategory = "الكل";
+  catIndex = 0;
+  channelIndex = 0;
+  extractCategories();
+  renderCategories();
+  renderChannels();
+}
+
 window.onload = () => {
   loadPlaylist();
 };
