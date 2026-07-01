@@ -29,7 +29,7 @@
     .brand-area { padding: 0 25px 15px 25px; text-align: center; }
     .brand-title { font-size: 26px; font-weight: bold; color: var(--primary-color); letter-spacing: 1px; }
     
-    /* زر تبديل اللغة السريع بره في السايد بار */
+    /* زر تبديل اللغة الخارجي في السايد بار */
     .lang-toggle-bar {
       margin: 0 20px 20px 20px; padding: 10px; background: #1c2430; border-radius: 8px;
       display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer;
@@ -56,7 +56,7 @@
     }
     .filter-item {
       padding: 8px 18px; background: #222; border-radius: 20px; font-size: 14px;
-      color: var(--text-dim); white-space: nowrap; transition: background 0.2s;
+      color: var(--text-dim); white-space: nowrap; transition: background 0.2s; cursor: pointer;
     }
     .filter-item.focused { background: var(--text-color); color: #000; font-weight: bold; }
 
@@ -69,7 +69,7 @@
     /* كروت المحتوى بالبوسترات */
     .media-card {
       background: var(--bg-card); border: 1px solid #222; border-radius: 12px;
-      overflow: hidden; transition: transform 0.2s; position: relative;
+      overflow: hidden; transition: transform 0.2s; position: relative; cursor: pointer;
     }
     .media-card img { width: 100%; height: 270px; object-fit: cover; }
     .media-card .info { padding: 12px; text-align: center; font-size: 14px; font-weight: bold; }
@@ -125,6 +125,7 @@
 
 <div class="layout">
   
+  <!-- القائمة الجانبية الموحدة المربوطة بالضغط الفوري -->
   <div class="sidebar" id="sidebarMenu">
     <div class="brand-area"><div class="brand-title">VISION TV</div></div>
     
@@ -133,20 +134,22 @@
       <span id="lbl-sidebar-lang">العربية / EN</span>
     </div>
 
-    <div class="menu-item" data-view="view-home"><span class="material-icons">home</span><span class="txt-lang" data-key="home">الرئيسية</span></div>
-    <div class="menu-item" data-view="view-live"><span class="material-icons">live_tv</span><span class="txt-lang" data-key="live">قنوات مباشرة</span></div>
-    <div class="menu-item" data-view="view-movies"><span class="material-icons">movie</span><span class="txt-lang" data-key="movies">الأفلام</span></div>
-    <div class="menu-item" data-view="view-series"><span class="material-icons">tv</span><span class="txt-lang" data-key="series">المسلسلات</span></div>
-    <div class="menu-item" data-view="view-favorites"><span class="material-icons">favorite</span><span class="txt-lang" data-key="favorites">المفضلة</span></div>
-    <div class="menu-item" data-view="view-history"><span class="material-icons">history</span><span class="txt-lang" data-key="history">تابع المشاهدة</span></div>
-    <div class="menu-item" data-view="view-playlist"><span class="material-icons">playlist_add</span><span class="txt-lang" data-key="add_playlist">أضف قائمة تشغيل</span></div>
-    <div class="menu-item" data-view="view-search"><span class="material-icons">search</span><span class="txt-lang" data-key="search">البحث المتقدم</span></div>
-    <div class="menu-item" data-view="view-settings"><span class="material-icons">settings</span><span class="txt-lang" data-key="settings">الإعدادات</span></div>
+    <!-- تم ربط أحداث clickSidebarItem لتعمل فوراً عند اللمس أو الضغط بالماوس -->
+    <div class="menu-item" onclick="clickSidebarItem(0)"><span class="material-icons">home</span><span class="txt-lang" data-key="home">الرئيسية</span></div>
+    <div class="menu-item" onclick="clickSidebarItem(1)"><span class="material-icons">live_tv</span><span class="txt-lang" data-key="live">قنوات مباشرة</span></div>
+    <div class="menu-item" onclick="clickSidebarItem(2)"><span class="material-icons">movie</span><span class="txt-lang" data-key="movies">الأفلام</span></div>
+    <div class="menu-item" onclick="clickSidebarItem(3)"><span class="material-icons">tv</span><span class="txt-lang" data-key="series">المسلسلات</span></div>
+    <div class="menu-item" onclick="clickSidebarItem(4)"><span class="material-icons">favorite</span><span class="txt-lang" data-key="favorites">المفضلة</span></div>
+    <div class="menu-item" onclick="clickSidebarItem(5)"><span class="material-icons">history</span><span class="txt-lang" data-key="history">تابع المشاهدة</span></div>
+    <div class="menu-item" onclick="clickSidebarItem(6)"><span class="material-icons">playlist_add</span><span class="txt-lang" data-key="add_playlist">أضف قائمة تشغيل</span></div>
+    <div class="menu-item" onclick="clickSidebarItem(7)"><span class="material-icons">search</span><span class="txt-lang" data-key="search">البحث المتقدم</span></div>
+    <div class="menu-item" onclick="clickSidebarItem(8)"><span class="material-icons">settings</span><span class="txt-lang" data-key="settings">الإعدادات</span></div>
   </div>
 
   <div class="content-container">
     <div class="sub-filter-bar" id="subFilterBar"></div>
 
+    <!-- شاشة الرئيسية -->
     <div id="view-home" class="view-panel">
       <div class="hero-banner">
         <div class="hero-title">House of the Dragon</div>
@@ -156,12 +159,14 @@
       <div class="grid-container" id="home-history-grid"></div>
     </div>
 
+    <!-- باقي الشاشات والشبكات -->
     <div id="view-live" class="view-panel"><div class="grid-container" id="live-grid"></div></div>
     <div id="view-movies" class="view-panel"><div class="grid-container" id="movies-grid"></div></div>
     <div id="view-series" class="view-panel"><div class="grid-container" id="series-grid"></div></div>
     <div id="view-favorites" class="view-panel"><div class="grid-container" id="favorites-grid"></div></div>
     <div id="view-history" class="view-panel"><div class="grid-container" id="history-grid"></div></div>
 
+    <!-- شاشة أضف قائمة تشغيل -->
     <div id="view-playlist" class="view-panel">
       <div class="playlist-screen">
         <div class="screen-title txt-lang" data-key="xt_title">أضف قائمة تشغيل</div>
@@ -194,6 +199,7 @@
       </div>
     </div>
 
+    <!-- شاشة البحث المتقدم -->
     <div id="view-search" class="view-panel">
       <div style="max-width:600px; margin: 0 auto 30px auto;">
         <input id="search-input" class="form-input" placeholder="ابحث هنا عن قنوات، أفلام، مسلسلات..." oninput="triggerGlobalSearch()" style="text-align:center;" />
@@ -201,13 +207,14 @@
       <div class="grid-container" id="search-results-grid"></div>
     </div>
 
+    <!-- شاشة الإعدادات الكاملة -->
     <div id="view-settings" class="view-panel">
       <div class="settings-list">
-        <div class="settings-item settings-focusable"><div class="settings-left"><span class="material-icons">account_circle</span><span class="txt-lang" data-key="set_acc">الحساب والاشتراك</span></div><span class="material-icons">chevron_left</span></div>
-        <div class="settings-item settings-focusable"><div class="settings-left"><span class="material-icons">palette</span><span class="txt-lang" data-key="set_theme">المظهر والسمات (Dark Premium)</span></div><span class="material-icons">chevron_left</span></div>
+        <div class="settings-item settings-focusable" onclick="alert('الحساب نشط')"><div class="settings-left"><span class="material-icons">account_circle</span><span class="txt-lang" data-key="set_acc">الحساب والاشتراك</span></div><span class="material-icons">chevron_left</span></div>
+        <div class="settings-item settings-focusable" onclick="alert('السمة داكنة ممتازة')"><div class="settings-left"><span class="material-icons">palette</span><span class="txt-lang" data-key="set_theme">المظهر والسمات (Dark Premium)</span></div><span class="material-icons">chevron_left</span></div>
         <div class="settings-item settings-focusable" onclick="toggleLanguage()"><div class="settings-left"><span class="material-icons">language</span><span id="lbl-current-lang">اللغة الحالية: العربية (اضغط للتبديل)</span></div><span class="material-icons">translate</span></div>
-        <div class="settings-item settings-focusable"><div class="settings-left"><span class="material-icons">security</span><span class="txt-lang" data-key="set_parent">الرقابة الأبوية والقفل</span></div><span class="material-icons">chevron_left</span></div>
-        <div class="settings-item settings-focusable"><div class="settings-left"><span class="material-icons">info</span><span class="txt-lang" data-key="set_about">حول تطبيق VISION TV v1.0</span></div><span class="material-icons">chevron_left</span></div>
+        <div class="settings-item settings-focusable" onclick="alert('مفتوح بالكامل')"><div class="settings-left"><span class="material-icons">security</span><span class="txt-lang" data-key="set_parent">الرقابة الأبوية والقفل</span></div><span class="material-icons">chevron_left</span></div>
+        <div class="settings-item settings-focusable" onclick="alert('VISION TV v1.0')"><div class="settings-left"><span class="material-icons">info</span><span class="txt-lang" data-key="set_about">حول تطبيق VISION TV v1.0</span></div><span class="material-icons">chevron_left</span></div>
       </div>
     </div>
 
