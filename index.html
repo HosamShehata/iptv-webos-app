@@ -13,55 +13,69 @@
     }
 
     header {
-      padding: 15px;
+      padding: 12px;
       background: #000;
-      display: flex;
-      gap: 10px;
     }
 
     input {
-      flex: 1;
+      width: 98%;
       padding: 10px;
       border: none;
       border-radius: 5px;
+      margin-bottom: 10px;
     }
 
-    .container {
+    .layout {
       display: flex;
+      height: calc(100vh - 60px);
     }
 
     .sidebar {
-      width: 200px;
+      width: 180px;
       background: #1a1a1a;
-      height: 100vh;
-      padding: 10px;
+      overflow-y: auto;
     }
 
-    .channel {
+    .category {
       padding: 12px;
-      margin: 5px 0;
-      background: #222;
+      border-bottom: 1px solid #333;
       cursor: pointer;
     }
 
-    .channel:hover {
+    .category:hover {
       background: #0d6efd;
     }
 
     .content {
       flex: 1;
       padding: 10px;
+      overflow-y: auto;
     }
 
-    .category {
-      padding: 10px;
-      margin-bottom: 5px;
-      background: #333;
+    .channel {
+      padding: 12px;
+      margin: 6px 0;
+      background: #222;
       cursor: pointer;
+      border-radius: 4px;
     }
 
-  </style>
+    .channel:hover {
+      background: #0d6efd;
+    }
 
+    .epg-box {
+      margin-top: 10px;
+      padding: 10px;
+      background: #000;
+    }
+
+    .epg-item {
+      padding: 6px;
+      border-bottom: 1px solid #333;
+      font-size: 14px;
+    }
+  </style>
 </head>
 
 <body>
@@ -70,12 +84,17 @@
   <input id="search" placeholder="Search channels..." oninput="renderChannels()" />
 </header>
 
-<div class="container">
+<div class="layout">
 
   <div class="sidebar" id="categories"></div>
 
   <div class="content">
     <div id="channels"></div>
+
+    <div class="epg-box">
+      <h3>📺 EPG</h3>
+      <div id="epg"></div>
+    </div>
   </div>
 
 </div>
