@@ -1,205 +1,253 @@
-// ==============================
+// =====================================
 // VISION TV API ENGINE
-// ==============================
+// مسؤول عن البيانات فقط
+// =====================================
 
-let liveChannels = [];
-let moviesList = [];
-let seriesList = [];
+const AppData = {
 
-let filteredLive = [];
-let filteredMovies = [];
-let filteredSeries = [];
+    live: [],
+    movies: [],
+    series: [],
 
-/*
-    لاحقاً سيتم استبدال هذا كله بطلبات Xtream API الحقيقية
-*/
+    filteredLive: [],
+    filteredMovies: [],
+    filteredSeries: [],
 
-function generateServerPlaylistContent() {
+    playlists: []
 
-    const lang = localStorage.getItem("app_lang") || "ar";
-    const ar = lang === "ar";
+};
 
-    liveChannels = [
+// =====================================
+
+function loadPlaylistsFromStorage() {
+
+    AppData.playlists =
+        JSON.parse(localStorage.getItem("iptv_playlists_lg")) || [];
+
+}
+
+// =====================================
+
+function savePlaylistsToStorage() {
+
+    localStorage.setItem(
+        "iptv_playlists_lg",
+        JSON.stringify(AppData.playlists)
+    );
+
+}
+
+// =====================================
+
+function clearContent() {
+
+    AppData.live = [];
+    AppData.movies = [];
+    AppData.series = [];
+
+    AppData.filteredLive = [];
+    AppData.filteredMovies = [];
+    AppData.filteredSeries = [];
+
+}
+
+// =====================================
+
+function generateDemoContent(language = "ar") {
+
+    const ar = language === "ar";
+
+    AppData.live = [
+
         {
-            stream_id: 1,
+            id: 1,
             type: "live",
             name: ar ? "beIN Sports 1 HD" : "beIN Sports 1 HD",
-            stream_icon: "https://placehold.co/400x600/e50914/ffffff?text=SPORT+1",
+            image: "https://placehold.co/400x600/e50914/ffffff?text=SPORT",
             url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
         },
+
         {
-            stream_id: 2,
+            id: 2,
             type: "live",
             name: ar ? "MBC مصر" : "MBC Masr",
-            stream_icon: "https://placehold.co/400x600/0057ff/ffffff?text=MBC",
-            url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-        },
-        {
-            stream_id: 3,
-            type: "live",
-            name: ar ? "أبو ظبي الرياضية" : "AD Sports",
-            stream_icon: "https://placehold.co/400x600/00c851/ffffff?text=AD",
+            image: "https://placehold.co/400x600/0f7cff/ffffff?text=MBC",
             url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
         }
+
     ];
 
-    moviesList = [
+    AppData.movies = [
+
         {
-            stream_id: 100,
+            id: 100,
             type: "movie",
-            name: ar ? "Sintel 4K" : "Sintel 4K",
-            stream_icon: "https://placehold.co/400x600/141414/ffffff?text=SINTEL",
+            name: "Sintel 4K",
+            image: "https://placehold.co/400x600/181818/ffffff?text=SINTEL",
             url: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"
-        },
-        {
-            stream_id: 101,
-            type: "movie",
-            name: ar ? "Big Buck Bunny" : "Big Buck Bunny",
-            stream_icon: "https://placehold.co/400x600/444444/ffffff?text=BBB",
-            url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
         }
+
     ];
 
-    seriesList = [
+    AppData.series = [
+
         {
-            series_id: 200,
+            id: 200,
             type: "series",
-            name: ar ? "Sci-Fi Series" : "Sci-Fi Series",
-            stream_icon: "https://placehold.co/400x600/8a2be2/ffffff?text=SERIES"
+            name: ar ? "مسلسل خيال علمي" : "Sci-Fi Series",
+            image: "https://placehold.co/400x600/8a2be2/ffffff?text=SERIES"
         }
+
     ];
 
-    filteredLive = [...liveChannels];
-    filteredMovies = [...moviesList];
-    filteredSeries = [...seriesList];
+    AppData.filteredLive = [...AppData.live];
+    AppData.filteredMovies = [...AppData.movies];
+    AppData.filteredSeries = [...AppData.series];
+
 }
+// =====================================
+// PLAYLISTS
+// =====================================
 
-// ======================================
+function addPlaylist(name, user, pass, url) {
 
-function saveIPTVServer() {
+    if (!name || !user || !url)
+        return false;
 
     const playlist = {
-        name: document.getElementById("server-name").value.trim(),
-        user: document.getElementById("server-user").value.trim(),
-        pass: document.getElementById("server-pass").value.trim(),
-        url: document.getElementById("server-url").value.trim()
+        id: Date.now(),
+        name,
+        user,
+        pass,
+        url
     };
 
-    if (!playlist.name || !playlist.user || !playlist.url) {
+    AppData.playlists.push(playlist);
 
-        document.getElementById("pl_status").innerHTML =
-            "برجاء إدخال جميع البيانات.";
+    savePlaylistsToStorage();
 
-        document.getElementById("pl_status").style.color = "red";
-
-        return;
-    }
-
-    let servers =
-        JSON.parse(localStorage.getItem("iptv_playlists_lg")) || [];
-
-    servers.push(playlist);
-
-    localStorage.setItem(
-        "iptv_playlists_lg",
-        JSON.stringify(servers)
-    );
-
-    document.getElementById("pl_status").style.color = "#00c851";
-    document.getElementById("pl_status").innerHTML =
-        "تم إضافة السيرفر بنجاح";
-
-    document.getElementById("server-name").value = "";
-    document.getElementById("server-user").value = "";
-    document.getElementById("server-pass").value = "";
-    document.getElementById("server-url").value = "";
-
-    generateServerPlaylistContent();
-
-    loadPlaylists();
-
-    if (window.clickSidebarItem)
-        clickSidebarItem(0);
+    return true;
 }
 
-// ======================================
+// =====================================
 
-function loadPlaylists() {
+function deletePlaylist(id) {
 
-    const container =
-        document.getElementById("playlists-list");
+    AppData.playlists =
+        AppData.playlists.filter(
+            p => p.id !== id
+        );
 
-    if (!container)
-        return;
+    savePlaylistsToStorage();
 
-    container.innerHTML = "";
+    if (AppData.playlists.length === 0) {
 
-    const list =
-        JSON.parse(localStorage.getItem("iptv_playlists_lg")) || [];
+        clearContent();
 
-    if (!list.length) {
-
-        container.innerHTML =
-            "<p style='opacity:.6'>لا توجد اشتراكات.</p>";
-
-        return;
     }
-
-    list.forEach((item, index) => {
-
-        container.innerHTML += `
-
-<div class="playlist-table-row">
-
-<div>
-
-<b>${item.name}</b>
-
-<br>
-
-${item.url}
-
-</div>
-
-<div>
-
-<button
-class="btn-playlist-control edit">
-Edit
-</button>
-
-<button
-class="btn-playlist-control delete"
-onclick="deletePlaylist(${index})">
-
-Delete
-
-</button>
-
-</div>
-
-</div>
-
-`;
-
-    });
 
 }
 
-// ======================================
+// =====================================
 
-function deletePlaylist(index){
+function updatePlaylist(id, data) {
 
-    let list =
-        JSON.parse(localStorage.getItem("iptv_playlists_lg")) || [];
+    const playlist =
+        AppData.playlists.find(
+            p => p.id === id
+        );
 
-    list.splice(index,1);
+    if (!playlist)
+        return false;
 
-    localStorage.setItem(
-        "iptv_playlists_lg",
-        JSON.stringify(list)
-    );
+    playlist.name = data.name;
+    playlist.user = data.user;
+    playlist.pass = data.pass;
+    playlist.url = data.url;
 
-    loadPlaylists();
+    savePlaylistsToStorage();
+
+    return true;
+}
+
+// =====================================
+
+function getPlaylists() {
+
+    return AppData.playlists;
+
+}
+
+// =====================================
+
+function getLiveChannels() {
+
+    return AppData.filteredLive;
+
+}
+
+function getMovies() {
+
+    return AppData.filteredMovies;
+
+}
+
+function getSeries() {
+
+    return AppData.filteredSeries;
+
+}
+
+// =====================================
+
+function searchContent(keyword) {
+
+    keyword = keyword.toLowerCase();
+
+    AppData.filteredLive =
+        AppData.live.filter(item =>
+            item.name.toLowerCase().includes(keyword)
+        );
+
+    AppData.filteredMovies =
+        AppData.movies.filter(item =>
+            item.name.toLowerCase().includes(keyword)
+        );
+
+    AppData.filteredSeries =
+        AppData.series.filter(item =>
+            item.name.toLowerCase().includes(keyword)
+        );
+
+}
+async function loadXtreamData(server){
+
+    const base =
+        `${server.url}/player_api.php?username=${server.user}&password=${server.pass}`;
+
+    const account =
+        await fetch(base).then(r=>r.json());
+
+    const live =
+        await fetch(base+"&action=get_live_streams")
+        .then(r=>r.json());
+
+    const movies =
+        await fetch(base+"&action=get_vod_streams")
+        .then(r=>r.json());
+
+    const series =
+        await fetch(base+"&action=get_series")
+        .then(r=>r.json());
+
+    AppData.live = live;
+    AppData.movies = movies;
+    AppData.series = series;
+
+    AppData.filteredLive = [...live];
+    AppData.filteredMovies = [...movies];
+    AppData.filteredSeries = [...series];
+
+    return account;
 
 }
