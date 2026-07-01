@@ -114,11 +114,37 @@ const VisionAPI = {
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), 15000);
 
-            const response = await fetch(proxyUrl, { signal: controller.signal });
-            const result = await response.json();
 
-            clearTimeout(timeout);
+const response = await fetch(proxyUrl, { signal: controller.signal });
 
+console.log("================================");
+console.log("HTTP STATUS:", response.status);
+console.log("Proxy URL:", proxyUrl);
+
+const text = await response.text();
+
+console.log("RAW RESPONSE:");
+console.log(text);
+
+let result;
+
+try {
+    result = JSON.parse(text);
+} catch (e) {
+    console.error("❌ Response is NOT valid JSON");
+    console.error(text);
+    this.loadDemoData();
+    return false;
+}
+
+clearTimeout(timeout);
+
+console.log("PARSED RESULT:");
+console.log(result);
+
+console.log("CONTENTS:");
+console.log(result.contents);
+console.log("================================");
             // ==============================
             // FIX 1: حماية JSON parsing
             // ==============================
