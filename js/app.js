@@ -42,14 +42,14 @@ const languages = {
 function loadTestData() {
   const isAr = currentLang === "ar";
   liveChannels = [
-    { stream_id: 901, name: isAr ? "قناة التيست الحية 1" : "Live Stream Test 1", category_name: isAr ? "بث تجريبي" : "Demo Live", stream_icon: "https://placehold.co/200x270/1f6feb/ffffff?text=LIVE+1", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8", type:"live" },
-    { stream_id: 902, name: isAr ? "قناة بي إن الإخبارية تيست" : "beIN Test Stream", category_name: isAr ? "بث تجريبي" : "Demo Live", stream_icon: "https://placehold.co/200x270/00c851/ffffff?text=beIN", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8", type:"live" }
+    { stream_id: 901, name: isAr ? "قناة بين سبورت 1 HD" : "beIN Sports 1 HD", category_name: isAr ? "رياضة" : "Sports", stream_icon: "https://placehold.co/200x270/1f6feb/ffffff?text=beIN+1", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8", type:"live" },
+    { stream_id: 902, name: isAr ? "قناة أبوظبي الرياضية" : "AD Sports Test", category_name: isAr ? "رياضة" : "Sports", stream_icon: "https://placehold.co/200x270/00c851/ffffff?text=AD+SPORTS", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8", type:"live" }
   ];
   moviesList = [
-    { stream_id: 903, name: "Sintel (Demo Movie)", category_name: isAr ? "أفلام تيست" : "Demo Movies", stream_icon: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400", url: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8", container_extension: "m3u8", type:"movie" }
+    { stream_id: 903, name: "Sintel (4K Movie Demo)", category_name: isAr ? "أفلام حركة" : "Action Movies", stream_icon: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400", url: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8", container_extension: "m3u8", type:"movie", rating: "⭐ 8.8", year: "2025" }
   ];
   seriesList = [
-    { series_id: 905, name: "Tears of Steel (Demo Series)", category_name: isAr ? "مسلسلات تيست" : "Demo Series", stream_icon: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400", type:"series" }
+    { series_id: 905, name: "Tears of Steel (Sci-Fi Series)", category_name: isAr ? "مسلسلات خيال" : "Sci-Fi Series", stream_icon: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400", type:"series", rating: "⭐ 8.5", year: "2026" }
   ];
 }
 
@@ -63,20 +63,12 @@ function updateClockAndDay() {
 }
 
 function measureConnectionSpeed() {
-  document.getElementById("top-net-speed").innerText = "48.5 Mbps";
+  document.getElementById("top-net-speed").innerText = "54.2 Mbps";
 }
 
-function updateSeekDurationSetting(val) {
-  localStorage.setItem("global_seek_duration", val);
-}
-
-function clickSidebarItem(idx) {
-  focusMode = "sidebar"; sidebarIdx = idx; switchView(sidebarViews[sidebarIdx]); updateFocus();
-}
-
-function clickSettingsItem(idx) {
-  focusMode = "settings"; settingsIdx = idx; showSubSettings(idx); updateFocus();
-}
+function updateSeekDurationSetting(val) { localStorage.setItem("global_seek_duration", val); }
+function clickSidebarItem(idx) { focusMode = "sidebar"; sidebarIdx = idx; switchView(sidebarViews[sidebarIdx]); updateFocus(); }
+function clickSettingsItem(idx) { focusMode = "settings"; settingsIdx = idx; showSubSettings(idx); updateFocus(); }
 
 function showSubSettings(idx) {
   document.querySelectorAll(".sub-settings-panel").forEach(p => p.classList.remove("active"));
@@ -84,9 +76,7 @@ function showSubSettings(idx) {
   if(activePanel) activePanel.classList.add("active");
 }
 
-function clearPlaylistData() {
-  localStorage.clear(); window.location.reload();
-}
+function clearPlaylistData() { localStorage.clear(); window.location.reload(); }
 
 function saveToGlobalHistory(item) {
   let history = JSON.parse(localStorage.getItem("global_watch_history")) || [];
@@ -119,7 +109,6 @@ function switchPlaylistType(type) {
   document.getElementById("tab-m3u").className = "tab-btn " + (type === "m3u" ? "active-m3u" : "");
   document.getElementById("tab-stream").className = "tab-btn " + (type === "stream1" ? "active-stream" : "");
   document.getElementById("tab-xtream").className = "tab-btn " + (type === "xtream" ? "active-xtream" : "");
-
   const rowUser = document.getElementById("row-user");
   const rowPass = document.getElementById("row-pass");
   if(type === "m3u") { if(rowUser) rowUser.style.display = "none"; if(rowPass) rowPass.style.display = "none"; }
@@ -128,9 +117,8 @@ function switchPlaylistType(type) {
 
 function togglePasswordVisibility() {
   const passInput = document.getElementById("pl_pass");
-  const eyeIcon = document.getElementById("eye-icon");
-  if(passInput.type === "password") { passInput.type = "text"; eyeIcon.innerText = "visibility_off"; }
-  else { passInput.type = "password"; eyeIcon.innerText = "visibility"; }
+  if(passInput.type === "password") passInput.type = "text";
+  else passInput.type = "password";
 }
 
 async function processPlaylistAddition() {
@@ -141,7 +129,7 @@ async function processPlaylistAddition() {
   const status = document.getElementById("pl_status");
 
   if(!name || !url) { status.innerText = "برجاء كتابة البيانات كاملة."; status.style.color = "#ff4444"; return; }
-  status.innerText = "جاري الفحص والسحب الحي من السيرفر..."; status.style.color = "#ffffff";
+  status.innerText = "جاري الفحص والسحب من السيرفر..."; status.style.color = "#ffffff";
 
   const baseUrl = `${url}/player_api.php?username=${user}&password=${pass}`;
   try {
@@ -162,9 +150,7 @@ async function processPlaylistAddition() {
   } catch(e) { status.innerText = "فشل الاتصال بالسيرفر."; status.style.color = "#ff4444"; }
 }
 
-function finalizeLogin() {
-  setTimeout(() => { sidebarIdx = 1; focusMode = "sidebar"; switchView(sidebarViews[sidebarIdx]); updateFocus(); }, 1000);
-}
+function finalizeLogin() { setTimeout(() => { sidebarIdx = 1; focusMode = "sidebar"; switchView(sidebarViews[sidebarIdx]); updateFocus(); }, 1000); }
 
 function renderSubFilters() {
   const bar = document.getElementById("subFilterBar"); bar.innerHTML = "";
@@ -185,8 +171,7 @@ function renderContentGrid(viewId) {
   else if (viewId === "view-movies") { targetGridId = "movies-grid"; dataList = moviesList; }
   else if (viewId === "view-series") { targetGridId = "series-grid"; dataList = seriesList; }
   else if (viewId === "view-favorites") { targetGridId = "favorites-grid"; dataList = JSON.parse(localStorage.getItem("favorites_list")) || []; }
-  else if (viewId === "view-history") { targetGridId = "history-grid"; dataList = JSON.parse(localStorage.getItem("global_watch_history")) || []; }
-  else if (viewId === "view-home") { targetGridId = "home-history-grid"; dataList = JSON.parse(localStorage.getItem("global_watch_history")) || []; }
+  else if (viewId === "view-history" || viewId === "view-home") { targetGridId = (viewId === "view-home") ? "home-history-grid" : "history-grid"; dataList = JSON.parse(localStorage.getItem("global_watch_history")) || []; }
   else return;
 
   const container = document.getElementById(targetGridId); if(!container) return; container.innerHTML = "";
@@ -205,13 +190,9 @@ function renderContentGrid(viewId) {
       cardIdx = idx; focusMode = "cards";
       localStorage.setItem("current", JSON.stringify(item));
       saveToGlobalHistory(item);
-      if (item.type === "live") {
-        if(!item.url) {
-          const creds = JSON.parse(localStorage.getItem("xtream_creds")) || {url:"", user:"", pass:""};
-          item.url = `${creds.url}/live/${creds.user}/${creds.pass}/${item.stream_id}.ts`;
-        }
-        localStorage.setItem("current", JSON.stringify(item)); window.location.href = "player.html";
-      } else { window.location.href = "details.html"; }
+      localStorage.setItem("current_playlist_context", JSON.stringify(globalFiltered));
+      localStorage.setItem("current_playlist_index", idx);
+      window.location.href = (item.url || item.type === "live") ? "player.html" : "details.html";
     };
     container.appendChild(card);
   });
@@ -222,10 +203,9 @@ function triggerGlobalSearch() {
   const query = document.getElementById("search-input").value.toLowerCase().trim();
   const container = document.getElementById("search-results-grid"); container.innerHTML = "";
   if(!query) return;
-
   const all = [...liveChannels, ...moviesList, ...seriesList];
   globalFiltered = all.filter(i => (i.name || "").toLowerCase().includes(query) || (i.category_name || "").toLowerCase().includes(query)).slice(0, 40);
-  globalFiltered.forEach((item, idx) => {
+  globalFiltered.forEach((item) => {
     const card = document.createElement("div"); card.className = "media-card";
     card.innerHTML = `<img src="${item.stream_icon || item.cover || 'https://placehold.co/200x270/1a1a1a/ffffff?text=VISION'}" /><div class="info">${item.name}</div>`;
     card.onclick = function() { localStorage.setItem("current", JSON.stringify(item)); saveToGlobalHistory(item); window.location.href = item.url ? "player.html" : "details.html"; };
@@ -238,7 +218,6 @@ function updateFocus() {
   const langBtn = document.getElementById("sidebarLangBtn");
   if(langBtn) langBtn.classList.toggle("focused", focusMode === "sidebar_lang");
   renderSubFilters();
-
   document.querySelectorAll(".view-panel.active .media-card").forEach((el, i) => { el.classList.toggle("focused", focusMode === "cards" && i === cardIdx); });
   const formFields = document.querySelectorAll(".playlist-focusable");
   formFields.forEach((el, i) => { el.classList.toggle("focused", focusMode === "playlist_form" && i === formIndex); });
@@ -252,17 +231,12 @@ function applyLanguage() {
   htmlTag.setAttribute("lang", currentLang);
   document.getElementById("lbl-current-lang").innerText = dict.lang_btn;
   document.getElementById("lbl-sidebar-lang").innerText = dict.sidebar_lang;
-
-  document.querySelectorAll(".txt-lang").forEach(el => {
-    const key = el.getAttribute("data-key");
-    if(dict[key]) el.innerText = dict[key];
-  });
+  document.querySelectorAll(".txt-lang").forEach(el => { const key = el.getAttribute("data-key"); if(dict[key]) el.innerText = dict[key]; });
   updateClockAndDay();
 }
 
 function toggleLanguage() {
-  currentLang = (currentLang === "ar") ? "en" : "ar";
-  localStorage.setItem("app_lang", currentLang);
+  currentLang = (currentLang === "ar") ? "en" : "ar"; localStorage.setItem("app_lang", currentLang);
   applyLanguage(); loadTestData(); switchView(sidebarViews[sidebarIdx]);
 }
 
@@ -307,7 +281,7 @@ document.addEventListener("keydown", function(e) {
     if (focusMode === "settings" && settingsIdx === 2) toggleLanguage();
     if (focusMode === "cards" && globalFiltered[cardIdx]) {
       const item = globalFiltered[cardIdx]; localStorage.setItem("current", JSON.stringify(item));
-      window.location.href = item.url ? "player.html" : "details.html";
+      window.location.href = (item.url || item.type === "live") ? "player.html" : "details.html";
     }
   }
   if (focusMode === "sub_filters") renderContentGrid(activeView);
@@ -317,9 +291,7 @@ document.addEventListener("keydown", function(e) {
 window.onload = () => {
   const savedLive = JSON.parse(localStorage.getItem("xt_live"));
   if(savedLive && savedLive.length > 0) {
-    liveChannels = savedLive;
-    moviesList = JSON.parse(localStorage.getItem("xt_movies")) || [];
-    seriesList = JSON.parse(localStorage.getItem("xt_series")) || [];
+    liveChannels = savedLive; moviesList = JSON.parse(localStorage.getItem("xt_movies")) || []; seriesList = JSON.parse(localStorage.getItem("xt_series")) || [];
     sidebarIdx = 1; focusMode = "sidebar";
   } else { loadTestData(); }
   applyLanguage(); switchView(sidebarViews[sidebarIdx]); updateFocus();
