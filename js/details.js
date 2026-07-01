@@ -1,8 +1,8 @@
 let seriesItem = JSON.parse(localStorage.getItem("current")) || {};
 let episodes = [
-  { id: "101", title: "Episode 1 - The Beginning", thumb: "https://placehold.co/320x180/1f6feb/ffffff?text=EP1" },
-  { id: "102", title: "Episode 2 - Technical Deep Dive", thumb: "https://placehold.co/320x180/00c851/ffffff?text=EP2" },
-  { id: "103", title: "Episode 3 - Core Implementation", thumb: "https://placehold.co/320x180/ff4444/ffffff?text=EP3" }
+  { id: "101", title: "Episode 1 - The Cinematic Launch", thumb: "https://placehold.co/640x360/1f6feb/ffffff?text=EP1" },
+  { id: "102", title: "Episode 2 - Logic Integration", thumb: "https://placehold.co/640x360/00c851/ffffff?text=EP2" },
+  { id: "103", title: "Episode 3 - Ultimate Command Panel", thumb: "https://placehold.co/640x360/ff4444/ffffff?text=EP3" }
 ];
 let currentLang = localStorage.getItem("app_lang") || "ar";
 
@@ -13,7 +13,7 @@ const localDict = {
 
 function initDetails() {
   const dict = localDict[currentLang];
-  document.getElementById("details-html-tag").setAttribute("dir", currentLang==="ar"?"rtl":"ltr");
+  document.getElementById("details-html").setAttribute("dir", currentLang==="ar"?"rtl":"ltr");
   document.getElementById("lbl-back").innerText = dict.back;
   document.getElementById("lbl-resume-btn").innerText = dict.resume;
   document.getElementById("lbl-episodes-heading").innerText = dict.heading;
@@ -28,7 +28,7 @@ function initDetails() {
     const ratio = localStorage.getItem(`progress_ratio_media_${ep.id}`) || 0;
     const isLast = ep.id === lastEpId;
     
-    const card = document.createElement("div"); card.className = "episode-yt-card details-focusable";
+    const card = document.createElement("div"); card.className = "episode-yt-card";
     card.innerHTML = `
       <div class="thumb-wrapper">
         <img src="${ep.thumb}" />
@@ -60,4 +60,8 @@ function resumeLastWatchedEpisode() {
   if(idx === -1) idx = 0; playEpisode(idx);
 }
 
-window.onload = initDetails;
+window.onload = function() {
+  initDetails();
+  const activeTheme = localStorage.getItem('selected-theme') || 'theme-netflix';
+  document.getElementById('details-html').className = activeTheme;
+};
