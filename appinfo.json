@@ -1,6 +1,6 @@
 {
-    "id": "com.visiontv.iptvlg",
-    "version": "1.0.0",
+    "id": "com.visiontv.iptvlg.premium",
+    "version": "1.0.1",
     "vendor": "VisionTV",
     "type": "web",
     "main": "index.html",
