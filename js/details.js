@@ -35,8 +35,7 @@ async function initDetails() {
     document.getElementById("backdrop-bg").style.backgroundImage = `url('${imgUrl}')`;
   }
 
-  // معالجة جلب الحلقات سواء تجريبية أو من سيرفر Xtream
-  if (item.series_id && item.series_id === 905) {
+  if (item.series_id || item.type === "series") {
     document.getElementById("episodes-block").style.display = "flex";
     document.getElementById("media-plot").innerText = currentLang === "ar" ? "مسلسل خيال علمي وتجربة بصرية فريدة لاختبار جودة تشغيل الفيديو والتحكم." : "A sci-fi demo series for testing video playback and player controls.";
     
@@ -45,35 +44,8 @@ async function initDetails() {
       { id: 102, title: currentLang === "ar" ? "الموسم 1 - الحلقة 2" : "Season 1 - Episode 2", url: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8" }
     ];
     renderEpisodesTray();
-    updateFocus();
-    return;
-  }
-
-  if (item.series_id) {
-    document.getElementById("episodes-block").style.display = "flex";
-    const baseUrl = `${creds.url}/player_api.php?username=${creds.user}&password=${creds.pass}`;
-    try {
-      const res = await fetch(`${baseUrl}&action=get_series_info&series_id=${item.series_id}`);
-      const data = await res.json();
-      if(data.info && data.info.plot) document.getElementById("media-plot").innerText = data.info.plot;
-      if(data.info && data.info.rating) document.getElementById("media-rating").innerText = `⭐ ${data.info.rating}`;
-
-      episodesList = [];
-      if(data.episodes) {
-        Object.keys(data.episodes).forEach(season => {
-          data.episodes[season].forEach(ep => {
-            episodesList.push({
-              id: ep.id,
-              title: currentLang === "ar" ? `الموسم ${season} - حلقة ${ep.episode_num}` : `S${season} - Ep ${ep.episode_num}`,
-              url: `${creds.url}/series/${creds.user}/${creds.pass}/${ep.id}.${ep.container_extension || 'mp4'}`
-            });
-          });
-        });
-      }
-      renderEpisodesTray();
-    } catch(e) { console.error(e); }
   } else {
-    document.getElementById("media-plot").innerText = currentLang === "ar" ? "فيلم ممتع وعالي الجودة متاح للمشاهدة الفورية." : "An enjoyable movie available for instant playback.";
+    document.getElementById("media-plot").innerText = currentLang === "ar" ? "فيلم ممتع وعالي الجودة متاح للمشاهدة الفورية والـ Seek." : "An enjoyable movie available for instant playback and custom seek.";
   }
   updateFocus();
 }
@@ -88,13 +60,10 @@ function renderEpisodesTray() {
     div.className = "ep-card";
     div.innerText = ep.title;
     
-    if(lastEpId && lastEpId == ep.id) {
-      div.classList.add("last-watched-badge");
-    }
+    if(lastEpId && lastEpId == ep.id) { div.classList.add("last-watched-badge"); }
 
     div.onclick = function() {
-      epIdx = idx; focusMode = "episodes";
-      playEp(ep, idx);
+      epIdx = idx; focusMode = "episodes"; playEp(ep, idx);
     };
     tray.appendChild(div);
   });
@@ -111,14 +80,10 @@ function playEp(ep, index) {
 }
 
 function triggerPlay() {
-  if (item.series_id && episodesList.length > 0) {
-    playEp(episodesList[0], 0);
-  } else {
-    if(!item.url && creds) {
-      item.url = `${creds.url}/movie/${creds.user}/${creds.pass}/${item.stream_id}.${item.container_extension || "mp4"}`;
-    }
-    localStorage.setItem("current", JSON.stringify(item));
-    window.location.href = "player.html";
+  if (item.series_id && episodesList.length > 0) { playEp(episodesList[0], 0); } 
+  else {
+    if(!item.url && creds) { item.url = `${creds.url}/movie/${creds.user}/${creds.pass}/${item.stream_id}.${item.container_extension || "mp4"}`; }
+    localStorage.setItem("current", JSON.stringify(item)); window.location.href = "player.html";
   }
 }
 
@@ -126,13 +91,11 @@ function toggleFav() {
   let favs = JSON.parse(localStorage.getItem("favorites_list")) || [];
   const exists = favs.some(f => f.stream_id === item.stream_id || f.series_id === item.series_id);
   const dict = detailsLanguages[currentLang];
-  
   if(exists) {
     favs = favs.filter(f => item.stream_id ? f.stream_id !== item.stream_id : f.series_id !== item.series_id);
     document.getElementById("lbl-fav-btn").innerText = dict.fav_add;
   } else {
-    favs.unshift(item);
-    document.getElementById("lbl-fav-btn").innerText = dict.fav_rem;
+    favs.unshift(item); document.getElementById("lbl-fav-btn").innerText = dict.fav_rem;
   }
   localStorage.setItem("favorites_list", JSON.stringify(favs));
 }
@@ -140,7 +103,6 @@ function toggleFav() {
 function updateFocus() {
   const btns = document.querySelectorAll(".detail-item");
   btns.forEach((b, i) => b.classList.toggle("focused", focusMode === "buttons" && i === btnIdx));
-
   const eps = document.querySelectorAll(".ep-card");
   eps.forEach((e, i) => e.classList.toggle("focused", focusMode === "episodes" && i === epIdx));
 }
@@ -158,12 +120,8 @@ document.addEventListener("keydown", function(e) {
     if (focusMode === "buttons") btnIdx = Math.min(btns.length - 1, btnIdx + 1);
     if (focusMode === "episodes") epIdx = Math.min(episodesList.length - 1, epIdx + 1);
   }
-  if (e.key === "ArrowDown" && focusMode === "buttons" && episodesList.length > 0) {
-    focusMode = "episodes"; epIdx = 0;
-  }
-  if (e.key === "ArrowUp" && focusMode === "episodes") {
-    focusMode = "buttons";
-  }
+  if (e.key === "ArrowDown" && focusMode === "buttons" && episodesList.length > 0) { focusMode = "episodes"; epIdx = 0; }
+  if (e.key === "ArrowUp" && focusMode === "episodes") { focusMode = "buttons"; }
   if (e.key === "Enter") {
     if (focusMode === "buttons") btns[btnIdx].click();
     else if (focusMode === "episodes") playEp(episodesList[epIdx], epIdx);
