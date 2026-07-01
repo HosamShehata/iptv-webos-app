@@ -114,7 +114,38 @@ function renderFavorites() {
     };
 
     container.appendChild(div);
+let selectedIndex = 0;
+let items = [];
 
+document.addEventListener("keydown", function(e) {
+
+  if (channels.length === 0) return;
+
+  const divs = document.querySelectorAll("#channels div");
+  items = divs;
+
+  if (e.key === "ArrowDown") {
+    selectedIndex++;
+  }
+
+  if (e.key === "ArrowUp") {
+    selectedIndex--;
+  }
+
+  if (selectedIndex < 0) selectedIndex = 0;
+  if (selectedIndex >= divs.length) selectedIndex = divs.length - 1;
+
+  // highlight
+  divs.forEach((d, i) => {
+    d.style.background = i === selectedIndex ? "#0d6efd" : "#222";
+  });
+
+  // enter
+  if (e.key === "Enter") {
+    divs[selectedIndex].click();
+  }
+
+});
   });
 
 }
