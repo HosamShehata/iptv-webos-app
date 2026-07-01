@@ -1,53 +1,69 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" id="details-html">
+<html lang="ar" dir="rtl" id="details-html" class="theme-netflix">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VISION TV - SERIES DETAILS</title>
+  <title>VISION TV - SERIES HUB</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
-    html { font-size: 1.2vw; }
-    @media (max-width: 1024px) { html { font-size: 16px; } }
-    body { background: #0b0b0b; color: #fff; padding: 3rem; font-family: sans-serif; }
+    .theme-netflix { --accent: #e50914; --bg-main: #000000; --bg-card: #141414; }
+    .theme-shahid { --accent: #00ff87; --bg-main: #0b0f19; --bg-card: #111827; }
+    .theme-cyberpunk { --accent: #f000ff; --bg-main: #0c0014; --bg-card: #1a0033; }
+    .theme-midnight { --accent: #d4af37; --bg-main: #050b14; --bg-card: #0f172a; }
+    .theme-ocean { --accent: #00b4d8; --bg-main: #011627; --bg-card: #0b3c5d; }
+
+    html { font-size: 1.15vw; }
+    @media (max-width: 1024px) { html { font-size: 15px; } }
+    body { background: var(--bg-main); color: #fff; padding: 3rem; font-family: 'Segoe UI', sans-serif; margin: 0; }
     
     .action-row { display: flex; gap: 1.5rem; margin-bottom: 2.5rem; }
-    .btn-action { background: #161616; padding: 1rem 2rem; border-radius: 10px; border: 1px solid #333; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 0.8rem; font-weight: bold; font-size: 1.1rem; text-decoration: none; }
-    .btn-action:hover { outline: 3px solid #1f6feb; background: #1f6feb; }
+    .btn-action { background: var(--bg-card); padding: 1.1rem 2.2rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; display: flex; align-items: center; gap: 0.8rem; font-weight: bold; font-size: 1.15rem; text-decoration: none; transition: 0.2s; }
+    .btn-action:hover { background: var(--accent); border-color: transparent; box-shadow: 0 0 15px var(--accent); }
     
-    .series-header { display: flex; gap: 3rem; background: #111; padding: 2.5rem; border-radius: 16px; border: 1px solid #222; margin-bottom: 2.5rem; }
-    .series-poster { width: 18rem; height: 25rem; object-fit: cover; border-radius: 12px; }
-    .series-title { font-size: 2.4rem; font-weight: 900; margin: 0 0 1rem 0; }
+    .series-header { display: flex; gap: 3rem; background: var(--bg-card); padding: 2.5rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 2.5rem; align-items: center; }
+    .series-poster { width: 17rem; height: 24rem; object-fit: cover; border-radius: 14px; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+    .series-title { font-size: 2.5rem; font-weight: 900; margin: 0 0 1rem 0; }
 
-    .episodes-grid-youtube { display: grid; grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr)); gap: 2rem; }
-    .episode-yt-card { background: #161616; border-radius: 14px; overflow: hidden; border: 1px solid #222; cursor: pointer; position: relative; }
+    /* حقل البحث داخل الحلقات */
+    .ep-search-container { margin-bottom: 2rem; max-width: 30rem; position: relative; display: flex; align-items: center; }
+
+    .episodes-grid-youtube { display: grid; grid-template-columns: repeat(auto-fill, minmax(21rem, 1fr)); gap: 2.2rem; }
+    .episode-yt-card { background: var(--bg-card); border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.06); cursor: pointer; position: relative; transition: 0.2s; }
+    .episode-yt-card:hover { transform: scale(1.03); border-color: var(--accent); }
     .thumb-wrapper { position: relative; width: 100%; height: 12rem; background: #222; }
     .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
     
-    /* شريط تقدم الحلقات المماثل لليوتيوب */
-    .yt-progress-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 6px; background: rgba(255,255,255,0.3); }
-    .yt-progress-fill { height: 100%; background: #ff0000; width: 0%; box-shadow: 0 0 6px #ff0000; }
+    .yt-progress-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 6px; background: rgba(255,255,255,0.2); }
+    .yt-progress-fill { height: 100%; background: var(--accent); width: 0%; box-shadow: 0 0 6px var(--accent); }
     
-    .ep-card-info { padding: 1rem; }
-    .ep-card-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem; }
-    .ep-card-status { font-size: 1rem; color: #1f6feb; font-weight: bold; }
+    .ep-card-info { padding: 1.2rem; }
+    .ep-card-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ep-card-status { font-size: 1.05rem; color: var(--accent); font-weight: bold; }
   </style>
 </head>
 <body>
 
   <div class="action-row">
     <a href="index.html" class="btn-action"><span class="material-icons">arrow_forward</span><span id="lbl-back">العودة للرئيسية</span></a>
-    <button class="btn-action" style="background:#00c851; border-color:transparent;" onclick="resumeLastWatchedEpisode()"><span class="material-icons">play_circle_filled</span><span id="lbl-resume-btn">متابعة المشاهدة (Resume)</span></button>
+    <button class="btn-action" style="background:#00c851; border-color:transparent; box-shadow: 0 4px 12px rgba(0,200,81,0.2);" onclick="resumeLastWatchedEpisode()"><span class="material-icons">play_circle_filled</span><span id="lbl-resume-btn">متابعة الحلقة الأخيرة المتبقية</span></button>
   </div>
 
   <div class="series-header">
     <img id="series-img" class="series-poster" src="https://placehold.co/400x540/ff4444/ffffff?text=Series" />
     <div>
-      <h1 id="series-title" class="series-title">اسم المسلسل</h1>
-      <p style="color:#aaa; font-size:1.2rem;" id="series-desc">تفاصيل وقصة المسلسل كاملة معروضة بدقة فائقة الجودة ونسبة تحجيم ذكية تتناسب مع الشاشات.</p>
+      <h1 id="series-title" class="series-title">اسم المسلسل النشط</h1>
+      <p style="color:#aaa; font-size:1.25rem; line-height:1.6;" id="series-desc">عرض تفصيلي وتلقائي لكافة الحلقات المتوفرة ضمن ملفات الـ IPTV المحفوظة بالكامل مع ميزة تتبع الحلقات المشاهدة بدقة عالية.</p>
     </div>
   </div>
 
-  <h3 style="margin-bottom:1.5rem; font-size:1.6rem;" id="lbl-episodes-heading">حلقات المسلسل</h3>
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+    <h3 style="margin:0; font-size:1.7rem;" id="lbl-episodes-heading">حلقات هذا الموسم</h3>
+    <div class="ep-search-container">
+      <span class="material-icons" style="position:absolute; right:1rem; color:#888;">search</span>
+      <input type="text" id="ep-search-input" class="btn-action" style="width:100%; padding-right:3rem; text-align:right; margin:0;" placeholder="ابحث عن رقم أو اسم الحلقة..." oninput="filterEpisodesList(this.value)">
+    </div>
+  </div>
+
   <div class="episodes-grid-youtube" id="episodes-container"></div>
 
 <script src="js/details.js"></script>
