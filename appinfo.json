@@ -1,19 +1,9 @@
 {
-    "id": "com.visiontv.iptvlg",
-    "version": "1.0.0",
-    "vendor": "VisionTV",
-    "type": "web",
-    "main": "index.html",
-    "title": "VISION TV",
-    "icon": "icon.png",
-    "iconColor": "#e50914",
-    "appDescription": "Ultra Premium IPTV Player for LG webOS Smart TVs",
-    "resolution": "1920x1080",
-    "requiredPermissions": [
-        "internet"
-    ],
-    "trustLevel": "trusted",
-    "jsCapabilities": {
-        "preventScreenSaver": true
-    }
+  "id": "com.hosamshehata.visiontv",
+  "version": "1.0.0",
+  "vendor": "HosamShehata",
+  "type": "web",
+  "main": "index.html",
+  "title": "VISION TV",
+  "icon": "icon.png"
 }
