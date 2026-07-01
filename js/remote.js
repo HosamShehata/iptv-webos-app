@@ -1,293 +1,98 @@
-// ============================================
-// VISION TV REMOTE ENGINE
-// ============================================
+// =====================================================
+// VISION TV - LG SMART TV REMOTE FOCUS LAYER
+// =====================================================
 
 let focusableElements = [];
 let currentFocusIndex = 0;
 
-// ============================================
-
 function updateFocusableElements() {
-
+    // تجميع العناصر التفاعلية في الصفحة المفتوحة حالياً فقط بالإضافة إلى القائمة الجانبية
     focusableElements = Array.from(
-
-        document.querySelectorAll(
-
-            ".view-panel.active .remote-focusable," +
-
-            ".sidebar .menu-item"
-
-        )
-
+        document.querySelectorAll(".sidebar .menu-item, .sidebar .language-btn, .view-panel.active .remote-focusable, .search-container input")
     );
 
-    if (focusableElements.length === 0)
-        return;
-
-    if (currentFocusIndex >= focusableElements.length)
-        currentFocusIndex = 0;
+    if (focusableElements.length === 0) return;
+    if (currentFocusIndex >= focusableElements.length) currentFocusIndex = 0;
 
     applyFocus();
-
 }
-
-// ============================================
 
 function applyFocus() {
-
-    document
-        .querySelectorAll(".focused")
-        .forEach(el => {
-
-            el.classList.remove("focused");
-
-        });
-
-    const item =
-        focusableElements[currentFocusIndex];
-
-    if (!item)
-        return;
+    document.querySelectorAll(".focused").forEach(el => el.classList.remove("focused"));
+    const item = focusableElements[currentFocusIndex];
+    if (!item) return;
 
     item.classList.add("focused");
-
+    item.focus(); // تفعيل الفوكس الفعلي للمتصفح لدعم الكيبورد والريموت
+    
     item.scrollIntoView({
-
         block: "nearest",
-
         inline: "nearest",
-
         behavior: "smooth"
-
     });
-
 }
-
-// ============================================
 
 function focusNext() {
-
-    if (!focusableElements.length)
-        return;
-
-    currentFocusIndex++;
-
-    if (currentFocusIndex >= focusableElements.length)
-        currentFocusIndex = 0;
-
+    if (!focusableElements.length) return;
+    currentFocusIndex = (currentFocusIndex + 1) % focusableElements.length;
     applyFocus();
-
 }
-
-// ============================================
 
 function focusPrevious() {
-
-    if (!focusableElements.length)
-        return;
-
-    currentFocusIndex--;
-
-    if (currentFocusIndex < 0)
-        currentFocusIndex =
-            focusableElements.length - 1;
-
+    if (!focusableElements.length) return;
+    currentFocusIndex = (currentFocusIndex - 1 + focusableElements.length) % focusableElements.length;
     applyFocus();
-
 }
-// ============================================
-// NAVIGATION
-// ============================================
-
-function moveRight() {
-
-    focusNext();
-
-}
-
-function moveLeft() {
-
-    focusPrevious();
-
-}
-
-function moveDown() {
-
-    focusNext();
-
-}
-
-function moveUp() {
-
-    focusPrevious();
-
-}
-
-// ============================================
-// SELECT
-// ============================================
-
-function pressEnter() {
-
-    const item =
-        focusableElements[currentFocusIndex];
-
-    if (!item)
-        return;
-
-    item.click();
-
-}
-
-// ============================================
-// BACK
-// ============================================
-
-function pressBack() {
-
-    if (typeof currentViewId === "undefined")
-        return;
-
-    if (currentViewId === "view-details") {
-
-        openView("home");
-
-        return;
-
-    }
-
-    if (currentViewId !== "view-home") {
-
-        openView("home");
-
-        return;
-
-    }
-
-}
-
-// ============================================
-// KEY EVENTS
-// ============================================
 
 document.addEventListener("keydown", e => {
-
     switch (e.key) {
-
         case "ArrowRight":
-
-            moveRight();
+            focusNext();
             e.preventDefault();
             break;
-
         case "ArrowLeft":
-
-            moveLeft();
+            focusPrevious();
             e.preventDefault();
             break;
-
         case "ArrowDown":
-
-            moveDown();
+            focusNext();
             e.preventDefault();
             break;
-
         case "ArrowUp":
-
-            moveUp();
+            focusPrevious();
             e.preventDefault();
             break;
-
         case "Enter":
-
         case "OK":
-
         case "Ok":
-
-            pressEnter();
-            e.preventDefault();
+            if (focusableElements[currentFocusIndex]) {
+                focusableElements[currentFocusIndex].click();
+                e.preventDefault();
+            }
             break;
-
         case "Backspace":
-
         case "Escape":
-
-            pressBack();
-            e.preventDefault();
+            if (currentView !== "home") {
+                openView("home");
+                e.preventDefault();
+            }
             break;
-
     }
-
-});
-// ============================================
-// MAGIC REMOTE / POINTER
-// ============================================
-
-document.addEventListener("mousemove", () => {
-
-    document
-        .querySelectorAll(".focused")
-        .forEach(el => {
-
-            el.classList.remove("focused");
-
-        });
-
 });
 
-// ============================================
-
+// تفعيل العمل بالماجيك ريموت الماوس لشاشات LG
 document.addEventListener("mouseover", e => {
-
-    const target =
-        e.target.closest(".remote-focusable,.menu-item");
-
-    if (!target)
-        return;
-
-    updateFocusableElements();
-
-    const index =
-        focusableElements.indexOf(target);
-
-    if (index === -1)
-        return;
-
-    currentFocusIndex = index;
-
-    applyFocus();
-
+    const target = e.target.closest(".remote-focusable, .menu-item");
+    if (!target) return;
+    
+    const index = focusableElements.indexOf(target);
+    if (index !== -1) {
+        currentFocusIndex = index;
+        applyFocus();
+    }
 });
 
-// ============================================
-// VIEW CHANGED
-// ============================================
-
-const observer = new MutationObserver(() => {
-
-    updateFocusableElements();
-
-});
-
-document.querySelectorAll(".view-panel")
-    .forEach(view => {
-
-        observer.observe(view, {
-
-            attributes: true,
-
-            attributeFilter: ["class"]
-
-        });
-
-    });
-
-// ============================================
-// START
-// ============================================
-
+// تحديث اللائحة التفاعلية تلقائياً عند تحميل الصفحة بالكامل
 window.addEventListener("load", () => {
-
-    updateFocusableElements();
-
+    setTimeout(updateFocusableElements, 500);
 });
