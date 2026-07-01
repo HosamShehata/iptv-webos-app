@@ -11,15 +11,15 @@
     #loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 20px; display: none; font-weight: bold; z-index: 10; }
     #error { position: absolute; bottom: 120px; left: 30px; color: #ff4444; font-weight: bold; font-size: 16px; z-index: 10; }
     
-    /* البلاير الاحترافي السفلي */
+    /* البلاير الاحترافي السفلي الشفاف المودرن */
     .player-controls {
       position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0));
       padding: 30px; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px; z-index: 5; transition: opacity 0.3s ease;
     }
     .timeline-container { display: flex; align-items: center; gap: 15px; width: 100%; }
     .time-lbl { color: #aaa; font-size: 14px; min-width: 60px; text-align: center; }
-    .progress-bar { flex: 1; height: 6px; background: #333; border-radius: 3px; position: relative; cursor: pointer; }
-    .progress-fill { width: 0%; height: 100%; background: #1f6feb; border-radius: 3px; }
+    .progress-bar { flex: 1; height: 8px; background: #333; border-radius: 4px; position: relative; cursor: pointer; }
+    .progress-fill { width: 0%; height: 100%; background: #1f6feb; border-radius: 4px; }
     
     .buttons-row { display: flex; gap: 25px; align-items: center; color: white; }
     .control-icon { font-size: 32px; cursor: pointer; color: #ccc; transition: transform 0.1s; }
@@ -38,13 +38,16 @@
 <div class="player-controls" id="controls-panel">
   <div class="timeline-container">
     <span class="time-lbl" id="current-time">00:00:00</span>
-    <div class="progress-bar" id="timeline-click-zone"><div class="progress-fill" id="fill-bar"></div></div>
+    <div class="progress-bar" id="timeline-click-zone">
+      <div class="progress-fill" id="fill-bar"></div>
+    </div>
     <span class="time-lbl" id="total-time">00:00:00</span>
   </div>
   <div class="buttons-row">
     <span class="material-icons control-icon active-focus" id="icon-play" onclick="togglePlayPause()">pause</span>
     <span class="material-icons control-icon" id="icon-rewind" onclick="seekBack()">fast_rewind</span>
     <span class="material-icons control-icon" id="icon-forward" onclick="seekForward()">fast_forward</span>
+    <span class="material-icons control-icon" id="icon-next" onclick="playNextEpisodeAutomatically()">skip_next</span>
     <div class="stream-title" id="player-title">VISION TV STREAM</div>
   </div>
 </div>
