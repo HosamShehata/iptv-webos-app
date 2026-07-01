@@ -1,48 +1,53 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" id="details-html-tag">
+<html lang="ar" dir="rtl" id="details-html">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VISION TV - SERIES DETAILS</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
-    body { margin: 0; background: #0b0b0b; color: #fff; font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; }
-    .action-row-container { display: flex; gap: 15px; margin-bottom: 30px; }
-    .btn-action { background: #161616; padding: 12px 24px; border-radius: 8px; border: 1px solid #333; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 10px; font-weight: bold; text-decoration: none; }
-    .btn-action.focused, .btn-action:hover { outline: 3px solid #1f6feb; background: #1f6feb; }
+    html { font-size: 1.2vw; }
+    @media (max-width: 1024px) { html { font-size: 16px; } }
+    body { background: #0b0b0b; color: #fff; padding: 3rem; font-family: sans-serif; }
     
-    .series-header { display: flex; gap: 40px; background: #111; padding: 30px; border-radius: 16px; border: 1px solid #222; margin-bottom: 30px; }
-    .series-poster { width: 220px; height: 300px; object-fit: cover; border-radius: 12px; }
+    .action-row { display: flex; gap: 1.5rem; margin-bottom: 2.5rem; }
+    .btn-action { background: #161616; padding: 1rem 2rem; border-radius: 10px; border: 1px solid #333; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 0.8rem; font-weight: bold; font-size: 1.1rem; text-decoration: none; }
+    .btn-action:hover { outline: 3px solid #1f6feb; background: #1f6feb; }
     
-    .episodes-grid-youtube { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-    .episode-yt-card { background: #161616; border-radius: 12px; overflow: hidden; border: 1px solid #222; cursor: pointer; transition: transform 0.2s; position: relative; }
-    .episode-yt-card.focused { outline: 3px solid #1f6feb; transform: scale(1.02); }
-    .thumb-wrapper { position: relative; width: 100%; height: 160px; background: #222; }
+    .series-header { display: flex; gap: 3rem; background: #111; padding: 2.5rem; border-radius: 16px; border: 1px solid #222; margin-bottom: 2.5rem; }
+    .series-poster { width: 18rem; height: 25rem; object-fit: cover; border-radius: 12px; }
+    .series-title { font-size: 2.4rem; font-weight: 900; margin: 0 0 1rem 0; }
+
+    .episodes-grid-youtube { display: grid; grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr)); gap: 2rem; }
+    .episode-yt-card { background: #161616; border-radius: 14px; overflow: hidden; border: 1px solid #222; cursor: pointer; position: relative; }
+    .thumb-wrapper { position: relative; width: 100%; height: 12rem; background: #222; }
     .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
     
+    /* شريط تقدم الحلقات المماثل لليوتيوب */
     .yt-progress-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 6px; background: rgba(255,255,255,0.3); }
-    .yt-progress-fill { height: 100%; background: #ff0000; width: 0%; box-shadow: 0 0 4px #ff0000; }
+    .yt-progress-fill { height: 100%; background: #ff0000; width: 0%; box-shadow: 0 0 6px #ff0000; }
     
-    .ep-card-info { padding: 12px; }
-    .ep-card-title { font-size: 15px; font-weight: bold; margin-bottom: 6px; }
-    .ep-card-status { font-size: 12px; color: #1f6feb; font-weight: bold; }
+    .ep-card-info { padding: 1rem; }
+    .ep-card-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem; }
+    .ep-card-status { font-size: 1rem; color: #1f6feb; font-weight: bold; }
   </style>
 </head>
 <body>
 
-  <div class="action-row-container">
-    <a href="index.html" class="btn-action details-focusable"><span class="material-icons">arrow_forward</span><span id="lbl-back">العودة للرئيسية</span></a>
-    <button class="btn-action details-focusable" style="background:#00c851;" onclick="resumeLastWatchedEpisode()"><span class="material-icons">play_circle_filled</span><span id="lbl-resume-btn">متابعة المشاهدة (Resume)</span></button>
+  <div class="action-row">
+    <a href="index.html" class="btn-action"><span class="material-icons">arrow_forward</span><span id="lbl-back">العودة للرئيسية</span></a>
+    <button class="btn-action" style="background:#00c851; border-color:transparent;" onclick="resumeLastWatchedEpisode()"><span class="material-icons">play_circle_filled</span><span id="lbl-resume-btn">متابعة المشاهدة (Resume)</span></button>
   </div>
 
   <div class="series-header">
-    <img id="series-img" class="series-poster" src="https://placehold.co/220x300/ff4444/ffffff?text=Series" />
+    <img id="series-img" class="series-poster" src="https://placehold.co/400x540/ff4444/ffffff?text=Series" />
     <div>
-      <h1 id="series-title" style="margin:0 0 15px 0;">اسم المسلسل</h1>
-      <p style="color:#aaa;" id="series-desc">تفاصيل وقصة المسلسل كاملة لعرض تجربة البث المحدثة وبدقة عالية الجودة.</p>
+      <h1 id="series-title" class="series-title">اسم المسلسل</h1>
+      <p style="color:#aaa; font-size:1.2rem;" id="series-desc">تفاصيل وقصة المسلسل كاملة معروضة بدقة فائقة الجودة ونسبة تحجيم ذكية تتناسب مع الشاشات.</p>
     </div>
   </div>
 
-  <h3 style="margin-bottom:20px;" id="lbl-episodes-heading">حلقات المسلسل</h3>
+  <h3 style="margin-bottom:1.5rem; font-size:1.6rem;" id="lbl-episodes-heading">حلقات المسلسل</h3>
   <div class="episodes-grid-youtube" id="episodes-container"></div>
 
 <script src="js/details.js"></script>
