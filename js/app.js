@@ -8,7 +8,7 @@ const sidebarViews = ["view-home", "view-live", "view-movies", "view-series", "v
 const subSettingsIds = ["sub-set-account", "sub-set-theme", "sub-set-language", "sub-set-parental", "sub-set-about"];
 
 let focusMode = "sidebar"; 
-let sidebarIdx = 0; // يبدأ من الرئيسية الافتراضية
+let sidebarIdx = 0; // يبدأ من الرئيسية لتجربة تصفح الكروت مباشرة
 let filterIdx = 0;
 let cardIdx = 0;
 let formIndex = 2;         
@@ -22,40 +22,39 @@ const languages = {
   ar: {
     home: "الرئيسية", live: "قنوات مباشرة", movies: "الأفلام", series: "المسلسلات", favorites: "المفضلة",
     history: "تابع المشاهدة", add_playlist: "أضف قائمة تشغيل", search: "البحث المتقدم", settings: "الإعدادات",
-    [span_5](start_span)hero_desc: "استمتع بـ تجربة مشاهدة لا حدود لها بدقة 4K ULTRA HD وأحدث تقنيات الصوت الرقمي[span_5](end_span).",
-    [span_6](start_span)recent: "⏱️ تابع المشاهدة مؤخراً[span_6](end_span)[span_7](start_span)", xt_title: "أضف قائمة تشغيل[span_7](end_span)", xt_btn: "إضافة",
-    [span_8](start_span)set_acc: "الحساب والاشتراك", set_theme: "المظهر والسمات", set_parent: "الرقابة الأبوية والقفل[span_8](end_span)", set_about: "حول التطبيق",
-    set_lang_menu: "اللغة والترجمة", no_content: "القائمة فارغة. [span_9](start_span)برجاء إضافة قائمة تشغيل حية من القسم المختص[span_9](end_span).",
-    sidebar_lang: "English" // الزر يعرض اللغة القادمة عند الضغط
+    hero_desc: "استمتع بـ تجربة مشاهدة لا حدود لها بدقة 4K ULTRA HD وأحدث تقنيات الصوت الرقمي.",
+    recent: "⏱️ تابع المشاهدة مؤخراً", xt_title: "أضف قائمة تشغيل", xt_btn: "إضافة",
+    set_acc: "الحساب والاشتراك", set_theme: "المظهر والسمات", set_parent: "الرقابة الأبوية والقفل", set_about: "حول التطبيق",
+    set_lang_menu: "اللغة والترجمة", no_content: "القائمة فارغة. برجاء إضافة قائمة تشغيل حية من القسم المختص.",
+    sidebar_lang: "English"
   },
   en: {
     home: "Home", live: "Live TV", movies: "Movies", series: "Series", favorites: "Favorites",
     history: "Continue Watching", add_playlist: "Add Playlist", search: "Advanced Search", settings: "Settings",
-    [span_10](start_span)hero_desc: "Enjoy an unlimited viewing experience with 4K ULTRA HD and the latest digital sound technologies[span_10](end_span).",
-    [span_11](start_span)recent: "⏱️ Continue Watching[span_11](end_span)[span_12](start_span)", xt_title: "Add Playlist[span_12](end_span)", xt_btn: "Add",
-    [span_13](start_span)set_acc: "Account & Subscription", set_theme: "Appearance", set_parent: "Parental Control[span_13](end_span)", set_about: "About App",
-    set_lang_menu: "Language / الترجمة", no_content: "The list is empty. [span_14](start_span)Please add a live playlist from the dedicated section[span_14](end_span).",
-    sidebar_lang: "العربية" // الزر يعرض اللغة القادمة عند الضغط
+    hero_desc: "Enjoy an unlimited viewing experience with 4K ULTRA HD and the latest digital sound technologies.",
+    recent: "⏱️ Continue Watching", xt_title: "Add Playlist", xt_btn: "Add",
+    set_acc: "Account & Subscription", set_theme: "Appearance", set_parent: "Parental Control", set_about: "About App",
+    set_lang_menu: "Language / الترجمة", no_content: "The list is empty. Please add a live playlist from the dedicated section.",
+    sidebar_lang: "العربية"
   }
 };
 
-// توليد داتا تيست وروابط بث حية حقيقية 100% لفحص البلاير بالكامل
+// روابط بث عالمية حية وحقيقية 100% لفحص المشغل والـ Seek والـ Speed
 function loadTestData() {
   const isAr = currentLang === "ar";
   
-  // روابط بث حية عالمية مفتوحة لاختبار البث
   liveChannels = [
-    { stream_id: 901, name: isAr ? "قناة التيست الحية 1" : "Live Stream Test 1", category_name: isAr ? "بث تجريبي" : "Demo Live", stream_icon: "https://placehold.co/200x270/1f6feb/ffffff?text=LIVE+1", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
-    { stream_id: 902, name: isAr ? "قناة بي إن الإخبارية تيست" : "beIN Test Stream", category_name: isAr ? "بث تجريبي" : "Demo Live", stream_icon: "https://placehold.co/200x270/00c851/ffffff?text=beIN", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" }
+    { stream_id: 901, name: isAr ? "قناة حية تجريبية 1" : "Live Demo Stream 1", category_name: isAr ? "بث تجريبي" : "Demo Live", stream_icon: "https://placehold.co/200x270/1f6feb/ffffff?text=LIVE+1", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+    { stream_id: 902, name: isAr ? "قناة بي إن تيست حية" : "beIN Test Stream", category_name: isAr ? "بث تجريبي" : "Demo Live", stream_icon: "https://placehold.co/200x270/00c851/ffffff?text=beIN", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" }
   ];
 
   moviesList = [
-    { stream_id: 903, name: "Sintel (Demo Movie)", category_name: isAr ? "أفلام تيست" : "Demo Movies", stream_icon: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400", url: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8", container_extension: "m3u8" },
+    { stream_id: 903, name: "Sintel (Movie Test)", category_name: isAr ? "أفلام تيست" : "Demo Movies", stream_icon: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400", url: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8", container_extension: "m3u8" },
     { stream_id: 904, name: "Big Buck Bunny", category_name: isAr ? "أفلام تيست" : "Demo Movies", stream_icon: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=400", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8", container_extension: "m3u8" }
   ];
 
   seriesList = [
-    { series_id: 905, name: "Tears of Steel (Demo Series)", category_name: isAr ? "مسلسلات تيست" : "Demo Series", stream_icon: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400" }
+    { series_id: 905, name: "Tears of Steel (Series Test)", category_name: isAr ? "مسلسلات تيست" : "Demo Series", stream_icon: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400" }
   ];
 }
 
@@ -96,7 +95,7 @@ function showSubSettings(idx) {
 
 function clearPlaylistData() {
   localStorage.clear();
-  alert(currentLang === "ar" ? "تم حذف البيانات وإعادة ضبط المصنع بنجاح!" : "Data wiped successfully!");
+  alert(currentLang === "ar" ? "تم حذف البيانات بنجاح!" : "Data wiped successfully!");
   window.location.reload();
 }
 
@@ -146,13 +145,13 @@ async function processPlaylistAddition() {
   const status = document.getElementById("pl_status");
 
   if(!name || !url) { status.innerText = "برجاء كتابة البيانات كاملة."; status.style.color = "#ff4444"; return; }
-  status.innerText = "جاري التحقق من السيرفر..."; status.style.color = "#ffffff";
+  status.innerText = "جاري الفحص والسحب الحي من السيرفر..."; status.style.color = "#ffffff";
 
   const baseUrl = `${url}/player_api.php?username=${user}&password=${pass}`;
   try {
     const authRes = await fetch(baseUrl); const authData = await authRes.json();
     if(authData.user_info && authData.user_info.auth === 1) {
-      status.innerText = "تم جلب الاشتراك الحقيقي بنجاح!";
+      status.innerText = "تمت المزامنة بنجاح!";
       liveChannels = await (await fetch(`${baseUrl}&action=get_live_streams`)).json();
       moviesList = await (await fetch(`${baseUrl}&action=get_vod_streams`)).json();
       seriesList = await (await fetch(`${baseUrl}&action=get_series`)).json();
@@ -206,18 +205,15 @@ function renderContentGrid(viewId) {
     const imgUrl = item.stream_icon || item.cover || "https://placehold.co/200x270/1a1a1a/ffffff?text=VISION";
     card.innerHTML = `<div class="badge">${item.container_extension || 'HD'}</div><img src="${imgUrl}" /><div class="info">${item.name}</div>`;
     
-    // ربط كروت الشبكة بالضغط المباشر واللمس فوراً
     card.onclick = function() {
-      cardIdx = idx;
-      focusMode = "cards";
+      cardIdx = idx; focusMode = "cards";
       localStorage.setItem("current", JSON.stringify(item));
       if (viewId === "view-live") {
         if(!item.url) {
           const creds = JSON.parse(localStorage.getItem("xtream_creds")) || {url:"", user:"", pass:""};
           item.url = `${creds.url}/live/${creds.user}/${creds.pass}/${item.stream_id}.ts`;
         }
-        localStorage.setItem("current", JSON.stringify(item));
-        window.location.href = "player.html";
+        localStorage.setItem("current", JSON.stringify(item)); window.location.href = "player.html";
       } else { window.location.href = "details.html"; }
     };
     container.appendChild(card);
@@ -235,10 +231,7 @@ function triggerGlobalSearch() {
   globalFiltered.forEach((item, idx) => {
     const card = document.createElement("div"); card.className = "media-card";
     card.innerHTML = `<img src="${item.stream_icon || item.cover || 'https://placehold.co/200x270/1a1a1a/ffffff?text=VISION'}" /><div class="info">${item.name}</div>`;
-    card.onclick = function() {
-      localStorage.setItem("current", JSON.stringify(item));
-      window.location.href = item.url ? "player.html" : "details.html";
-    };
+    card.onclick = function() { localStorage.setItem("current", JSON.stringify(item)); window.location.href = item.url ? "player.html" : "details.html"; };
     container.appendChild(card);
   });
 }
@@ -253,7 +246,7 @@ function updateFocus() {
   
   const formFields = document.querySelectorAll(".playlist-focusable");
   formFields.forEach((el, i) => { el.classList.toggle("focused", focusMode === "playlist_form" && i === formIndex); });
-  document.querySelectorAll(".settings-focusable").forEach((el, i) => { el.classList.toggle("focused", focusMode === "settings" && i === settingsIdx); });
+  document.querySelectorAll(".view-panel.active .settings-focusable").forEach((el, i) => { el.classList.toggle("focused", focusMode === "settings" && i === settingsIdx); });
 }
 
 function applyLanguage() {
@@ -275,11 +268,10 @@ function toggleLanguage() {
   currentLang = (currentLang === "ar") ? "en" : "ar";
   localStorage.setItem("app_lang", currentLang);
   applyLanguage();
-  loadTestData(); // تحديث اللغة وعناوين كروت التيست
+  loadTestData(); 
   switchView(sidebarViews[sidebarIdx]);
 }
 
-// ريموت الشاشة الذكي الموازي
 document.addEventListener("keydown", function(e) {
   const activeView = sidebarViews[sidebarIdx];
   let leftKey = (currentLang === "en") ? "ArrowRight" : "ArrowLeft";
@@ -305,7 +297,11 @@ document.addEventListener("keydown", function(e) {
     else if (focusMode === "sidebar") { if (sidebarIdx < sidebarViews.length - 1) { sidebarIdx++; switchView(sidebarViews[sidebarIdx]); } } 
     else if (focusMode === "sub_filters") { focusMode = "cards"; cardIdx = 0; } 
     else if (focusMode === "cards" && cardIdx + columnsCount < globalFiltered.length) { cardIdx += columnsCount; } 
-    else if (focusMode === "settings") { settingsIdx = Math.min(settingsIdx + 1, 4); showSubSettings(settingsIdx); }
+    else if (focusMode === "playlist_form") {
+      const maxFormIdx = (currentPlaylistType === "m3u") ? 5 : 7;
+      if(formIndex < 2) formIndex = 3; else if(formIndex === 3 && currentPlaylistType === "m3u") formIndex = 6;
+      else formIndex = Math.min(formIndex + 1, maxFormIdx == 5 ? 6 : 7);
+    } else if (focusMode === "settings") { settingsIdx = Math.min(settingsIdx + 1, 4); showSubSettings(settingsIdx); }
   }
 
   if (e.key === "ArrowUp") {
@@ -313,11 +309,16 @@ document.addEventListener("keydown", function(e) {
     else if (focusMode === "sidebar") { sidebarIdx = Math.max(0, sidebarIdx - 1); switchView(sidebarViews[sidebarIdx]); } 
     else if (focusMode === "cards" && cardIdx - columnsCount >= 0) { cardIdx -= columnsCount; } 
     else if (focusMode === "cards" && activeSubCategories.length > 1) { focusMode = "sub_filters"; } 
+    else if (focusMode === "playlist_form") { if(formIndex === 3) formIndex = 2; else if(formIndex === 6 && currentPlaylistType === "m3u") formIndex = 3; else formIndex = Math.max(0, formIndex - 1); } 
     else if (focusMode === "settings") { settingsIdx = Math.max(0, settingsIdx - 1); showSubSettings(settingsIdx); }
   }
 
   if (e.key === "Enter") {
     if (focusMode === "sidebar_lang") toggleLanguage();
+    if (focusMode === "playlist_form") {
+      if(formIndex === 0) switchPlaylistType('m3u'); if(formIndex === 1) switchPlaylistType('stream1'); if(formIndex === 2) switchPlaylistType('xtream'); if(formIndex === 4) togglePasswordVisibility();
+      if((currentPlaylistType === 'm3u' && formIndex === 6) || (currentPlaylistType !== 'm3u' && formIndex === 7)) processPlaylistAddition();
+    }
     if (focusMode === "settings" && settingsIdx === 2) toggleLanguage();
     if (focusMode === "cards" && globalFiltered[cardIdx]) {
       const item = globalFiltered[cardIdx]; localStorage.setItem("current", JSON.stringify(item));
@@ -337,7 +338,7 @@ window.onload = () => {
     seriesList = JSON.parse(localStorage.getItem("xt_series")) || [];
     sidebarIdx = 1; focusMode = "sidebar";
   } else {
-    loadTestData(); // تفعيل كروت التيست حية فوراً للفحص والتصفح الشامل
+    loadTestData(); 
   }
   applyLanguage(); switchView(sidebarViews[sidebarIdx]); updateFocus();
   setInterval(updateClockAndDay, 1000);
