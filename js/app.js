@@ -6,8 +6,8 @@ let activeSubCategories = ["الكل"];
 
 const sidebarViews = ["view-home", "view-live", "view-movies", "view-series", "view-favorites", "view-history", "view-playlist", "view-search", "view-settings"];
 
-let focusMode = "sidebar"; // sidebar | sidebar_lang | sub_filters | cards | playlist_form | settings
-let sidebarIdx = 6;        // يقف افتراضياً على أضف قائمة تشغيل
+let focusMode = "sidebar"; 
+let sidebarIdx = 6;        // البداية الافتراضية على شاشة أضف قائمة تشغيل
 let filterIdx = 0;
 let cardIdx = 0;
 let formIndex = 2;         
@@ -38,17 +38,24 @@ const languages = {
   }
 };
 
+// دالة لمعالجة الضغط باللمس أو الماوس من السايد بار مباشرة[span_0](start_span)[span_0](end_span)
+function clickSidebarItem(idx) {
+  focusMode = "sidebar";
+  sidebarIdx = idx;
+  switchView(sidebarViews[sidebarIdx]);
+  updateFocus();
+}
+
 function switchView(viewId) {
   document.querySelectorAll(".view-panel").forEach(panel => panel.classList.remove("active"));
+  
   const activePanel = document.getElementById(viewId);
   if(activePanel) activePanel.classList.add("active");
 
   if(viewId === "view-playlist") { 
-    focusMode = "playlist_form"; 
     switchPlaylistType(currentPlaylistType);
     return; 
   }
-  if(viewId === "view-settings") { focusMode = "settings"; return; }
 
   const defaultAll = (currentLang === "ar") ? "الكل" : "All";
   const set = new Set([defaultAll]);
@@ -72,7 +79,6 @@ function switchPlaylistType(type) {
   
   if(type === "m3u") { rowUser.style.display = "none"; rowPass.style.display = "none"; }
   else { rowUser.style.display = "flex"; rowPass.style.display = "flex"; }
-  updateFocus();
 }
 
 function togglePasswordVisibility() {
@@ -193,18 +199,15 @@ function updateFocus() {
     el.classList.toggle("focused", focusMode === "sidebar" && i === sidebarIdx);
   });
   
-  // إضاءة زر تبديل اللغة الخارجي عند التركيز
   document.getElementById("sidebarLangBtn").classList.toggle("focused", focusMode === "sidebar_lang");
-
   renderSubFilters();
+
   document.querySelectorAll(".view-panel.active .media-card").forEach((el, i) => { el.classList.toggle("focused", focusMode === "cards" && i === cardIdx); });
   
   const formFields = document.querySelectorAll(".playlist-focusable");
   formFields.forEach((el, i) => {
     const isFocused = focusMode === "playlist_form" && i === formIndex;
     el.classList.toggle("focused", isFocused);
-    if(isFocused && el.tagName === "INPUT") el.focus();
-    if(!isFocused && el.tagName === "INPUT") el.blur();
   });
   document.querySelectorAll(".settings-focusable").forEach((el, i) => { el.classList.toggle("focused", focusMode === "settings" && i === settingsIdx); });
 }
@@ -230,6 +233,7 @@ function toggleLanguage() {
   switchView(sidebarViews[sidebarIdx]);
 }
 
+// تعديل كود الأسهم لمنع الاحتجاز داخل الشاشات الفارغة أثناء تصفح السايد بار بالريموت
 document.addEventListener("keydown", function(e) {
   const activeView = sidebarViews[sidebarIdx];
   let leftKey = (currentLang === "en") ? "ArrowRight" : "ArrowLeft";
@@ -244,8 +248,10 @@ document.addEventListener("keydown", function(e) {
   }
 
   if (e.key === rightKey) {
-    if (focusMode === "sidebar" || focusMode === "sidebar_lang") {
-      switchView(activeView);
+    if (focusMode === "sidebar") {
+      if (activeView === "view-playlist") focusMode = "playlist_form";
+      else if (activeView === "view-settings") focusMode = "settings";
+      else focusMode = activeSubCategories.length > 1 ? "sub_filters" : "cards";
     } else if (focusMode === "sub_filters" && filterIdx < activeSubCategories.length - 1) {
       filterIdx++;
     } else if (focusMode === "sub_filters") {
@@ -278,7 +284,7 @@ document.addEventListener("keydown", function(e) {
 
   if (e.key === "ArrowUp") {
     if (focusMode === "sidebar" && sidebarIdx === 0) {
-      focusMode = "sidebar_lang"; // الصعود لزر اللغة الخارجي عند تجاوز أول عنصر
+      focusMode = "sidebar_lang"; 
     } else if (focusMode === "sidebar") {
       sidebarIdx = Math.max(0, sidebarIdx - 1); switchView(sidebarViews[sidebarIdx]);
     } else if (focusMode === "cards" && cardIdx - columnsCount >= 0) {
