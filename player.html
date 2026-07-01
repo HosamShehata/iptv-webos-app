@@ -1,101 +1,116 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" id="player-html" class="theme-netflix">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VISION TV - CINEMATIC VIDEO ENGINE</title>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.compiled.js"></script>
-  <style>
-    .theme-netflix { --accent: #e50914; }
-    .theme-shahid { --accent: #00ff87; }
-    .theme-cyberpunk { --accent: #f000ff; }
-    .theme-midnight { --accent: #d4af37; }
-    .theme-ocean { --accent: #00b4d8; }
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VISION TV - CINEMATIC VIDEO ENGINE</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- مكتبة Shaka Player للبث المباشر المستقر HLS/DASH -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.compiled.js"></script>
+    <style>
+        :root {
+            --accent: #e50914;
+        }
+        .theme-netflix { --accent: #e50914; }
+        .theme-shahid { --accent: #00ff87; }
+        .theme-cyberpunk { --accent: #f000ff; }
+        .theme-midnight { --accent: #d4af37; }
+        .theme-ocean { --accent: #00b4d8; }
 
-    body, html { margin:0; padding:0; width:100%; height:100%; background:#000; overflow:hidden; font-family:sans-serif; }
-    .video-container { position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
-    video { width:100%; height:100%; object-fit:contain; }
-    
-    .osd-controls-panel {
-      position:absolute; bottom:0; left:0; right:0; background:linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.3), rgba(0,0,0,0));
-      padding:3.5rem; box-sizing:border-box; display:flex; flex-direction:column; gap:1.5rem; transition:opacity 0.4s ease; opacity:1;
-    }
-    .timeline-container { display:flex; align-items:center; gap:1.5rem; width:100%; }
-    .time-txt { color:#ccc; font-family:monospace; font-size:1.15rem; font-weight:bold; }
-    
-    .progress-bar-clickable-zone { flex:1; height:1.6rem; display:flex; align-items:center; cursor:pointer; position:relative; }
-    .progress-bg { width:100%; height:0.6rem; background:rgba(255,255,255,0.25); border-radius:4px; position:relative; width:100%; }
-    .progress-fill { height:100%; width:0%; background:var(--accent); border-radius:4px; position:relative; box-shadow:0 0 10px var(--accent); }
-    .progress-knob { position:absolute; top:50%; transform:translate(-50%, -50%); width:1.5rem; height:1.5rem; background:#ffffff; border:4px solid var(--accent); border-radius:50%; box-shadow:0 0 12px rgba(0,0,0,0.9); }
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background: #000; overflow: hidden; font-family: sans-serif; 
+        }
+        .video-container { 
+            position: relative; width: 100%; height: 100%; 
+            display: flex; align-items: center; justify-content: center; 
+        }
+        video { width: 100%; height: 100%; object-fit: contain; }
+        
+        .osd-controls-panel {
+            position: absolute; bottom: 0; left: 0; right: 0; 
+            background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.4), rgba(0,0,0,0));
+            padding: 3.5rem; box-sizing: border-box; display: flex; 
+            flex-direction: column; gap: 1.5rem; transition: opacity 0.4s ease; opacity: 1;
+            z-index: 10;
+        }
+        .timeline-container { display: flex; align-items: center; gap: 1.5rem; width: 100%; }
+        .time-txt { color: #ccc; font-family: monospace; font-size: 1.15rem; font-weight: bold; }
+        
+        .progress-bar-clickable-zone { flex: 1; height: 1.6rem; display: flex; align-items: center; cursor: pointer; position: relative; }
+        .progress-bg { width: 100%; height: 0.6rem; background: rgba(255,255,255,0.25); border-radius: 4px; position: relative; }
+        .progress-fill { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; position: relative; box-shadow: 0 0 10px var(--accent); }
+        .progress-knob { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 1.5rem; height: 1.5rem; background: #ffffff; border: 4px solid var(--accent); border-radius: 50%; box-shadow: 0 0 12px rgba(0,0,0,0.9); left: 0%; }
 
-    .controls-row-buttons { display:flex; align-items:center; justify-content:center; gap:2.5rem; width:100%; }
-    .control-btn { background:none; border:none; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; width:3.6rem; height:3.6rem; border-radius:50%; transition:0.2s; }
-    .control-btn .material-icons { font-size:2.6rem; }
-    .control-btn:hover { background:rgba(255,255,255,0.15); transform:scale(1.1); }
-    .control-btn.main-center-play { background:var(--accent); width:4.8rem; height:4.8rem; box-shadow:0 0 20px var(--accent); }
-    
-    .badge-selector-box { display:flex; gap:1rem; align-items:center; }
-    .speed-badge-selector { background:rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:0.6rem 1.4rem; border-radius:10px; cursor:pointer; font-size:1.15rem; font-weight:bold; outline:none; }
+        .controls-row-buttons { display: flex; align-items: center; justify-content: center; gap: 2.5rem; width: 100%; }
+        .control-btn { background: none; border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 3.6rem; height: 3.6rem; border-radius: 50%; transition: 0.2s; }
+        .control-btn .material-icons { font-size: 2.6rem; }
+        .control-btn:hover, .control-btn.focused { background: rgba(255,255,255,0.15); transform: scale(1.1); outline: none; }
+        .control-btn.main-center-play { background: var(--accent); width: 4.8rem; height: 4.8rem; box-shadow: 0 0 20px var(--accent); }
+        
+        .badge-selector-box { display: flex; gap: 1rem; align-items: center; }
+        .speed-badge-selector { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 0.6rem 1.4rem; border-radius: 10px; cursor: pointer; font-size: 1.15rem; font-weight: bold; outline: none; }
+        .speed-badge-selector.focused { border-color: var(--accent); background: rgba(255,255,255,0.1); }
 
-    /* البوب اب السينمائي لاقتراح الحلقة الجاية بآخر 60 ثانية ويتزامن مع الـ OSD */
-    .next-episode-popup-card {
-      position: absolute; bottom: 12rem; left: 3.5rem; background: rgba(15,15,15,0.95); border: 2px solid var(--accent);
-      padding: 1.5rem; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); display: none; transition: 0.3s ease; max-width: 25rem; z-index: 99;
-    }
-    .next-ep-title { font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem; color: #fff; }
-    .next-ep-sub { font-size: 1.05rem; color: var(--accent); font-weight: bold; }
-  </style>
+        .next-episode-popup-card {
+            position: absolute; bottom: 14rem; left: 3.5rem; background: rgba(15,15,15,0.95); border: 2px solid var(--accent);
+            padding: 1.5rem; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); display: none; transition: 0.3s ease; max-width: 25rem; z-index: 99;
+        }
+        .next-ep-title { font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem; color: #fff; }
+        .next-ep-sub { font-size: 1.05rem; color: var(--accent); font-weight: bold; }
+    </style>
 </head>
 <body>
 
 <div class="video-container" id="player-container-zone">
-  <video id="video" autoplay></video>
-  
-  <!-- نافذة اقتراح الحلقة القادمة صراحة باسمها -->
-  <div class="next-episode-popup-card" id="next-ep-popup">
-    <div class="next-ep-sub">التالي تلقائياً خلال دقيقة ⏭️</div>
-    <div class="next-ep-title" id="next-ep-name-lbl">الحلقة التالية من القائمة الرأسية للسيرفر</div>
-  </div>
-
-  <div class="osd-controls-panel" id="controls-panel">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-      <div id="player-title" style="font-size:1.7rem; font-weight:bold; color:#fff;">جاري تحميل البث المستقر...</div>
-      
-      <div class="badge-selector-box">
-        <select class="speed-badge-selector" id="quality-selector" onchange="switchVideoQuality(this.value)">
-          <option value="auto">Quality: Auto (مستقر)</option>
-          <option value="1080">1080p FHD</option>
-          <option value="720">720p HD</option>
-        </select>
-        <button class="speed-badge-selector" onclick="triggerPlaybackSpeedCycle()" id="speed-label-btn">1.0x</button>
-        <button class="speed-badge-selector" onclick="cycleSubtitles()" id="sub-label-btn">الترجمة: AR</button>
-        <button class="speed-badge-selector" onclick="changeOSDSeekStep()">القفز: <span id="seek-lbl-osd">10s</span></button>
-      </div>
-    </div>
+    <!-- عنصر الفيديو الأساسي -->
+    <video id="video" autoplay crossorigin="anonymous"></video>
     
-    <div class="timeline-container">
-      <div id="current-time" class="time-txt">00:00:00</div>
-      <div class="progress-bar-clickable-zone" id="timeline-click-zone">
-        <div class="progress-bg">
-          <div class="progress-fill" id="fill-bar"></div>
-          <div class="progress-knob" id="progress-knob" style="left:0%;"></div>
-        </div>
-      </div>
-      <div id="total-time" class="time-txt">00:00:00</div>
+    <!-- نافذة اقتراح الحلقة التالية تلقائياً عند اقتراب انتهاء الفيديو الحالي -->
+    <div class="next-episode-popup-card" id="next-ep-popup">
+        <div class="next-ep-sub">التالي تلقائياً خلال دقيقة ⏭️</div>
+        <div class="next-ep-title" id="next-ep-name-lbl">الحلقة التالية من القائمة الرأسية</div>
     </div>
 
-    <div class="controls-row-buttons">
-      <button class="control-btn" onclick="navigateEpisodesStream(-1)"><span class="material-icons">skip_previous</span></button>
-      <button class="control-btn" id="btn-rewind-action"><span class="material-icons">replay_10</span></button>
-      <button class="control-btn main-center-play" onclick="togglePlayPauseState()"><span class="material-icons" id="icon-play">pause</span></button>
-      <button class="control-btn" id="btn-forward-action"><span class="material-icons">forward_10</span></button>
-      <button class="control-btn" onclick="navigateEpisodesStream(1)"><span class="material-icons">skip_next</span></button>
+    <!-- لوحة التحكم الذكية العائمة (OSD) -->
+    <div class="osd-controls-panel" id="controls-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div id="player-title" style="font-size:1.7rem; font-weight:bold; color:#fff;">جاري تحميل البث المستقر...</div>
+            
+            <div class="badge-selector-box">
+                <select class="speed-badge-selector remote-focusable" id="quality-selector" onchange="switchVideoQuality(this.value)">
+                    <option value="auto">Quality: Auto (مستقر)</option>
+                    <option value="1080">1080p FHD</option>
+                    <option value="720">720p HD</option>
+                </select>
+                <button class="speed-badge-selector remote-focusable" onclick="triggerPlaybackSpeedCycle()" id="speed-label-btn">1.0x</button>
+                <button class="speed-badge-selector remote-focusable" onclick="changeOSDSeekStep()">القفز: <span id="seek-lbl-osd">10s</span></button>
+            </div>
+        </div>
+        
+        <!-- التايم لاين والوقت المنقضي -->
+        <div class="timeline-container">
+            <div id="current-time" class="time-txt">00:00:00</div>
+            <div class="progress-bar-clickable-zone" id="timeline-click-zone">
+                <div class="progress-bg">
+                    <div class="progress-fill" id="fill-bar"></div>
+                    <div class="progress-knob" id="progress-knob"></div>
+                </div>
+            </div>
+            <div id="total-time" class="time-txt">00:00:00</div>
+        </div>
+
+        <!-- أزرار التحكم بالبث والمقاطع المباشرة -->
+        <div class="controls-row-buttons">
+            <button class="control-btn remote-focusable" onclick="prevEpisode()"><span class="material-icons">skip_previous</span></button>
+            <button class="control-btn remote-focusable" id="btn-rewind-action" onclick="seek(-seekStep)"><span class="material-icons">replay_10</span></button>
+            <button class="control-btn main-center-play remote-focusable" onclick="togglePlay()"><span class="material-icons" id="icon-play">pause</span></button>
+            <button class="control-btn remote-focusable" id="btn-forward-action" onclick="seek(seekStep)"><span class="material-icons">forward_10</span></button>
+            <button class="control-btn remote-focusable" onclick="nextEpisode()"><span class="material-icons">skip_next</span></button>
+        </div>
     </div>
-  </div>
 </div>
 
-<!-- استدعاء منطق البلاير والأسهم الأربعة -->
 <script src="js/player.js"></script>
 </body>
 </html>
