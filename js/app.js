@@ -1,5 +1,7 @@
 let channels = [];
-let favorites = JSON.parse(localStorage.getItem("fav")) || [];
+let filtered = [];
+let categories = ["All", "Sports", "Movies", "News"];
+let currentCategory = "All";
 
 // تحميل M3U
 function loadPlaylist() {
@@ -11,7 +13,10 @@ function loadPlaylist() {
     .then(data => {
 
       channels = parseM3U(data);
-      renderAll();
+      filtered = channels;
+
+      renderCategories();
+      renderChannels();
 
     });
 
@@ -30,7 +35,12 @@ function parseM3U(data) {
       const name = lines[i].split(",")[1];
       const url = lines[i + 1];
 
-      result.push({ name, url });
+      // تصنيف بسيط (تجريبي)
+      let category = "Movies";
+      if (name.toLowerCase().includes("sport")) category = "Sports";
+      if (name.toLowerCase().includes("news")) category = "News";
+
+      result.push({ name, url, category });
 
     }
 
@@ -39,74 +49,52 @@ function parseM3U(data) {
   return result;
 }
 
-// عرض الكل
-function renderAll() {
-  renderChannels();
-  renderFavorites();
+// Categories
+function renderCategories() {
+
+  const box = document.getElementById("categories");
+  box.innerHTML = "";
+
+  categories.forEach(cat => {
+
+    const div = document.createElement("div");
+
+    div.className = "category";
+    div.innerText = cat;
+
+    div.onclick = function () {
+      currentCategory = cat;
+      renderChannels();
+    };
+
+    box.appendChild(div);
+
+  });
+
 }
 
-// عرض القنوات
+// Channels
 function renderChannels() {
+
+  const search = document.getElementById("search")?.value || "";
 
   const container = document.getElementById("channels");
   container.innerHTML = "";
 
-  channels.forEach(ch => {
+  filtered = channels.filter(ch => {
 
-    const div = document.createElement("div");
+    const matchCategory = currentCategory === "All" || ch.category === currentCategory;
+    const matchSearch = ch.name.toLowerCase().includes(search.toLowerCase());
 
-    div.innerText = "▶ " + ch.name;
-
-    div.style.padding = "15px";
-    div.style.margin = "10px";
-    div.style.background = "#222";
-    div.style.color = "white";
-    div.style.cursor = "pointer";
-
-    // تشغيل القناة
-    div.onclick = function () {
-      localStorage.setItem("current", JSON.stringify(ch));
-      window.location.href = "player.html";
-    };
-
-    // إضافة للمفضلة (ضغط مطول)
-    div.oncontextmenu = function (e) {
-      e.preventDefault();
-      addFavorite(ch);
-    };
-
-    container.appendChild(div);
+    return matchCategory && matchSearch;
 
   });
 
-}
-
-// Favorites
-function addFavorite(ch) {
-
-  if (!favorites.find(f => f.url === ch.url)) {
-    favorites.push(ch);
-    localStorage.setItem("fav", JSON.stringify(favorites));
-    renderFavorites();
-  }
-
-}
-
-function renderFavorites() {
-
-  const container = document.getElementById("favorites");
-  container.innerHTML = "";
-
-  favorites.forEach(ch => {
+  filtered.forEach(ch => {
 
     const div = document.createElement("div");
-
-    div.innerText = "⭐ " + ch.name;
-
-    div.style.padding = "10px";
-    div.style.margin = "5px";
-    div.style.background = "#444";
-    div.style.color = "white";
+    div.className = "channel";
+    div.innerText = ch.name;
 
     div.onclick = function () {
       localStorage.setItem("current", JSON.stringify(ch));
@@ -114,38 +102,7 @@ function renderFavorites() {
     };
 
     container.appendChild(div);
-let selectedIndex = 0;
-let items = [];
 
-document.addEventListener("keydown", function(e) {
-
-  if (channels.length === 0) return;
-
-  const divs = document.querySelectorAll("#channels div");
-  items = divs;
-
-  if (e.key === "ArrowDown") {
-    selectedIndex++;
-  }
-
-  if (e.key === "ArrowUp") {
-    selectedIndex--;
-  }
-
-  if (selectedIndex < 0) selectedIndex = 0;
-  if (selectedIndex >= divs.length) selectedIndex = divs.length - 1;
-
-  // highlight
-  divs.forEach((d, i) => {
-    d.style.background = i === selectedIndex ? "#0d6efd" : "#222";
-  });
-
-  // enter
-  if (e.key === "Enter") {
-    divs[selectedIndex].click();
-  }
-
-});
   });
 
 }
