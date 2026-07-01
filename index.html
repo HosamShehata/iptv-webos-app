@@ -4,151 +4,38 @@
   <meta charset="utf-8">
   <title>VISION TV</title>
   <style>
-    body {
-      margin: 0;
-      background: #0b0b0b;
-      color: white;
-      font-family: 'Segoe UI', Arial, sans-serif;
-      overflow: hidden;
-      user-select: none;
-    }
+    body { margin: 0; background: #0b0b0b; color: white; font-family: 'Segoe UI', Arial, sans-serif; overflow: hidden; user-select: none; }
+    header { padding: 15px 30px; background: #111; display: flex; gap: 20px; align-items: center; border-bottom: 1px solid #222; }
+    header input { flex: 1; padding: 12px 20px; border: 1px solid #333; border-radius: 8px; background: #1a1a1a; color: white; font-size: 16px; }
+    header input:focus, .form-input:focus { outline: 2px solid #1f6feb; }
+    
+    .layout { display: flex; height: calc(100vh - 80px); }
+    
+    .sidebar { width: 240px; background: #111; border-left: 1px solid #222; display: flex; flex-direction: column; padding-top: 10px; }
+    .menu-item { padding: 15px 25px; font-size: 18px; color: #aaa; cursor: pointer; transition: all 0.2s ease; }
+    .menu-item.focused { background: #1f6feb; color: white; font-weight: bold; padding-right: 35px; }
 
-    /* الهيدر العلوي */
-    header {
-      padding: 15px 30px;
-      background: #111;
-      display: flex;
-      gap: 20px;
-      align-items: center;
-      border-bottom: 1px solid #222;
-    }
+    .content-area { flex: 1; display: flex; flex-direction: column; background: #0f0f0f; position: relative; }
+    .sub-bar { padding: 15px 30px; background: #141414; display: flex; gap: 15px; overflow-x: auto; border-bottom: 1px solid #222; }
+    .category-item { padding: 8px 20px; background: #222; border-radius: 20px; font-size: 14px; white-space: nowrap; color: #ccc; }
+    .category-item.focused { background: #fff; color: #000; font-weight: bold; }
 
-    header input {
-      flex: 1;
-      padding: 12px 20px;
-      border: 1px solid #333;
-      border-radius: 8px;
-      background: #1a1a1a;
-      color: white;
-      font-size: 16px;
-    }
+    .main-content { flex: 1; padding: 30px; overflow-y: auto; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+    .card { background: #161616; border: 1px solid #222; padding: 25px 20px; border-radius: 12px; text-align: center; font-size: 16px; transition: transform 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.3); word-wrap: break-word; }
+    .card.focused { outline: 4px solid #1f6feb; transform: scale(1.05); background: #222; }
 
-    header input:focus {
-      outline: 2px solid #1f6feb;
-    }
-
-    header button {
-      padding: 12px 24px;
-      background: #1f6feb;
-      border: none;
-      color: white;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    /* توزيع الواجهة */
-    .layout {
-      display: flex;
-      height: calc(100vh - 80px);
-    }
-
-    /* القائمة الجانبية الاحترافية */
-    .sidebar {
-      width: 240px;
-      background: #111;
-      border-left: 1px solid #222;
-      display: flex;
-      flex-direction: column;
-      padding-top: 10px;
-    }
-
-    .menu-item {
-      padding: 15px 25px;
-      font-size: 18px;
-      color: #aaa;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .menu-item.focused {
-      background: #1f6feb;
-      color: white;
-      font-weight: bold;
-      padding-right: 35px;
-    }
-
-    /* منطقة المحتوى */
-    .content-area {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      background: #0f0f0f;
-    }
-
-    /* شريط التصنيفات الفرعية */
-    .sub-bar {
-      padding: 15px 30px;
-      background: #141414;
-      display: flex;
-      gap: 15px;
-      overflow-x: auto;
-      border-bottom: 1px solid #222;
-    }
-
-    .category-item {
-      padding: 8px 20px;
-      background: #222;
-      border-radius: 20px;
-      font-size: 14px;
-      white-space: nowrap;
-      color: #ccc;
-    }
-
-    .category-item.focused {
-      background: #fff;
-      color: #000;
-      font-weight: bold;
-    }
-
-    /* شبكة عرض الكروت الرائعة */
-    .main-content {
-      flex: 1;
-      padding: 30px;
-      overflow-y: auto;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 20px;
-    }
-
-    .card {
-      background: #161616;
-      border: 1px solid #222;
-      padding: 25px 20px;
-      border-radius: 12px;
-      text-align: center;
-      font-size: 16px;
-      transition: transform 0.2s;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-      word-wrap: break-word;
-    }
-
-    .card.focused {
-      outline: 4px solid #1f6feb;
-      transform: scale(1.05);
-      background: #222;
-    }
+    /* شاشة إدخال بيانات Xtream */
+    #playlist-manager { display: none; padding: 40px; max-width: 500px; margin: auto; background: #161616; border-radius: 12px; border: 1px solid #333; margin-top: 50px; }
+    .form-input { width: 90%; padding: 15px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #333; background: #0b0b0b; color: white; font-size: 16px; }
+    .btn-login { width: 98%; padding: 15px; background: #1f6feb; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
+    .btn-login.focused { outline: 4px solid #fff; background: #3b82f6; }
   </style>
 </head>
 <body>
 
 <header>
-  <input id="m3uUrl" placeholder="أدخل رابط ملف M3U هنا..." value="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" />
-  <button onclick="loadPlaylist()">تحميل القائمة</button>
-  <input id="search" placeholder="بحث..." oninput="renderChannels()" style="max-width: 300px; margin-right: auto;" />
+  <input id="search" placeholder="بحث شامل..." oninput="renderChannels()" style="max-width: 400px; margin-right: auto;" />
 </header>
 
 <div class="layout">
@@ -159,12 +46,27 @@
     <div class="menu-item" data-section="series">المسلسلات</div>
     <div class="menu-item" data-section="favorites">المفضلة</div>
     <div class="menu-item" data-section="history">تابع المشاهدة</div>
+    <div class="menu-item" data-section="add-playlist">إضافة قائمة تشغيل</div>
   </div>
 
   <div class="content-area">
-    <div class="sub-bar" id="categories"></div>
-    <div class="main-content">
-      <div id="channels" class="grid"></div>
+    <!-- المحتوى العادي (الشبكة) -->
+    <div id="content-view">
+      <div class="sub-bar" id="categories"></div>
+      <div class="main-content">
+        <div id="channels" class="grid"></div>
+      </div>
+    </div>
+
+    <!-- شاشة إضافة حساب Xtream -->
+    <div id="playlist-manager">
+      <h2 style="margin-top:0; color:#1f6feb;">تسجيل الدخول Xtream API</h2>
+      <p style="color:#aaa; font-size:14px; margin-bottom: 20px;">أدخل بيانات الاشتراك لسحب القنوات والأفلام بالبوسترات.</p>
+      <input id="xt_url" class="form-input xtream-field" placeholder="رابط السيرفر (مثال: http://tv.com:8080)" />
+      <input id="xt_user" class="form-input xtream-field" placeholder="اسم المستخدم" />
+      <input id="xt_pass" class="form-input xtream-field" type="password" placeholder="كلمة المرور" />
+      <button id="xt_btn" class="btn-login xtream-field" onclick="connectXtream()">تسجيل الدخول</button>
+      <div id="xt_status" style="margin-top: 15px; text-align: center; color: #ff4444;"></div>
     </div>
   </div>
 </div>
