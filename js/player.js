@@ -1,138 +1,213 @@
-const video = document.getElementById("video");
-const fillBar = document.getElementById("fill-bar");
-const knob = document.getElementById("progress-knob");
-const currTimeLbl = document.getElementById("current-time");
-const totalTimeLbl = document.getElementById("total-time");
-const playIcon = document.getElementById("icon-play");
-const speedBtn = document.getElementById("speed-label-btn");
-const timelineZone = document.getElementById("timeline-click-zone");
-const nextPopup = document.getElementById("next-ep-popup");
+let video = document.getElementById("video");
+
+let fillBar = document.getElementById("fill-bar");
+let knob = document.getElementById("progress-knob");
+let currTimeLbl = document.getElementById("current-time");
+let totalTimeLbl = document.getElementById("total-time");
+let playIcon = document.getElementById("icon-play");
 
 let mediaItem = JSON.parse(localStorage.getItem("current")) || {};
-let currentSpeed = 1.0; let osdTimeout;
-let isDraggingSlider = false; let shakaPlayerInstance;
-let seekDuration = parseInt(localStorage.getItem("global_seek_duration")) || 10;
-let subMode = "ar";
 
-function initPlayerEngine() {
-  document.getElementById("player-title").innerText = mediaItem.name || "VISION TV Premium";
-  document.getElementById("seek-lbl-osd").innerText = seekDuration + "s";
+let seekStep = parseInt(localStorage.getItem("global_seek_duration")) || 10;
 
-  document.getElementById("btn-rewind-action").onclick = () => { video.currentTime -= seekDuration; showOSD(); };
-  document.getElementById("btn-forward-action").onclick = () => { video.currentTime += seekDuration; showOSD(); };
+let osdTimer;
+let isDragging = false;
 
-  if(timelineZone) {
-    timelineZone.addEventListener("mousedown", (e) => { isDraggingSlider = true; updateSliderPositionOnEvent(e); });
-    window.addEventListener("mousemove", (e) => { if(isDraggingSlider) updateSliderPositionOnEvent(e); });
-    window.addEventListener("mouseup", () => { isDraggingSlider = false; });
-  }
+let player;
+function initPlayer() {
 
-  shakaPlayerInstance = new shaka.Player(video);
-  shakaPlayerInstance.configure({ streaming: { bufferingGoal: 30, rebufferingGoal: 10, bufferBehind: 15 } });
-  shakaPlayerInstance.load(mediaItem.url || "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8").catch(err => console.error(err));
-  
-  video.addEventListener("timeupdate", onVideoTimeUpdateSync);
-  window.addEventListener("wheel", () => { showOSD(); });
-}
+    document.getElementById("player-title").innerText =
+        mediaItem.name || "VISION TV";
 
-function updateSliderPositionOnEvent(e) {
-  const rect = timelineZone.getBoundingClientRect();
-  let percentage = (e.clientX - rect.left) / rect.width;
-  if(percentage < 0) percentage = 0; if(percentage > 1) percentage = 1;
-  fillBar.style.width = (percentage * 100) + '%';
-  knob.style.left = (percentage * 100) + '%';
-  if(video.duration) video.currentTime = percentage * video.duration;
-  showOSD();
-}
+    const url = mediaItem.url;
 
-function onVideoTimeUpdateSync() {
-  if(isDraggingSlider) return;
-  currTimeLbl.innerText = formatSecondsToTimeStr(video.currentTime);
-  totalTimeLbl.innerText = formatSecondsToTimeStr(video.duration);
-  if (video.duration) {
-    const pct = (video.currentTime / video.duration) * 100;
-    fillBar.style.width = `${pct}%`; knob.style.left = `${pct}%`;
-    localStorage.setItem(`timestamp_media_${mediaItem.id || 201}`, video.currentTime);
-    localStorage.setItem(`progress_ratio_media_${mediaItem.id || 201}`, pct);
+    if (!url) return;
 
-    // فحص واقتراح الحلقة القادمة بآخر 60 ثانية والربط بالـ OSD بالملي لإخفائه تلقائياً
-    const timeLeft = video.duration - video.currentTime;
-    if (timeLeft <= 60 && timeLeft > 2) {
-      if (document.getElementById("controls-panel").style.opacity === "1") {
-        nextPopup.style.display = "block";
-      } else {
-        nextPopup.style.display = "none";
-      }
-    } else {
-      nextPopup.style.display = "none";
+    // Sh
+    try {
+
+        if (window.shaka) {
+
+            player = new shaka.Player(video);
+
+            player.configure({
+
+                streaming: {
+                    bufferingGoal: 30,
+                    rebufferingGoal: 10,
+                    bufferBehind: 20
+                }
+
+            });
+
+            player.load(url).catch(err => {
+
+                console.error("Shaka load error:", err);
+
+                fallbackToNative(url);
+
+            });
+
+        } else {
+
+            fallbackToNative(url);
+
+        }
+
+    } catch (e) {
+
+        console.error("Player init error:", e);
+
+        fallbackToNative(url);
+
     }
-  }
+
+    video.addEventListener("timeupdate", updateUI);
+
+    video.addEventListener("loadedmetadata", updateUI);
+
+}
+function fallbackToNative(url) {
+
+    video.src = url;
+    video.play().catch(()=>{});
+
 }
 
-function togglePlayPauseState() {
-  if (video.paused) { video.play(); playIcon.innerText = "pause"; }
-  else { video.pause(); playIcon.innerText = "play_arrow"; }
+// ============================================
+
+function updateUI() {
+
+    if (isDragging) return;
+
+    if (!video.duration) return;
+
+    let percent = (video.currentTime / video.duration) * 100;
+
+    fillBar.style.width = percent + "%";
+    knob.style.left = percent + "%";
+
+    currTimeLbl.innerText = formatTime(video.currentTime);
+    totalTimeLbl.innerText = formatTime(video.duration);
+
+    localStorage.setItem(
+        "progress_" + mediaItem.id,
+        percent
+    );
+
+    localStorage.setItem(
+        "time_" + mediaItem.id,
+        video.currentTime
+    );
+
+    checkNextEpisode();
+}
+function togglePlay() {
+
+    if (video.paused) {
+
+        video.play();
+        playIcon.innerText = "pause";
+
+    } else {
+
+        video.pause();
+        playIcon.innerText = "play_arrow";
+
+    }
+
 }
 
-function triggerPlaybackSpeedCycle() {
-  currentSpeed = currentSpeed === 2.0 ? 0.5 : currentSpeed + 0.5;
-  video.playbackRate = currentSpeed; speedBtn.innerText = currentSpeed + "x";
+// ============================================
+
+function seek(seconds) {
+
+    video.currentTime += seconds;
+
 }
 
-function cycleSubtitles() {
-  subMode = subMode === "ar" ? "en" : (subMode === "en" ? "off" : "ar");
-  document.getElementById("sub-label-btn").innerText = subMode === "off" ? "الترجمة: إيقاف" : `الترجمة: ${subMode.toUpperCase()}`;
-}
+// ============================================
 
-function changeOSDSeekStep() {
-  seekDuration = seekDuration === 60 ? 5 : (seekDuration === 30 ? 60 : seekDuration + 10);
-  localStorage.setItem("global_seek_duration", seekDuration);
-  document.getElementById("seek-lbl-osd").innerText = seekDuration + "s";
-}
-
-function navigateEpisodesStream(direction) {
-  alert(direction > 0 ? "الانتقال الفوري للحلقة التالية رأسياً من السيرفر..." : "الانتقال للحلقة السابقة...");
-  window.location.reload();
-}
-
-function formatSecondsToTimeStr(secs) {
-  if (isNaN(secs)) return "00:00:00";
-  const h = Math.floor(secs / 3600).toString().padStart(2, '0');
-  const m = Math.floor((secs % 3600) / 60).toString().padStart(2, '0');
-  const s = Math.floor(secs % 60).toString().padStart(2, '0');
-  return `${h}:${m}:${s}`;
-}
-
-// فصل كامل وفعال لأزرار ريموت LG الماجيك الأربعة
 document.addEventListener("keydown", (e) => {
-  showOSD();
-  // يمين ويسار للتقديم والتأخير
-  if (e.key === "ArrowLeft") { video.currentTime -= seekDuration; e.preventDefault(); }
-  if (e.key === "ArrowRight") { video.currentTime += seekDuration; e.preventDefault(); }
-  // فوق وتحت للحلقة القادمة والسابقة
-  if (e.key === "ArrowUp") { navigateEpisodesStream(1); e.preventDefault(); }
-  if (e.key === "ArrowDown") { navigateEpisodesStream(-1); e.preventDefault(); }
-  
-  if (e.key === "Enter" || e.key === "Ok") { togglePlayPauseState(); e.preventDefault(); }
-  if (e.key === "Backspace") { window.location.href = "index.html"; }
-});
 
-function showOSD() {
-  document.getElementById("controls-panel").style.opacity = "1";
-  const timeLeft = video.duration - video.currentTime;
-  if (timeLeft <= 60 && timeLeft > 2) nextPopup.style.display = "block";
-  
-  clearTimeout(osdTimeout);
-  // التلاشي والاختفاء التلقائي بعد 3 ثوانٍ بالضبط من ثبات السكرول أو الحركة كالاتفاق
-  osdTimeout = setTimeout(() => {
-    document.getElementById("controls-panel").style.opacity = "0";
-    nextPopup.style.display = "none";
-  }, 3000);
+    switch (e.key) {
+
+        case "ArrowLeft":
+            seek(-seekStep);
+            break;
+
+        case "ArrowRight":
+            seek(seekStep);
+            break;
+
+        case "ArrowUp":
+            nextEpisode();
+            break;
+
+        case "ArrowDown":
+            prevEpisode();
+            break;
+
+        case "Enter":
+            togglePlay();
+            break;
+
+        case "Backspace":
+        case "Escape":
+            window.location.href = "index.html";
+            break;
+
+    }
+
+});
+function formatTime(sec) {
+
+    if (!sec) return "00:00:00";
+
+    let h = Math.floor(sec / 3600);
+    let m = Math.floor((sec % 3600) / 60);
+    let s = Math.floor(sec % 60);
+
+    return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+
 }
 
-window.onload = function() {
-  const activeTheme = localStorage.getItem('selected-theme') || 'theme-netflix';
-  document.getElementById('player-html').className = activeTheme;
-  initPlayerEngine();
-  showOSD();
+// ============================================
+
+function checkNextEpisode() {
+
+    let left = video.duration - video.currentTime;
+
+    let popup = document.getElementById("next-ep-popup");
+
+    if (!popup) return;
+
+    if (left <= 60 && left > 2) {
+
+        popup.style.display = "block";
+
+    } else {
+
+        popup.style.display = "none";
+
+    }
+
+}
+
+// ============================================
+
+function nextEpisode() {
+    console.log("Next episode");
+}
+
+function prevEpisode() {
+    console.log("Previous episode");
+}
+
+// ============================================
+
+window.onload = () => {
+
+    initPlayer();
+
 };
