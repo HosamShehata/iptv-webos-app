@@ -13,15 +13,11 @@
       --text-color: #ffffff;
       --text-dim: #aaaaaa;
     }
-
     body {
       margin: 0; background: var(--bg-main); color: var(--text-color);
       font-family: 'Segoe UI', Arial, sans-serif; overflow: hidden; user-select: none;
     }
-
     .layout { display: flex; height: 100vh; width: 100vw; }
-
-    /* السايد بار الأساسي للبرنامج */
     .sidebar {
       width: 260px; background: var(--bg-sidebar); border-left: 1px solid #222; border-right: 1px solid #222;
       display: flex; flex-direction: column; padding: 20px 0; box-sizing: border-box; flex-shrink: 0;
@@ -40,26 +36,20 @@
       padding: 14px 25px; font-size: 16px; color: var(--text-dim); cursor: pointer;
       display: flex; align-items: center; gap: 15px; transition: all 0.2s ease;
     }
-    .menu-item .material-icons { font-size: 22px; }
     .menu-item.focused { background: var(--primary-color); color: var(--text-color); font-weight: bold; }
     html[dir="rtl"] .menu-item.focused { padding-right: 35px; }
     html[dir="ltr"] .menu-item.focused { padding-left: 35px; }
 
     .content-container { flex: 1; display: flex; flex-direction: column; height: 100%; overflow: hidden; position: relative; }
     
-    /* الـ Top Bar المطور والموزع بالملي */
     .top-info-bar {
       height: 60px; background: #111111; border-bottom: 1px solid #222;
       display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-sizing: border-box; flex-shrink: 0;
     }
     .top-right-clock-area { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: bold; color: var(--text-color); }
-    .top-right-clock-area .material-icons { color: var(--primary-color); font-size: 18px; }
     .top-right-clock-area .date-divider { color: var(--primary-color); margin: 0 4px; }
-    
-    .top-left-network-area { display: flex; align-items: center; }
     .speed-indicator { display: flex; align-items: center; gap: 6px; color: #00C851; background: rgba(0,200,81,0.1); padding: 5px 14px; border-radius: 6px; font-size: 13px; font-weight: bold; }
 
-    /* شريط القوائم الفرعية */
     .sub-filter-bar {
       padding: 15px 30px; background: #141414; display: flex; gap: 12px;
       overflow-x: auto; border-bottom: 1px solid #222; box-sizing: border-box; align-items: center; flex-shrink: 0;
@@ -70,13 +60,12 @@
     }
     .filter-item.focused { background: var(--text-color); color: #000; font-weight: bold; }
 
-    /* لوحات الشاشات */
     .view-panel { display: none; width: 100%; height: 100%; padding: 30px; overflow-y: auto; box-sizing: border-box; }
     .view-panel.active { display: block !important; }
     
     .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; }
 
-    /* كروت العرض بالبوسترات */
+    /* كروت الميديا مع إضافة بار المشاهدة السفلي */
     .media-card {
       background: var(--bg-card); border: 1px solid #222; border-radius: 12px;
       overflow: hidden; transition: transform 0.2s; position: relative; cursor: pointer;
@@ -84,65 +73,34 @@
     .media-card img { width: 100%; height: 270px; object-fit: cover; }
     .media-card .info { padding: 12px; text-align: center; font-size: 14px; font-weight: bold; }
     .media-card.focused { outline: 4px solid var(--primary-color); transform: scale(1.03); }
-    .media-card .badge { position: absolute; top: 10px; background: rgba(0,0,0,0.8); padding: 4px 8px; font-size: 11px; border-radius: 4px; color: var(--primary-color); }
-    html[dir="rtl"] .media-card .badge { left: 10px; }
-    html[dir="ltr"] .media-card .badge { right: 10px; }
-
-    /* شاشة أضف قائمة تشغيل المحدثة على شكل كروت فرعية وأيقونات (شاشة رقم 8) */
-    .playlist-grid-menu { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; margin-bottom: 30px; }
-    .playlist-menu-card {
-      background: #161616; border: 1px solid #2c3a4a; border-radius: 12px; padding: 25px;
-      text-align: center; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 12px;
-    }
-    .playlist-menu-card .material-icons { font-size: 40px; color: var(--primary-color); }
-    .playlist-menu-card.focused { outline: 4px solid var(--primary-color); background: #1c2430; }
-
-    .playlist-screen-form { display: none; max-width: 750px; margin: 10px auto; background: #19222d; border-radius: 16px; padding: 35px; border: 1px solid #2c3a4a; }
-    .playlist-screen-form.active { display: block; }
-    .screen-title { font-size: 22px; font-weight: bold; text-align: center; margin-bottom: 25px; color: white; }
-
-    .field-wrapper { width: 100%; margin-bottom: 15px; display: flex; align-items: center; }
-    .form-input {
-      width: 100%; padding: 14px 20px; border-radius: 8px; border: 1px solid #3a4a5a;
-      background: #ffffff; color: #000000; font-size: 16px; box-sizing: border-box; text-align: right;
-    }
-    html[dir="ltr"] .form-input { text-align: left; }
-    .form-input:focus { outline: 3px solid var(--primary-color); }
     
-    .password-input-box { flex: 1; }
-    .eye-btn { background: #ffffff; border: 1px solid #3a4a5a; border-radius: 8px; padding: 11px 15px; margin-right: 10px; display: flex; align-items: center; color: #333; cursor: pointer; }
-    html[dir="ltr"] .eye-btn { margin-right: 0; margin-left: 10px; }
+    /* بار المشاهدة الصغير أسفل الكارت */
+    .card-progress-container { width: 100%; height: 5px; background: #333; position: relative; }
+    .card-progress-fill { height: 100%; background: #ff0000; width: 0%; }
 
-    .add-action-container { display: flex; justify-content: center; gap: 15px; margin-top: 25px; }
-    .btn-add-playlist { width: 180px; padding: 14px; background: #ffffff; color: #000000; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; text-align: center; }
-    .btn-add-playlist.focused { outline: 4px solid var(--primary-color); }
-
-    /* شاشة الإعدادات لوحتين (شاشة رقم 10) */
+    /* واجهة تخصيص الريموت المتقدمة والإعدادات لوحتين */
     .settings-layout-box { display: flex; gap: 30px; height: 100%; }
     .settings-sidebar-list { width: 300px; display: flex; flex-direction: column; gap: 12px; }
     .settings-item { background: var(--bg-card); padding: 16px 20px; border-radius: 10px; border: 1px solid #222; display: flex; justify-content: space-between; align-items: center; font-size: 15px; cursor: pointer; }
     .settings-item.focused { outline: 3px solid var(--primary-color); background: #222; }
-    .settings-left-side { display: flex; align-items: center; gap: 12px; }
-
-    .settings-details-container { flex: 1; background: #111111; border: 1px solid #222; border-radius: 12px; padding: 30px; box-sizing: border-box; }
+    
+    .settings-details-container { flex: 1; background: #111111; border: 1px solid #222; border-radius: 12px; padding: 30px; box-sizing: border-box; overflow-y: auto; }
     .sub-settings-panel { display: none; }
     .sub-settings-panel.active { display: block !important; }
     
-    .custom-select { padding: 12px; border-radius: 8px; background: #222; color: #fff; width: 100%; font-size: 15px; border: 1px solid #444; outline: none; }
+    .custom-select { padding: 12px; border-radius: 8px; background: #222; color: #fff; width: 100%; font-size: 15px; border: 1px solid #444; outline: none; margin-bottom: 15px; }
+    .remote-btn-mapping-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #222; }
   </style>
 </head>
 <body>
 
 <div class="layout">
-  
   <div class="sidebar" id="sidebarMenu">
     <div class="brand-area"><div class="brand-title">VISION TV</div></div>
-    
     <div class="lang-toggle-bar" id="sidebarLangBtn" onclick="toggleLanguage()">
       <span class="material-icons">translate</span>
       <span id="lbl-sidebar-lang">English</span>
     </div>
-
     <div class="menu-item" onclick="clickSidebarItem(0)"><span class="material-icons">home</span><span class="txt-lang" data-key="home">الرئيسية</span></div>
     <div class="menu-item" onclick="clickSidebarItem(1)"><span class="material-icons">live_tv</span><span class="txt-lang" data-key="live">قنوات مباشرة</span></div>
     <div class="menu-item" onclick="clickSidebarItem(2)"><span class="material-icons">movie</span><span class="txt-lang" data-key="movies">الأفلام</span></div>
@@ -155,29 +113,25 @@
   </div>
 
   <div class="content-container">
-    
     <div class="top-info-bar">
       <div class="top-right-clock-area">
         <span class="material-icons">schedule</span>
-        <span id="top-current-day">--</span>
-        <span class="date-divider">|</span>
-        <span id="top-current-date">--/--/----</span>
-        <span class="date-divider">|</span>
+        <span id="top-current-day">--</span> <span class="date-divider">|</span>
+        <span id="top-current-date">--/--/----</span> <span class="date-divider">|</span>
         <span id="top-current-time">00:00 AM</span>
       </div>
-      <div class="top-left-network-area">
-        <div class="speed-indicator">
-          <span class="material-icons" style="font-size:16px;">speed</span>
-          <span id="top-net-speed">48.5 Mbps</span>
-        </div>
-      </div>
+      <div class="top-left-network-area"><div class="speed-indicator"><span class="material-icons" style="font-size:16px;">speed</span><span id="top-net-speed">48.5 Mbps</span></div></div>
     </div>
 
     <div class="sub-filter-bar" id="subFilterBar"></div>
 
-    <!-- الشاشات والـ Grids -->
+    <div id="continue-watching-sub-shelf" style="padding: 15px 30px; display:none; background: rgba(31,111,235,0.05); border-bottom: 1px solid #222;">
+      <h4 style="margin:0 0 10px 0; color: #1f6feb;" class="txt-lang" data-key="resume_shelf">تكملة المشاهدة الفورية ⏱️</h4>
+      <div class="grid-container" id="sub-shelf-grid"></div>
+    </div>
+
     <div id="view-home" class="view-panel">
-      <h3 style="margin: 0 0 20px 0; color:var(--primary-color); font-size: 20px;" class="txt-lang" data-key="recent">⏱️ تابع المشاهدة مؤخراً</h3>
+      <h3 style="margin: 0 0 20px 0; color:var(--primary-color);" class="txt-lang" data-key="recent">⏱️ تابع المشاهدة مؤخراً</h3>
       <div class="grid-container" id="home-history-grid"></div>
     </div>
 
@@ -187,85 +141,44 @@
     <div id="view-favorites" class="view-panel"><div class="grid-container" id="favorites-grid"></div></div>
     <div id="view-history" class="view-panel"><div class="grid-container" id="history-grid"></div></div>
 
-    <!-- شاشة أضف قائمة تشغيل المحدثة بالملي ككروت فرعية (شاشة رقم 8) -->
     <div id="view-playlist" class="view-panel">
-      <div class="playlist-grid-menu" id="pl-main-menu-grid">
-        <div class="playlist-menu-card playlist-grid-focusable" onclick="openPlaylistInputForm('xtream')"><span class="material-icons">cloud_download</span><div>Xtream Codes API</div></div>
-        <div class="playlist-menu-card playlist-grid-focusable" onclick="openPlaylistInputForm('m3u_url')"><span class="material-icons">link</span><div>M3U URL</div></div>
-        <div class="playlist-menu-card playlist-grid-focusable" onclick="openPlaylistInputForm('m3u_file')"><span class="material-icons">insert_drive_file</span><div>M3U File</div></div>
-        <div class="playlist-menu-card playlist-grid-focusable" onclick="openPlaylistInputForm('qr')"><span class="material-icons">qr_code_2</span><div>ملح رمز QR</div></div>
-      </div>
-
-      <!-- فورم حقول الإدخال عند اختيار الكارت -->
-      <div class="playlist-screen-form" id="playlist-input-form-box">
-        <div class="screen-title" id="lbl-form-type-title">ربط اشتراك Xtream API</div>
-        <div class="field-wrapper"><input id="pl_name" class="form-input form-focusable" placeholder="إسم قائمة التشغيل" /></div>
-        <div class="field-wrapper" id="row-user"><input id="pl_user" class="form-input form-focusable" placeholder="إسم المستخدم" /></div>
-        <div class="field-wrapper" id="row-pass">
-          <button class="eye-btn form-focusable" onclick="togglePasswordVisibility()"><span class="material-icons">visibility</span></button>
-          <input id="pl_pass" class="form-input password-input-box form-focusable" type="password" placeholder="كلمة المرور" />
-        </div>
-        <div class="field-wrapper"><input id="pl_url" class="form-input form-focusable" placeholder="رابط السيرفر Host" /></div>
-        <div class="add-action-container">
-          <button class="btn-add-playlist form-focusable" onclick="processPlaylistAddition()">إضافة</button>
-          <button class="btn-add-playlist form-focusable" style="background:#4b5563; color:#fff;" onclick="backToPlaylistMenu()">رجوع</button>
-        </div>
-        <div id="pl_status" style="margin-top:20px; text-align:center; color:#fff; font-weight:bold;"></div>
+      <div class="grid-container" id="pl-main-menu-grid">
+        <div class="media-card" onclick="openPlaylistInputForm('xtream')"><div class="info">Xtream Codes API</div></div>
+        <div class="media-card" onclick="openPlaylistInputForm('m3u_url')"><div class="info">M3U URL</div></div>
       </div>
     </div>
 
-    <!-- شاشة البحث المتقدم -->
     <div id="view-search" class="view-panel">
-      <div style="max-width:600px; margin: 0 auto 30px auto;">
-        <input id="search-input" class="form-input" placeholder="ابحث هنا عن قنوات، أفلام، مسلسلات..." oninput="triggerGlobalSearch()" style="text-align:center;" />
-      </div>
-      <div class="grid-container" id="search-results-grid"></div>
+      <input id="search-input" class="form-input" placeholder="ابحث هنا..." oninput="triggerGlobalSearch()" style="width:100%; padding:14px; background:#fff; color:#000; border-radius:8px;" />
+      <div class="grid-container" id="search-results-grid" style="margin-top:20px;"></div>
     </div>
 
-    <!-- شاشة الإعدادات المحدثة بالكامل لوحتين (شاشة رقم 10) -->
     <div id="view-settings" class="view-panel">
       <div class="settings-layout-box">
         <div class="settings-sidebar-list">
-          <div class="settings-item settings-focusable" onclick="clickSettingsItem(0)"><div class="settings-left-side"><span class="material-icons">account_circle</span><span class="txt-lang" data-key="set_acc">الحساب والاشتراك</span></div><span class="material-icons">chevron_left</span></div>
-          <div class="settings-item settings-focusable" onclick="clickSettingsItem(1)"><div class="settings-left-side"><span class="material-icons">palette</span><span class="txt-lang" data-key="set_theme">المظهر والسمات</span></div><span class="material-icons">chevron_left</span></div>
-          <div class="settings-item settings-focusable" onclick="clickSettingsItem(2)"><div class="settings-left-side"><span class="material-icons">language</span><span class="txt-lang" data-key="set_lang_menu">اللغة والترجمة</span></div><span class="material-icons">chevron_left</span></div>
-          <div class="settings-item settings-focusable" onclick="clickSettingsItem(3)"><div class="settings-left-side"><span class="material-icons">security</span><span class="txt-lang" data-key="set_parent">الرقابة الأبوية والقفل</span></div><span class="material-icons">chevron_left</span></div>
-          <div class="settings-item settings-focusable" onclick="clickSettingsItem(4)"><div class="settings-left-side"><span class="material-icons">settings_remote</span><span>إعدادات أزرار الريموت</span></div><span class="material-icons">chevron_left</span></div>
+          <div class="settings-item settings-focusable" onclick="clickSettingsItem(0)"><span>الحساب والاشتراك</span></div>
+          <div class="settings-item settings-focusable" onclick="clickSettingsItem(1)"><span>المظهر والسرعة</span></div>
+          <div class="settings-item settings-focusable" onclick="clickSettingsItem(2)"><span>برمجة أزرار الريموت كاملة</span></div>
         </div>
-
         <div class="settings-details-container">
-          <div id="sub-set-account" class="sub-settings-panel active">
-            <h3 style="color:var(--primary-color); margin-top:0;">Premium Account</h3>
-            <p style="color:#aaa;">الحالة: جاهز ومستقر بالكامل</p>
-            <button onclick="clearPlaylistData()" style="background:#ff4444; max-width:250px; padding:14px; border:none; border-radius:10px; color:#fff; font-weight:bold; cursor:pointer;">حذف وإعادة ضبط البيانات</button>
-          </div>
+          <div id="sub-set-account" class="sub-settings-panel active"><h3>Premium Account</h3><p>الحالة: مستقر</p></div>
           <div id="sub-set-theme" class="sub-settings-panel">
-            <h3 style="color:var(--primary-color); margin-top:0;">Dark Premium Sensation</h3>
-            <h4 style="color:#fff; margin-top:25px;">⏱️ تخصيص مدة قفز الريموت (يمين/يسار)</h4>
+            <h3 class="txt-lang" data-key="seek_sec_title">تخصيص ثواني قفز الريموت</h3>
             <select class="custom-select" onchange="updateSeekDurationSetting(this.value)">
               <option value="5">5 ثوانٍ</option>
-              <option value="10" selected>10 ثوانٍ (افتراضي)</option>
-              <option value="15">15 ثانية</option>
+              <option value="10" selected>10 ثوانٍ</option>
               <option value="30">30 ثانية</option>
             </select>
           </div>
-          <div id="sub-set-language" class="sub-settings-panel">
-            <h3 style="color:var(--primary-color); margin-top:0;">Language / اللغة</h3>
-            <button onclick="toggleLanguage()" style="max-width:300px; padding:14px; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); color:#fff; border-radius:10px; cursor:pointer;" id="lbl-current-lang">English</button>
-          </div>
-          <div id="sub-set-parental" class="sub-settings-panel">
-            <h3 style="color:var(--primary-color); margin-top:0;">Parental Control</h3>
-            <p style="color:#aaa;">حماية الرقابة الأبوية نشطة.</p>
-          </div>
           <div id="sub-set-remote" class="sub-settings-panel">
-            <h3 style="color:var(--primary-color); margin-top:0;">برمجة ريموت LG Magic</h3>
-            <p style="color:#aaa;">تم ربط السهم اليمين/اليسار لتسريع وتبطيء الحلقات بالثواني المحددة في خيارات السمة.</p>
-            <p style="color:#aaa;">أزرار تقليب القنوات (Ch+/Ch-) مفعلة للتنقل الفوري في البث المباشر.</p>
+            <h3 class="txt-lang" data-key="remote_config">لوحة تحكم وبرمجة ريموت LG Magic</h3>
+            <div class="remote-btn-mapping-row"><span>زر OK / ENTER الرئيسي</span><select class="custom-select" style="width:180px;"><option>تشغيل / إيقاف مؤقت</option><option>إظهار البيانات</option></select></div>
+            <div class="remote-btn-mapping-row"><span>الأزرار يمين / يسار</span><select class="custom-select" style="width:180px;"><option>تقديم وتأخير بالثواني</option><option>التنقل بين القنوات</option></select></div>
+            <div class="remote-btn-mapping-row"><span>أزرار تقليب القنوات (CH+/CH-)</span><select class="custom-select" style="width:180px;"><option>تقليب قنوات البث المباشر</option><option>تقديم سريع</option></select></div>
           </div>
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
