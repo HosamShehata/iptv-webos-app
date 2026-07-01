@@ -1,10 +1,11 @@
 let channels = [];
 let filtered = [];
 let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-let lastWatched = JSON.parse(localStorage.getItem("lastWatched")) || null;
 
 let categories = ["All", "Sports", "Movies", "News"];
 let currentCategory = "All";
+
+let selectedIndex = 0;
 
 // EPG تجريبي
 const epgData = {
@@ -33,13 +34,15 @@ function loadPlaylist() {
 
       channels = parseM3U(data);
 
-      renderAll();
+      renderCategories();
+      renderChannels();
+      renderEPG();
 
     });
 
 }
 
-// M3U Parser
+// تحويل M3U
 function parseM3U(data) {
 
   const lines = data.split("\n");
@@ -66,15 +69,7 @@ function parseM3U(data) {
   return result;
 }
 
-// Render All
-function renderAll() {
-  renderCategories();
-  renderChannels();
-  renderFavorites();
-  renderEPG();
-}
-
-// Categories
+// عرض الأقسام
 function renderCategories() {
 
   const box = document.getElementById("categories");
@@ -88,6 +83,7 @@ function renderCategories() {
 
     div.onclick = function () {
       currentCategory = cat;
+      selectedIndex = 0;
       renderChannels();
       renderEPG();
     };
@@ -98,7 +94,7 @@ function renderCategories() {
 
 }
 
-// Channels
+// عرض القنوات
 function renderChannels() {
 
   const search = document.getElementById("search").value.toLowerCase();
@@ -115,33 +111,19 @@ function renderChannels() {
 
   });
 
-  filtered.forEach(ch => {
+  filtered.forEach((ch, index) => {
 
     const div = document.createElement("div");
     div.className = "channel";
 
-    const isFav = favorites.some(f => f.url === ch.url);
+    div.innerText = "▶ " + ch.name;
 
-    div.innerHTML = `
-      <span>▶ ${ch.name}</span>
-      <span class="star">${isFav ? "★" : "☆"}</span>
-    `;
+    if (index === selectedIndex) {
+      div.style.background = "#0d6efd";
+    }
 
-    // تشغيل القناة
     div.onclick = function () {
-
-      localStorage.setItem("current", JSON.stringify(ch));
-
-      // حفظ آخر مشاهدة
-      localStorage.setItem("lastWatched", JSON.stringify(ch));
-
-      window.location.href = "player.html";
-    };
-
-    // إضافة/حذف من المفضلة
-    div.querySelector(".star").onclick = function (e) {
-      e.stopPropagation();
-      toggleFavorite(ch);
+      openChannel(ch);
     };
 
     container.appendChild(div);
@@ -150,7 +132,17 @@ function renderChannels() {
 
 }
 
-// Favorites
+// فتح قناة
+function openChannel(ch) {
+
+  localStorage.setItem("current", JSON.stringify(ch));
+  localStorage.setItem("lastWatched", JSON.stringify(ch));
+
+  window.location.href = "player.html";
+
+}
+
+// Favorites toggle
 function toggleFavorite(ch) {
 
   const index = favorites.findIndex(f => f.url === ch.url);
@@ -163,31 +155,7 @@ function toggleFavorite(ch) {
 
   localStorage.setItem("favorites", JSON.stringify(favorites));
 
-  renderFavorites();
   renderChannels();
-
-}
-
-function renderFavorites() {
-
-  const box = document.getElementById("favorites");
-  box.innerHTML = "";
-
-  favorites.forEach(ch => {
-
-    const div = document.createElement("div");
-    div.className = "channel";
-    div.innerText = "⭐ " + ch.name;
-
-    div.onclick = function () {
-      localStorage.setItem("current", JSON.stringify(ch));
-      localStorage.setItem("lastWatched", JSON.stringify(ch));
-      window.location.href = "player.html";
-    };
-
-    box.appendChild(div);
-
-  });
 
 }
 
@@ -210,3 +178,28 @@ function renderEPG() {
   });
 
 }
+
+// ريموت كنترول
+document.addEventListener("keydown", function(e) {
+
+  if (!filtered.length) return;
+
+  if (e.key === "ArrowDown") {
+    selectedIndex++;
+    if (selectedIndex >= filtered.length) selectedIndex = 0;
+    renderChannels();
+  }
+
+  if (e.key === "ArrowUp") {
+    selectedIndex--;
+    if (selectedIndex < 0) selectedIndex = filtered.length - 1;
+    renderChannels();
+  }
+
+  if (e.key === "Enter") {
+    if (filtered[selectedIndex]) {
+      openChannel(filtered[selectedIndex]);
+    }
+  }
+
+});
