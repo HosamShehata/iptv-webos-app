@@ -1,26 +1,12 @@
 let channels = [];
 let filtered = [];
-let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
 
 let categories = ["All", "Sports", "Movies", "News"];
 let currentCategory = "All";
-let selectedIndex = 0;
 
-// EPG بسيط
-const epgData = {
-  "Sports": [
-    { time: "10:00", title: "Football Live" },
-    { time: "12:00", title: "Sports News" }
-  ],
-  "Movies": [
-    { time: "11:00", title: "Action Movie" },
-    { time: "13:00", title: "Comedy Film" }
-  ],
-  "News": [
-    { time: "09:00", title: "Morning News" },
-    { time: "18:00", title: "Evening Update" }
-  ]
-};
+let focusMode = "channels"; // categories | channels
+let catIndex = 0;
+let channelIndex = 0;
 
 // تحميل M3U
 function loadPlaylist() {
@@ -35,14 +21,13 @@ function loadPlaylist() {
 
       renderCategories();
       renderChannels();
-      renderFavorites();
-      renderEPG();
+      updateFocus();
 
     });
 
 }
 
-// parser
+// M3U parser
 function parseM3U(data) {
 
   const lines = data.split("\n");
@@ -75,18 +60,11 @@ function renderCategories() {
   const box = document.getElementById("categories");
   box.innerHTML = "";
 
-  categories.forEach(cat => {
+  categories.forEach((cat, i) => {
 
     const div = document.createElement("div");
     div.className = "category";
     div.innerText = cat;
-
-    div.onclick = function () {
-      currentCategory = cat;
-      selectedIndex = 0;
-      renderChannels();
-      renderEPG();
-    };
 
     box.appendChild(div);
 
@@ -111,29 +89,11 @@ function renderChannels() {
 
   });
 
-  filtered.forEach((ch, index) => {
+  filtered.forEach((ch, i) => {
 
     const div = document.createElement("div");
     div.className = "card";
-
-    const isFav = favorites.some(f => f.url === ch.url);
-
-    div.innerHTML = `
-      <div class="fav">${isFav ? "★" : "☆"}</div>
-      <div>▶ ${ch.name}</div>
-    `;
-
-    // تشغيل
-    div.onclick = function () {
-      localStorage.setItem("current", JSON.stringify(ch));
-      window.location.href = "player.html";
-    };
-
-    // مفضلة
-    div.querySelector(".fav").onclick = function (e) {
-      e.stopPropagation();
-      toggleFavorite(ch);
-    };
+    div.innerText = ch.name;
 
     container.appendChild(div);
 
@@ -141,62 +101,69 @@ function renderChannels() {
 
 }
 
-// favorites
-function toggleFavorite(ch) {
+// focus system
+function updateFocus() {
 
-  const index = favorites.findIndex(f => f.url === ch.url);
+  // categories
+  document.querySelectorAll(".category").forEach((el, i) => {
+    el.classList.toggle("focused", focusMode === "categories" && i === catIndex);
+  });
 
-  if (index === -1) {
-    favorites.push(ch);
-  } else {
-    favorites.splice(index, 1);
+  // channels
+  document.querySelectorAll(".card").forEach((el, i) => {
+    el.classList.toggle("focused", focusMode === "channels" && i === channelIndex);
+  });
+
+}
+
+// open channel
+function openChannel(ch) {
+
+  localStorage.setItem("current", JSON.stringify(ch));
+  window.location.href = "player.html";
+
+}
+
+// remote control
+document.addEventListener("keydown", function(e) {
+
+  const cats = document.querySelectorAll(".category");
+  const chs = document.querySelectorAll(".card");
+
+  if (e.key === "ArrowLeft") focusMode = "categories";
+  if (e.key === "ArrowRight") focusMode = "channels";
+
+  if (e.key === "ArrowDown") {
+
+    if (focusMode === "categories") {
+      catIndex = Math.min(catIndex + 1, cats.length - 1);
+      currentCategory = categories[catIndex];
+      renderChannels();
+    } else {
+      channelIndex = Math.min(channelIndex + 1, chs.length - 1);
+    }
+
   }
 
-  localStorage.setItem("favorites", JSON.stringify(favorites));
+  if (e.key === "ArrowUp") {
 
-  renderFavorites();
-  renderChannels();
+    if (focusMode === "categories") {
+      catIndex = Math.max(catIndex - 1, 0);
+      currentCategory = categories[catIndex];
+      renderChannels();
+    } else {
+      channelIndex = Math.max(channelIndex - 1, 0);
+    }
 
-}
+  }
 
-function renderFavorites() {
+  if (e.key === "Enter") {
 
-  const box = document.getElementById("favorites");
-  box.innerHTML = "";
+    if (focusMode === "channels" && filtered[channelIndex]) {
+      openChannel(filtered[channelIndex]);
+    }
+  }
 
-  favorites.forEach(ch => {
+  updateFocus();
 
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerText = "⭐ " + ch.name;
-
-    div.onclick = function () {
-      localStorage.setItem("current", JSON.stringify(ch));
-      window.location.href = "player.html";
-    };
-
-    box.appendChild(div);
-
-  });
-
-}
-
-// EPG
-function renderEPG() {
-
-  const box = document.getElementById("epg");
-  box.innerHTML = "";
-
-  const data = epgData[currentCategory] || [];
-
-  data.forEach(item => {
-
-    const div = document.createElement("div");
-    div.className = "epg-item";
-    div.innerText = `${item.time} - ${item.title}`;
-
-    box.appendChild(div);
-
-  });
-
-}
+});
