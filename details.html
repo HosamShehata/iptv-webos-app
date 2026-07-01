@@ -1,65 +1,23 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" id="details-html" class="theme-netflix">
+<html lang="ar" dir="rtl" id="details-html">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VISION TV - VERTICAL EPISODES PANEL</title>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <title>VISION TV - VERTICAL DETAILS</title>
   <style>
-    .theme-netflix { --accent: #e50914; --bg-main: #000000; --bg-card: #141414; }
-    .theme-shahid { --accent: #00ff87; --bg-main: #0b0f19; --bg-card: #111827; }
-    .theme-cyberpunk { --accent: #f000ff; --bg-main: #0c0014; --bg-card: #1a0033; }
-    .theme-midnight { --accent: #d4af37; --bg-main: #050b14; --bg-card: #0f172a; }
-    .theme-ocean { --accent: #00b4d8; --bg-main: #011627; --bg-card: #0b3c5d; }
-
-    html { font-size: 1.15vw; }
-    @media (max-width: 1024px) { html { font-size: 15px; } }
-    body { background: var(--bg-main); color: #fff; padding: 3rem; font-family: sans-serif; margin: 0; }
-    
-    .action-row { display: flex; gap: 1.5rem; margin-bottom: 2.5rem; }
-    .btn-action { background: var(--bg-card); padding: 1.1rem 2.2rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; display: flex; align-items: center; gap: 0.8rem; font-weight: bold; font-size: 1.15rem; text-decoration: none; transition: 0.2s; }
-    .btn-action:hover { background: var(--accent); border-color: transparent; box-shadow: 0 0 15px var(--accent); }
-    
-    .series-header { display: flex; gap: 3rem; background: var(--bg-card); padding: 2.5rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 2.5rem; }
-    .series-poster { width: 16rem; height: 23rem; object-fit: cover; border-radius: 14px; }
-    
-    /* تصميم القائمة الرأسية للحلقات تحت بعضها البعض تماماً كاليوتيوب والمخطط الشامل */
-    .episodes-vertical-list { display: flex; flex-direction: column; gap: 1.5rem; width: 100%; }
-    .episode-row-card { display: flex; background: var(--bg-card); border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.06); cursor: pointer; transition: 0.2s; align-items: center; padding: 1rem; gap: 2rem; }
-    .episode-row-card:hover { border-color: var(--accent); background: rgba(255,255,255,0.02); }
-    
-    .thumb-area { position: relative; width: 18rem; height: 10rem; border-radius: 10px; overflow: hidden; flex-shrink: 0; }
+    body { background: #000; color: #fff; padding: 3rem; font-family: sans-serif; }
+    .btn-action { background: #141414; padding: 1rem 2rem; border-radius: 12px; border: 1px solid #333; color: #fff; text-decoration: none; font-weight: bold; cursor: pointer; }
+    .episode-row-card { display: flex; background: #141414; border-radius: 16px; padding: 1rem; gap: 2rem; margin-bottom: 1.5rem; cursor: pointer; border: 1px solid #222; }
+    .thumb-area { position: relative; width: 18rem; height: 10rem; border-radius: 10px; overflow: hidden; }
     .thumb-area img { width: 100%; height: 100%; object-fit: cover; }
-    
-    .yt-progress-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 6px; background: rgba(255,255,255,0.2); }
-    .yt-progress-fill { height: 100%; background: var(--accent); width: 0%; box-shadow: 0 0 6px var(--accent); }
-    
-    .ep-details-side { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
-    .ep-row-title { font-size: 1.3rem; font-weight: bold; color: #fff; }
-    .ep-row-desc { font-size: 1.1rem; color: #aaa; line-height: 1.5; }
-    .ep-row-status { font-size: 1.05rem; color: var(--accent); font-weight: bold; }
+    .yt-progress-bar { position: absolute; bottom: 0; width: 100%; height: 6px; background: rgba(255,255,255,0.2); }
+    .yt-progress-fill { height: 100%; background: #e50914; width: 0%; }
   </style>
 </head>
 <body>
-
-  <div class="action-row">
-    <a href="index.html" class="btn-action"><span class="material-icons">arrow_forward</span><span id="lbl-back">العودة للرئيسية</span></a>
-    <button class="btn-action" style="background:#00c851; border-color:transparent;" onclick="resumeLastWatchedEpisode()"><span class="material-icons">play_circle_filled</span><span id="lbl-resume-btn">متابعة آخر حلقة شاهدتها</span></button>
+  <div style="display:flex; gap:1.5rem; margin-bottom:2.5rem;">
+    <a href="index.html" class="btn-action">العودة للرئيسية</a>
   </div>
-
-  <div class="series-header">
-    <img id="series-img" class="series-poster" src="https://placehold.co/400x540/ff4444/ffffff?text=Series" />
-    <div style="display:flex; flex-direction:column; justify-content:center;">
-      <h1 id="series-title" style="font-size:2.5rem; margin:0 0 1rem 0;">اسم المسلسل</h1>
-      <p style="color:#aaa; font-size:1.25rem; margin:0;" id="series-desc">قائمة الحلقات والمواسم المتاحة مرتبة بشكل رأسي فخم مع تفاصيل البث وعدادات المشاهدة المنيرة بوضوح تام.</p>
-    </div>
-  </div>
-
-  <h3 style="margin-bottom:1.5rem; font-size:1.6rem;" id="lbl-episodes-heading">الحلقات المتوفرة</h3>
-  
-  <!-- حاوية القائمة الرأسية للحلقات -->
-  <div class="episodes-vertical-list" id="episodes-vertical-container"></div>
-
-<script src="js/details.js"></script>
+  <div id="episodes-vertical-container"></div>
+  <script src="js/details.js"></script>
 </body>
 </html>
