@@ -1,18 +1,18 @@
-/* المحرك الرسومي للـ 5 ثيمات وتعديل ألوان الـ Slider تلقائياً */
+/* ربط محرك ألوان الـ 5 ثيمات ببار تقدم الفيديو تلقائياً نسبة وتناسب */
 .theme-netflix { --accent: #e50914; --bg-main: #000000; --bg-card: #141414; --bg-item: #1f1f1f; --accent-glow: rgba(229, 9, 20, 0.4); }
 .theme-shahid { --accent: #00ff87; --bg-main: #0b0f19; --bg-card: #111827; --bg-item: #1f2937; --accent-glow: rgba(0, 255, 135, 0.4); }
 .theme-cyberpunk { --accent: #f000ff; --bg-main: #0c0014; --bg-card: #1a0033; --bg-item: #2d0055; --accent-glow: rgba(240, 0, 255, 0.4); }
 .theme-midnight { --accent: #d4af37; --bg-main: #050b14; --bg-card: #0f172a; --bg-item: #1e293b; --accent-glow: rgba(212, 175, 55, 0.4); }
 .theme-ocean { --accent: #00b4d8; --bg-main: #011627; --bg-card: #0b3c5d; --bg-item: #13507a; --accent-glow: rgba(0, 180, 216, 0.4); }
 
-/* التحجيم نسبة وتناسب بالـ rem والـ vw/vh للتلفزيون الكبيرة */
+/* التحجيم نسبة وتناسب للتلفزيونات الكبيرة بالملي */
 html { font-size: 1.2vw; }
 @media (max-width: 1024px) { html { font-size: 16px; } }
 
 body { margin: 0; background: var(--bg-main); color: #fff; font-family: 'Segoe UI', Arial, sans-serif; overflow: hidden; }
 .layout { display: flex; height: 100vh; width: 100vw; }
 
-/* السايد بار */
+/* السايد بار الاحترافي المودرن */
 .sidebar { width: 18rem; background: rgba(15, 15, 15, 0.95); backdrop-filter: blur(20px); padding: 1.5rem; border-left: 1px solid rgba(255,255,255,0.08); box-sizing: border-box; display: flex; flex-direction: column; }
 html[dir="ltr"] .sidebar { border-left: none; border-right: 1px solid rgba(255,255,255,0.08); }
 .brand-title { font-size: 2.2rem; font-weight: 900; text-align: center; margin-bottom: 2rem; color: var(--accent); text-shadow: 0 0 15px var(--accent-glow); }
@@ -20,15 +20,15 @@ html[dir="ltr"] .sidebar { border-left: none; border-right: 1px solid rgba(255,2
 .lang-toggle-bar { padding: 1rem; background: rgba(255,255,255,0.04); border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 0.8rem; cursor: pointer; font-size: 1.1rem; font-weight: bold; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 1.5rem; }
 .menu-item { padding: 1.1rem 1.3rem; font-size: 1.2rem; color: #aaa; cursor: pointer; display: flex; align-items: center; gap: 1rem; border-radius: 12px; transition: 0.2s; margin-bottom: 0.5rem; }
 
-/* الفوكس الصارم الفردي المانع للتداخل نهائياً */
+/* كلاس الفوكس الصارم المانع للتداخل نهائياً والتعليم على مكانيين معاً */
 .remote-focusable.focused, .menu-item.focused { background: var(--accent) !important; color: #fff !important; font-weight: bold; box-shadow: 0 0 15px var(--accent-glow); }
 
 .content-container { flex: 1; display: flex; flex-direction: column; height: 100%; overflow: hidden; }
 .top-info-bar { height: 4.5rem; background: rgba(10,10,10,0.6); display: flex; align-items: center; justify-content: space-between; padding: 0 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); flex-shrink: 0; }
 .top-right-clock-area { display: flex; align-items: center; gap: 0.8rem; font-size: 1.1rem; font-weight: bold; }
-.speed-indicator { display: flex; align-items: center; gap: 0.5rem; color: #00C851; background: rgba(0,200,81,0.08); padding: 0.5rem 1.2rem; border-radius: 8px; font-size: 1.05rem; font-weight: bold; border: 1px solid rgba(0,200,81,0.15); }
+.speed-indicator { display: flex; align-items: center; gap: 0.5rem; color: #00C851; background: rgba(0,200,81,0.08); padding: 0.5rem 1.2rem; border-radius: 8px; font-size: 1.05rem; font-weight: bold; border: 1px solid rgba(0,200,81,0.15); cursor: pointer; }
 
-/* البحث العريض الشامل */
+/* شريط البحث الموحد السينمائي العريض */
 .search-area-wrapper { padding: 1rem 2.5rem 0 2.5rem; flex-shrink: 0; }
 .search-input-box { width: 100%; position: relative; display: flex; align-items: center; }
 .search-field-control { width: 100%; padding: 1.1rem 3.5rem 1.1rem 1.5rem; background: var(--bg-card); border: 2px solid rgba(255,255,255,0.1); border-radius: 14px; color: #fff; font-size: 1.25rem; box-sizing: border-box; }
@@ -45,29 +45,33 @@ html[dir="ltr"] .sidebar { border-left: none; border-right: 1px solid rgba(255,2
 .card-progress-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.1); position: relative; }
 .card-progress-fill { height: 100%; background: var(--accent); width: 0%; box-shadow: 0 0 8px var(--accent); }
 
-/* الـ IPTV المودرن وأزرار الحذف في الجهة المقابلة بالملي */
+/* الـ IPTV بالأربع خانات وأزرار التعديل والحذف في الجهة المقابلة */
 .iptv-login-box { max-width: 38rem; background: var(--bg-card); padding: 3rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); margin: 0 auto 2rem auto; }
 .login-box-header { font-size: 1.5rem; font-weight: bold; text-align: center; margin-bottom: 2rem; color: var(--accent); }
 .input-field-group { position: relative; margin-bottom: 1.6rem; }
 .input-field-group label { display: block; margin-bottom: 0.6rem; font-size: 1.1rem; color: #ccc; }
 .app-input { width: 100%; padding: 1.1rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: #fff; font-size: 1.15rem; box-sizing: border-box; }
 .eye-toggle-icon { position: absolute; left: 1.2rem; top: 2.8rem; cursor: pointer; color: #aaa; font-size: 1.7rem; }
+.btn-action-submit { background: var(--accent); color: #fff; border: none; padding: 1.1rem; border-radius: 10px; cursor: pointer; font-size: 1.3rem; width: 100%; font-weight: bold; }
 
 .playlist-table-row { background: var(--bg-item); border: 1px solid rgba(255,255,255,0.08); padding: 1.5rem; margin-top: 1rem; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; font-size: 1.2rem; }
-.btn-playlist-control { padding: 0.6rem 1.2rem; border-radius: 8px; border: none; font-weight: bold; font-size: 1rem; cursor: pointer; color: #fff; }
+.btn-playlist-control { padding: 0.6rem 1.2rem; border-radius: 8px; border: none; font-weight: bold; font-size: 1rem; cursor: pointer; color: #fff; transition: 0.2s; }
+.btn-playlist-control.delete { background: #ff4444; }
+.btn-playlist-control.edit { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); margin-left: 0.5rem; }
 
-/* شاشة تفاصيل المسلسلات والترتيب الرأسي الكامل بجانب المعلومات */
+/* الحلقات الرأسية المرتبة تحت بعضها ببوستراتها ومعلوماتها الجانبية من السيرفر */
 .series-header { display: flex; gap: 3rem; background: var(--bg-card); padding: 2.5rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 2.5rem; align-items: center; }
 .series-poster { width: 16rem; height: 23rem; object-fit: cover; border-radius: 14px; }
 .series-title { font-size: 2.5rem; font-weight: 900; margin: 0 0 1rem 0; }
 
 .episodes-vertical-list { display: flex; flex-direction: column; gap: 1.5rem; width: 100%; }
 .episode-row-card { display: flex; background: var(--bg-card); border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.06); cursor: pointer; transition: 0.2s; align-items: center; padding: 1rem; gap: 2rem; }
+.episode-row-card:hover { border-color: var(--accent); background: rgba(255,255,255,0.02); }
 .thumb-area { position: relative; width: 18rem; height: 10rem; border-radius: 10px; overflow: hidden; flex-shrink: 0; }
 .thumb-area img { width: 100%; height: 100%; object-fit: cover; }
 .ep-details-side { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
 
-/* الإعدادات لوحتين */
+/* شاشة الإعدادات والريموت لوحتين فسيحة */
 .settings-split-layout { display: flex; gap: 2.5rem; height: 100%; }
 .settings-left-nav { width: 22rem; display: flex; flex-direction: column; gap: 0.8rem; }
 .settings-right-pane { flex: 1; background: var(--bg-card); padding: 2.5rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); }
