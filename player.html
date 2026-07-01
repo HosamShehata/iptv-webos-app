@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VISION TV - ULTRA LIGHT PLAYER</title>
+  <title>VISION TV - DYNAMIC OSD PLAYER</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.compiled.js"></script>
   <style>
@@ -20,17 +20,15 @@
     .video-container { position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
     video { width:100%; height:100%; object-fit:contain; background:#000; }
     
-    /* شاشة التحكم الشفافة OSD الفخمة */
     .osd-controls-panel {
-      position:absolute; bottom:0; left:0; right:0; background:linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.4), rgba(0,0,0,0));
+      position:absolute; bottom:0; left:0; right:0; background:linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.3), rgba(0,0,0,0));
       padding:3.5rem; box-sizing:border-box; display:flex; flex-direction:column; gap:1.5rem; transition:opacity 0.3s ease; opacity:1;
     }
     .timeline-container { display:flex; align-items:center; gap:1.5rem; width:100%; }
     .time-txt { color:#ccc; font-family:monospace; font-size:1.15rem; font-weight:bold; }
     
-    /* ستايل شريط سحب اليوتيوب ممسوك ومحكم مائة بالمائة */
     .progress-bar-clickable-zone { flex:1; height:1.6rem; display:flex; align-items:center; cursor:pointer; position:relative; }
-    .progress-bg { width:100%; height:0.6rem; background:rgba(255,255,255,0.25); border-radius:4px; position:relative; }
+    .progress-bg { width:100%; height:0.6rem; background:rgba(255,255,255,0.25); border-radius:4px; position:relative; width:100%; }
     .progress-fill { height:100%; width:0%; background:var(--accent); border-radius:4px; position:relative; box-shadow:0 0 10px var(--accent); }
     
     .progress-knob {
@@ -47,7 +45,6 @@
     
     .badge-selector-box { display:flex; gap:1rem; align-items:center; }
     .speed-badge-selector { background:rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:0.6rem 1.4rem; border-radius:10px; cursor:pointer; font-size:1.15rem; font-weight:bold; outline:none; }
-    .speed-badge-selector:focus { border-color: var(--accent); }
   </style>
 </head>
 <body>
@@ -57,17 +54,14 @@
   
   <div class="osd-controls-panel" id="controls-panel">
     <div style="display:flex; justify-content:space-between; align-items:center;">
-      <div id="player-title" style="font-size:1.7rem; font-weight:bold; color:#fff; text-shadow:0 2px 6px #000;">عنوان البث المباشر أو الفيلم</div>
+      <div id="player-title" style="font-size:1.7rem; font-weight:bold; color:#fff;">اسم المادة المعروضة حالياً</div>
       
       <div class="badge-selector-box">
-        <span style="font-size:1.1rem; color:#ccc;"><span class="material-icons" style="vertical-align:middle; font-size:1.3rem;">hd</span> الجودة:</span>
         <select class="speed-badge-selector" id="quality-selector" onchange="switchVideoQuality(this.value)">
-          <option value="auto">Auto (تلقائي مستقر)</option>
+          <option value="auto">الجودة: Auto تلقائي</option>
           <option value="1080">1080p FHD</option>
           <option value="720">720p HD</option>
-          <option value="480">480p SD</option>
         </select>
-        
         <button class="speed-badge-selector" onclick="triggerPlaybackSpeedCycle()" id="speed-label-btn">1.0x</button>
       </div>
     </div>
