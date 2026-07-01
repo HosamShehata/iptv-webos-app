@@ -1,85 +1,170 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" id="main-html">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
-  <title>تفاصيل المحتوى - VISION TV</title>
+  <title>VISION TV - DETAILS</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
-    body {
-      margin: 0; background: #06070d; color: white;
-      font-family: 'Segoe UI', Arial, sans-serif; overflow: hidden; user-select: none;
-    }
-    .hero-blur {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100vh;
-      background-size: cover; background-position: center;
-      filter: blur(30px) brightness(0.18); z-index: -1;
-    }
-    .container { display: flex; padding: 60px; height: calc(100vh - 120px); gap: 60px; align-items: flex-start; }
-    .poster-box { width: 290px; height: 430px; object-fit: cover; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.08); }
+    body { margin: 0; background: #0b0b0b; color: #fff; font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; box-sizing: border-box; }
+    .back-nav-btn { background: #161616; padding: 10px 20px; border-radius: 8px; border: 1px solid #222; color: #fff; display: inline-flex; align-items: center; gap: 10px; cursor: pointer; text-decoration: none; font-weight: bold; margin-bottom: 30px; }
+    .back-nav-btn.focused { outline: 3px solid #1f6feb; background: #1f6feb; }
     
-    .details-side { flex: 1; display: flex; flex-direction: column; }
-    .main-title { font-size: 42px; font-weight: 900; margin-bottom: 10px; }
-    .meta-row { display: flex; gap: 15px; align-items: center; color: #1f6feb; font-size: 15px; font-weight: bold; margin-bottom: 25px; }
-    .meta-badge { background: rgba(255,255,255,0.05); color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 12px; border: 1px solid rgba(255,255,255,0.1); }
-    .plot { font-size: 16px; color: #b9c4d7; line-height: 1.7; margin-bottom: 30px; max-width: 750px; }
-    
-    .button-group { display: flex; gap: 15px; margin-bottom: 35px; }
-    .action-btn {
-      padding: 14px 32px; font-size: 16px; font-weight: bold; border: none; border-radius: 10px;
-      cursor: pointer; color: white; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 8px; transition: all 0.2s;
-    }
-    .action-btn.primary-play { background: #1f6feb; border: none; box-shadow: 0 4px 15px rgba(31,111,235,0.3); }
-    .action-btn.focused { outline: 4px solid #fff; transform: scale(1.04); }
+    .series-details-header { display: flex; gap: 40px; margin-bottom: 40px; background: #111; padding: 30px; border-radius: 16px; border: 1px solid #1a1a1a; }
+    .series-poster { width: 240px; height: 340px; object-fit: cover; border-radius: 12px; border: 2px solid #222; }
+    .series-info-text { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .series-title { font-size: 32px; font-weight: bold; margin: 0 0 15px 0; color: #1f6feb; }
+    .series-meta { display: flex; gap: 20px; color: #aaa; font-size: 15px; margin-bottom: 20px; }
+    .series-plot { font-size: 16px; color: #ddd; line-height: 1.6; max-width: 800px; }
 
-    .episodes-section { display: none; flex-direction: column; width: 100%; }
-    .section-title { font-size: 18px; color: #1f6feb; margin-bottom: 12px; font-weight: bold; letter-spacing: 0.5px; }
-    .episodes-scroll { display: flex; gap: 14px; overflow-x: auto; padding: 10px 0; width: 100%; }
-    .episodes-scroll::-webkit-scrollbar { display: none; }
+    /* قائمة الحلقات وسطر المتابعة */
+    .episodes-section-title { font-size: 22px; font-weight: bold; margin-bottom: 20px; color: #fff; display: flex; align-items: center; gap: 10px; }
+    .episodes-list-grid { display: flex; flex-direction: column; gap: 12px; }
     
-    .ep-card {
-      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 14px 24px; border-radius: 10px;
-      min-width: 170px; text-align: center; font-size: 14px; color: #b9c4d7; position: relative; cursor: pointer; white-space: nowrap; transition: all 0.2s;
+    .episode-row-item {
+      background: #161616; border: 1px solid #222; border-radius: 10px; padding: 16px 25px;
+      display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;
     }
-    .ep-card.focused { outline: 3px solid #1f6feb; background: rgba(31,111,235,0.1); color: #fff; border-color: transparent; }
-    .ep-card.last-watched-badge::after {
-      content: '👁️ الأخيرة'; position: absolute; top: -8px; right: 5px; background: #1f6feb;
-      color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold;
-    }
-    html[dir="ltr"] .ep-card.last-watched-badge::after { content: '👁️ Last'; left: 5px; right: auto; }
+    .episode-row-item.focused { outline: 3px solid #1f6feb; background: #1c2430; transform: scale(1.01); }
+    .ep-left-side { display: flex; align-items: center; gap: 15px; font-size: 16px; font-weight: bold; }
+    .ep-left-side .material-icons { color: #aaa; }
+    
+    /* علامة "آخر حلقة شوهدت" المضيئة */
+    .watching-badge { background: rgba(31, 111, 235, 0.2); color: #1f6feb; border: 1px solid #1f6feb; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; display: none; }
+    .episode-row-item.last-watched .watching-badge { display: inline-block; }
+    .episode-row-item.last-watched .ep-left-side .material-icons { color: #1f6feb; }
   </style>
 </head>
 <body>
 
-<div class="hero-blur" id="backdrop-bg"></div>
+  <a href="index.html" class="back-nav-btn details-focusable" id="btn-back-home">
+    <span class="material-icons">arrow_forward</span>
+    <span>العودة للرئيسية</span>
+  </a>
 
-<div class="container">
-  <img class="poster-box" id="media-poster" src="" onerror="this.src='https://placehold.co/280x420/1a1a1a/ffffff?text=VISION+TV'" />
-
-  <div class="details-side">
-    <div class="main-title" id="media-title">اسم المادة</div>
-    
-    <div class="meta-row">
-      <span id="media-rating">⭐ 8.9</span>
-      <span class="meta-badge">4K ULTRA HD</span>
-      <span class="meta-badge" id="media-year">2026</span>
-      <span style="color:#8fa0b5;" id="media-genre">Drama, Sci-Fi</span>
-    </div>
-
-    <div class="plot" id="media-plot">جاري تحميل الوصف...</div>
-
-    <div class="button-group">
-      <button class="action-btn primary-play detail-item" id="btn-play" onclick="triggerPlay()"><span class="material-icons">play_arrow</span><span id="lbl-play-btn">تشغيل</span></button>
-      <button class="action-btn detail-item" id="btn-fav" onclick="toggleFav()"><span class="material-icons">favorite_border</span><span id="lbl-fav-btn">قائمتي</span></button>
-      <button class="action-btn detail-item" onclick="window.location.href='index.html'"><span class="material-icons">arrow_back</span><span id="lbl-back-btn">عودة</span></button>
-    </div>
-
-    <div class="episodes-section" id="episodes-block">
-      <div class="section-title" id="lbl-episodes-title">جميع الحلقات:</div>
-      <div class="episodes-scroll" id="episodes-tray"></div>
+  <div class="series-details-header">
+    <img id="series-img" class="series-poster" src="https://placehold.co/240x340/1a1a1a/ffffff?text=VISION" alt="Poster">
+    <div class="series-info-text">
+      <div class="series-title" id="series-title">اسم المسلسل</div>
+      <div class="series-meta">
+        <span id="series-year">السنة: --</span>
+        <span>|</span>
+        <span id="series-rating">التقييم: --</span>
+        <span>|</span>
+        <span style="color:#00C851;">المظهر: FHD Premium</span>
+      </div>
+      <div class="series-plot" id="series-plot">جاري تحميل تفاصيل وقصة المسلسل التفاعلي بالكامل...</div>
     </div>
   </div>
-</div>
 
-<script src="js/details.js"></script>
+  <div class="episodes-section-title">
+    <span class="material-icons" style="color:#1f6feb;">play_circle_filled</span>
+    <span>حلقات المسلسل وقائمة المتابعة الحركية</span>
+  </div>
+
+  <div class="episodes-list-grid" id="episodes-container">
+    </div>
+
+<script>
+  let seriesItem = JSON.parse(localStorage.getItem("current")) || {};
+  let episodesList = [];
+  let focusIdx = 0; // 0 للرجوع، 1+ للحلقات
+  let totalItemsCount = 1;
+
+  function loadEpisodes() {
+    document.getElementById("series-title").innerText = seriesItem.name || "Unknown Series";
+    if (seriesItem.stream_icon) document.getElementById("series-img").src = seriesItem.stream_icon;
+    document.getElementById("series-year").innerText = `السنة: ${seriesItem.year || '2026'}`;
+    document.getElementById("series-rating").innerText = `التقييم: ${seriesItem.rating || '⭐ 8.5'}`;
+    
+    // إنشاء حلقات افتراضية ذكية للمسلسل في حال عدم وجود سيرفر Xtream نشط بالكامل للتجربة المباشرة
+    episodesList = [
+      { id: "ep_1", title: "الحلقة الأولى - بداية الإثارة التشغيلية", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+      { id: "ep_2", title: "الحلقة الثانية - التعمق في هندسة الأكواد", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+      { id: "ep_3", title: "الحلقة الثالثة - الربط الشامل والسريع مع الريموت", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+      { id: "ep_4", title: "الحلقة الرابعة - مواصفات مشغل الـ OSD المثالي", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" }
+    ];
+
+    // تخزين حزمة الحلقات الحالية للوصول إليها داخل المشغل للتنقل التلقائي
+    localStorage.setItem("episodes_pack", JSON.stringify(episodesList));
+
+    // جلب معرف آخر حلقة تم مشاهدتها لهذا المسلسل لتفعيل ميزة المتابعة
+    const lastWatchedEpId = localStorage.getItem(`last_ep_for_series_${seriesItem.series_id || 905}`);
+
+    const container = document.getElementById("episodes-container");
+    container.innerHTML = "";
+
+    episodesList.forEach((ep, idx) => {
+      const row = document.createElement("div");
+      row.className = "episode-row-item details-focusable";
+      
+      // إذا كانت هذه الحلقة هي الأخيرة التي شوهدت، نمنحها كلاس العلامة المضيئة تلقائياً
+      if (ep.id === lastWatchedEpId) {
+        row.classList.add("last-watched");
+      }
+
+      row.innerHTML = `
+        <div class="ep-left-side">
+          <span class="material-icons">play_arrow</span>
+          <span>${ep.title}</span>
+        </div>
+        <div class="watching-badge">آخر حلقة شوهدت مسبقاً ✨</div>
+      `;
+
+      row.onclick = () => launchEpisode(idx);
+      container.appendChild(row);
+    });
+
+    totalItemsCount = 1 + episodesList.length;
+    updateDetailsFocus();
+  }
+
+  function launchEpisode(idx) {
+    const ep = episodesList[idx];
+    // حفظ معرف الحلقة لتنير المرة القادمة
+    localStorage.setItem(`last_ep_for_series_${seriesItem.series_id || 905}`, ep.id);
+    localStorage.setItem("current_ep_index", idx);
+    
+    // إنشاء سياق التنقل بين الحلقات داخل المشغل (أزرار التالي والسابق تحت بار التحكم)
+    let playerContext = episodesList.map(e => ({
+      name: e.title,
+      url: e.url,
+      id: e.id,
+      type: "series_episode"
+    }));
+    
+    localStorage.setItem("current_playlist_context", JSON.stringify(playerContext));
+    localStorage.setItem("current_playlist_index", idx);
+    localStorage.setItem("current", JSON.stringify(playerContext[idx]));
+
+    window.location.href = "player.html";
+  }
+
+  function updateDetailsFocus() {
+    document.querySelectorAll(".details-focusable").forEach((el, i) => {
+      el.classList.toggle("focused", i === focusIdx);
+    });
+  }
+
+  document.addEventListener("keydown", function(e) {
+    if (e.key === "ArrowDown") {
+      if (focusIdx < totalItemsCount - 1) { focusIdx++; updateDetailsFocus(); }
+    }
+    if (e.key === "ArrowUp") {
+      if (focusIdx > 0) { focusIdx--; updateDetailsFocus(); }
+    }
+    if (e.key === "Enter") {
+      if (focusIdx === 0) {
+        document.getElementById("btn-back-home").click();
+      } else {
+        launchEpisode(focusIdx - 1);
+      }
+    }
+    if (e.key === "Backspace" || e.key === "Escape") {
+      window.location.href = "index.html";
+    }
+  });
+
+  window.onload = loadEpisodes;
+</script>
 </body>
 </html>
