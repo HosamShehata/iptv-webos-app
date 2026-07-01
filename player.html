@@ -2,36 +2,37 @@
 <html lang="ar">
 <head>
   <meta charset="utf-8">
-  <title>VISION PLAYER</title>
+  <title>VISION PLAYER - SHAKA CORE</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.compiled.js"></script>
   <style>
     body { margin: 0; background: black; overflow: hidden; user-select: none; font-family: sans-serif; }
-    video { width: 100%; height: 100vh; background: black; }
-    #loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 20px; display: none; font-weight: bold; z-index: 10; }
-    #error { position: absolute; bottom: 120px; left: 30px; color: #ff4444; font-weight: bold; font-size: 16px; z-index: 10; }
+    video { width: 100%; height: 100vh; background: black; transition: all 0.2s ease; }
+    #loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 22px; display: none; font-weight: bold; z-index: 10; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+    #error { position: absolute; bottom: 130px; left: 40px; color: #00c851; font-weight: bold; font-size: 15px; z-index: 10; background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
     
-    /* البلاير الاحترافي السفلي الشفاف المودرن */
+    /* لوحة تحكم Glass Effect فخمة جداً تختفي تلقائياً بعد 5 ثوانٍ */
     .player-controls {
-      position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0));
-      padding: 30px; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px; z-index: 5; transition: opacity 0.3s ease;
+      position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(6,7,13,0.98), rgba(0,0,0,0));
+      padding: 40px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; z-index: 5; transition: opacity 0.4s ease; opacity: 1;
     }
-    .timeline-container { display: flex; align-items: center; gap: 15px; width: 100%; }
-    .time-lbl { color: #aaa; font-size: 14px; min-width: 60px; text-align: center; }
-    .progress-bar { flex: 1; height: 8px; background: #333; border-radius: 4px; position: relative; cursor: pointer; }
-    .progress-fill { width: 0%; height: 100%; background: #1f6feb; border-radius: 4px; }
+    .timeline-container { display: flex; align-items: center; gap: 20px; width: 100%; }
+    .time-lbl { color: #8fa0b5; font-size: 14px; min-width: 65px; font-weight: bold; text-align: center; }
+    .progress-bar { flex: 1; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; position: relative; cursor: pointer; transition: height 0.1s; }
+    .progress-bar:hover { height: 10px; }
+    .progress-fill { width: 0%; height: 100%; background: #1f6feb; border-radius: 4px; box-shadow: 0 0 10px #1f6feb; }
     
-    .buttons-row { display: flex; gap: 25px; align-items: center; color: white; }
-    .control-icon { font-size: 32px; cursor: pointer; color: #ccc; transition: transform 0.1s; }
-    .control-icon:hover, .control-icon.active-focus { color: #1f6feb; transform: scale(1.1); }
-    .stream-title { margin-right: auto; font-size: 18px; font-weight: bold; color: #fff; }
+    .buttons-row { display: flex; gap: 30px; align-items: center; color: white; }
+    .control-icon { font-size: 34px; cursor: pointer; color: #b9c4d7; transition: all 0.15s ease; }
+    .control-icon:hover, .control-icon.active-focus { color: #1f6feb; transform: scale(1.15); text-shadow: 0 0 10px rgba(31,111,235,0.5); }
+    .stream-title { margin-right: auto; font-size: 20px; font-weight: 900; color: #fff; letter-spacing: 0.5px; }
     html[dir="ltr"] .stream-title { margin-right: 0; margin-left: auto; }
   </style>
 </head>
 <body>
 
-<div id="loading">⏱️ جاري تحميل البث... / Loading...</div>
-<div id="error"></div>
+<div id="loading">⏱️ جاري الاتصال بالبث الحركي... / Loading...</div>
+<div id="error">STATS: Checking connection speed...</div>
 
 <video id="video" autoplay></video>
 
@@ -48,6 +49,9 @@
     <span class="material-icons control-icon" id="icon-rewind" onclick="seekBack()">fast_rewind</span>
     <span class="material-icons control-icon" id="icon-forward" onclick="seekForward()">fast_forward</span>
     <span class="material-icons control-icon" id="icon-next" onclick="playNextEpisodeAutomatically()">skip_next</span>
+    <span class="material-icons control-icon" id="icon-speed" onclick="changePlaybackSpeed()">speed</span>
+    <span class="material-icons control-icon" id="icon-aspect" onclick="toggleAspectRatio()">aspect_ratio</span>
+    <span class="material-icons control-icon" id="icon-zoom" onclick="toggleZoom()">zoom_in</span>
     <div class="stream-title" id="player-title">VISION TV STREAM</div>
   </div>
 </div>
