@@ -2,49 +2,52 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Player</title>
-
+  <title>VISION PLAYER</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.compiled.js"></script>
-
   <style>
-    body {
-      margin: 0;
-      background: black;
+    body { margin: 0; background: black; overflow: hidden; user-select: none; font-family: sans-serif; }
+    video { width: 100%; height: 100vh; }
+    #loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 20px; display: none; font-weight: bold; }
+    #error { position: absolute; bottom: 120px; left: 30px; color: #ff4444; font-weight: bold; font-size: 16px; }
+    
+    /* البلاير الاحترافي السفلي (شاشة 7) */
+    .player-controls {
+      position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0));
+      padding: 30px; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px; transition: opacity 0.3s;
     }
-
-    video {
-      width: 100%;
-      height: 100vh;
-    }
-
-    #loading {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: white;
-      font-size: 18px;
-      display: none;
-    }
-
-    #error {
-      position: absolute;
-      bottom: 20px;
-      left: 20px;
-      color: red;
-    }
+    .timeline-container { display: flex; align-items: center; gap: 15px; width: 100%; }
+    .time-lbl { color: #aaa; font-size: 14px; }
+    .progress-bar { flex: 1; height: 6px; background: #333; border-radius: 3px; position: relative; }
+    .progress-fill { width: 0%; height: 100%; background: #1f6feb; border-radius: 3px; }
+    
+    .buttons-row { display: flex; gap: 20px; align-items: center; color: white; }
+    .control-icon { font-size: 28px; cursor: pointer; color: #ccc; }
+    .control-icon.active-focus { color: #1f6feb; transform: scale(1.1); }
+    .stream-title { margin-right: auto; font-size: 18px; font-weight: bold; }
   </style>
-
 </head>
-
 <body>
 
-<div id="loading">Loading stream...</div>
+<div id="loading">⏱️ جاري تحميل البث الحي...</div>
 <div id="error"></div>
 
-<video id="video" autoplay controls></video>
+<video id="video" autoplay></video>
+
+<div class="player-controls" id="controls-panel">
+  <div class="timeline-container">
+    <span class="time-lbl" id="current-time">00:00:00</span>
+    <div class="progress-bar"><div class="progress-fill" id="fill-bar"></div></div>
+    <span class="time-lbl" id="total-time">00:00:00</span>
+  </div>
+  <div class="buttons-row">
+    <span class="material-icons control-icon active-focus" id="icon-play">pause</span>
+    <span class="material-icons control-icon">fast_rewind</span>
+    <span class="material-icons control-icon">fast_forward</span>
+    <div class="stream-title" id="player-title">اسم القناة الحالية</div>
+  </div>
+</div>
 
 <script src="js/player.js"></script>
-
 </body>
 </html>
