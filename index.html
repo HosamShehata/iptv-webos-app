@@ -13,6 +13,9 @@
 
 <div class="app">
 
+    <!-- ===================== -->
+    <!-- Sidebar (القائمة الجانبية) -->
+    <!-- ===================== -->
     <aside class="sidebar">
         <div class="logo">
             <h1>VISION TV</h1>
@@ -25,184 +28,123 @@
         </button>
 
         <nav class="menu">
-            <div class="menu-item remote-focusable active" id="menu-home" data-view="home" onclick="sidebarClick('home')">
+            <div class="menu-item remote-focusable active" data-view="home" onclick="sidebarClick('home')">
                 <span class="material-icons">home</span>
-                <span data-lang="home">الرئيسية</span>
+                <span>الرئيسية</span>
             </div>
-
-            <div class="menu-item remote-focusable" id="menu-live" data-view="live" onclick="sidebarClick('live')">
+            <div class="menu-item remote-focusable" data-view="live" onclick="sidebarClick('live')">
                 <span class="material-icons">live_tv</span>
-                <span data-lang="live">البث المباشر</span>
+                <span>البث المباشر</span>
             </div>
-
-            <div class="menu-item remote-focusable" id="menu-movies" data-view="movies" onclick="sidebarClick('movies')">
+            <div class="menu-item remote-focusable" data-view="movies" onclick="sidebarClick('movies')">
                 <span class="material-icons">movie</span>
-                <span data-lang="movies">الأفلام</span>
+                <span>الأفلام</span>
             </div>
-
-            <div class="menu-item remote-focusable" id="menu-series" data-view="series" onclick="sidebarClick('series')">
+            <div class="menu-item remote-focusable" data-view="series" onclick="sidebarClick('series')">
                 <span class="material-icons">tv</span>
-                <span data-lang="series">المسلسلات</span>
+                <span>المسلسلات</span>
             </div>
-
-            <div class="menu-item remote-focusable" id="menu-favorites" data-view="favorites" onclick="sidebarClick('favorites')">
-                <span class="material-icons">favorite</span>
-                <span data-lang="favorites">المفضلة</span>
-            </div>
-
-            <div class="menu-item remote-focusable" id="menu-history" data-view="history" onclick="sidebarClick('history')">
-                <span class="material-icons">history</span>
-                <span data-lang="history">أكمل المشاهدة</span>
-            </div>
-
-            <div class="menu-item remote-focusable" id="menu-playlist" data-view="playlist" onclick="sidebarClick('playlist')">
+            <div class="menu-item remote-focusable" data-view="playlist" onclick="sidebarClick('playlist')">
                 <span class="material-icons">playlist_add</span>
-                <span data-lang="playlist">إضافة اشتراك</span>
+                <span>إضافة اشتراك</span>
             </div>
-
-            <div class="menu-item remote-focusable" id="menu-search" data-view="search" onclick="sidebarClick('search')">
-                <span class="material-icons">search</span>
-                <span data-lang="search">البحث</span>
-            </div>
-
-            <div class="menu-item remote-focusable" id="menu-settings" data-view="settings" onclick="sidebarClick('settings')">
+            <div class="menu-item remote-focusable" data-view="settings" onclick="sidebarClick('settings')">
                 <span class="material-icons">settings</span>
-                <span data-lang="settings">الإعدادات</span>
+                <span>الإعدادات</span>
             </div>
         </nav>
     </aside>
 
+    <!-- ===================== -->
+    <!-- Main (المحتوى الرئيسي) -->
+    <!-- ===================== -->
     <main class="main">
 
+        <!-- Top Bar -->
         <header class="topbar">
             <div class="clock">
                 <span class="material-icons">schedule</span>
-                <span id="top-current-time">00:00</span>
-                <span id="top-current-date" style="margin-right: 10px; font-size: 14px; color: var(--text2);"></span>
+                <span id="clockTime">00:00</span>
             </div>
-            <div class="internet-speed" id="speedBox">
-                Fast.com 0 Mbps
-            </div>
+            <div class="internet-speed" id="speedBox">Fast.com 0 Mbps</div>
         </header>
 
+        <!-- Search Bar -->
         <section class="search-container">
             <span class="material-icons">search</span>
-            <input id="searchInput" type="text" placeholder="ابحث عن قناة أو فيلم أو مسلسل" oninput="searchInputChanged(this)">
+            <input id="searchInput" type="text" placeholder="ابحث عن قناة أو فيلم أو مسلسل" oninput="handleSearch(this.value)">
         </section>
 
+        <!-- Views Panels -->
+        
+        <!-- 1. HOME VIEW -->
         <section id="view-home" class="page view-panel active">
             <div class="hero-banner">
                 <div class="hero-overlay">
                     <div class="hero-info">
                         <span class="hero-tag">FEATURED</span>
-                        <h1 id="heroTitle">مرحباً بك فى VISION TV</h1>
-                        <p id="heroDescription">استمتع بأفضل تجربة IPTV مصممة خصيصاً لشاشات LG webOS.</p>
-                        <div class="hero-buttons">
-                            <button class="primary-btn remote-focusable" id="heroPlay">
-                                <span class="material-icons">play_arrow</span>تشغيل
-                            </button>
-                            <button class="secondary-btn remote-focusable" id="heroInfo">
-                                <span class="material-icons">info</span>التفاصيل
-                            </button>
-                        </div>
+                        <h1>مرحباً بك فى VISION TV</h1>
+                        <p>استمتع بأفضل تجربة IPTV مصممة خصيصاً لشاشات LG webOS.</p>
                     </div>
                 </div>
             </div>
-
-            <div class="media-grid" id="home-main-grid"></div>
+            <div class="content-section">
+                <h2>المحتوى المتاح</h2>
+                <div class="media-grid" id="homeGrid"></div>
+            </div>
         </section>
 
+        <!-- 2. LIVE VIEW -->
         <section id="view-live" class="page view-panel">
-            <div class="page-title">
-                <h2 data-lang="live">القنوات المباشرة</h2>
-            </div>
-            <div class="media-grid" id="live-grid"></div>
+            <div class="page-title"><h2>القنوات المباشرة</h2></div>
+            <div class="media-grid" id="liveGrid"></div>
         </section>
 
+        <!-- 3. MOVIES VIEW -->
         <section id="view-movies" class="page view-panel">
-            <div class="page-title">
-                <h2 data-lang="movies">مكتبة الأفلام</h2>
-            </div>
-            <div class="media-grid" id="movies-grid"></div>
+            <div class="page-title"><h2>مكتبة الأفلام</h2></div>
+            <div class="media-grid" id="moviesGrid"></div>
         </section>
 
+        <!-- 4. SERIES VIEW -->
         <section id="view-series" class="page view-panel">
-            <div class="page-title">
-                <h2 data-lang="series">مكتبة المسلسلات</h2>
-            </div>
-            <div class="media-grid" id="series-grid"></div>
+            <div class="page-title"><h2>مكتبة المسلسلات</h2></div>
+            <div class="media-grid" id="seriesGrid"></div>
         </section>
 
-        <section id="view-favorites" class="page view-panel">
-            <div class="page-title">
-                <h2 data-lang="favorites">المفضلة</h2>
-            </div>
-            <div class="media-grid" id="favorites-grid"></div>
-        </section>
-
-        <section id="view-history" class="page view-panel">
-            <div class="page-title">
-                <h2 data-lang="history">أكمل المشاهدة</h2>
-            </div>
-            <div class="media-grid" id="history-grid"></div>
-        </section>
-
-        <section id="view-details" class="page view-panel">
-            <div class="details-layout">
-                <div class="details-poster">
-                    <img id="detail-item-img" src="" alt="Poster">
-                </div>
-                <div class="details-info">
-                    <h1 id="detail-item-title">Title</h1>
-                    <div id="movie-action-zone" class="details-buttons" style="margin-top: 20px;"></div>
-                </div>
-            </div>
-            <div id="series-episodes-vertical-zone" class="episodes-list" style="display:none; margin-top:30px;">
-                <h3 style="margin-bottom:15px;">الحلقات</h3>
-                <div id="episodes-vertical-container"></div>
-            </div>
-        </section>
-
-        <section id="view-iptv" class="page view-panel">
+        <!-- 5. PLAYLIST VIEW (صفحة الاشتراكات) -->
+        <section id="view-playlist" class="page view-panel">
             <div class="playlist-box">
-                <h2 data-lang="playlist_title">إضافة اشتراك IPTV</h2>
-                <input id="server-name" class="iptv-input remote-focusable" type="text" placeholder="اسم الاشتراك">
-                <input id="server-user" class="iptv-input remote-focusable" type="text" placeholder="Username">
-                <input id="server-pass" class="iptv-input remote-focusable" type="password" placeholder="Password">
-                <input id="server-url" class="iptv-input remote-focusable" type="text" placeholder="http://server:port">
+                <h2>إضافة اشتراك IPTV (Xtream)</h2>
                 
-                <button id="addPlaylistBtn" class="primary-btn remote-focusable" onclick="savePlaylist()">
-                    إضافة الاشتراك
+                <!-- تم توحيد الـ IDs تماماً هنا لتقرأها الدالة بشكل صحيح -->
+                <input id="playlistName" class="iptv-input remote-focusable" type="text" placeholder="اسم الاشتراك">
+                <input id="playlistUser" class="iptv-input remote-focusable" type="text" placeholder="اسم المستخدم (Username)">
+                <input id="playlistPassword" class="iptv-input remote-focusable" type="password" placeholder="كلمة المرور (Password)">
+                <input id="playlistHost" class="iptv-input remote-focusable" type="text" placeholder="الرابط الخادم http://server:port">
+                
+                <button id="addPlaylistBtn" class="primary-btn remote-focusable" onclick="handleSavePlaylist()">
+                    إضافة الاشتراك وربطه
                 </button>
-                <div id="pl_status" style="margin-top:10px; font-weight:bold;"></div>
-                <div id="playlists-list" style="margin-top:20px;"></div>
+                
+                <div id="playlistStatus" style="margin-top: 15px; font-weight: bold;"></div>
+                
+                <hr style="margin: 30px 0; border: 1px solid var(--border);">
+                
+                <h3>الاشتراكات الحالية</h3>
+                <div id="playlistContainerList" style="margin-top: 15px;"></div>
             </div>
         </section>
 
-        <section id="view-search" class="page view-panel">
-            <div class="page-title">
-                <h2 data-lang="search">نتائج البحث</h2>
-            </div>
-            <div class="media-grid" id="search-grid"></div>
-        </section>
-
+        <!-- 6. SETTINGS VIEW -->
         <section id="view-settings" class="page view-panel">
             <div class="settings-layout">
                 <div class="settings-card">
-                    <h3>الثيم</h3>
+                    <h3>المظهر</h3>
                     <div class="theme-list">
                         <div class="theme-color netflix remote-focusable" onclick="applyTheme('theme-netflix')"></div>
                         <div class="theme-color shahid remote-focusable" onclick="applyTheme('theme-shahid')"></div>
                     </div>
-                </div>
-                <div class="settings-card">
-                    <h3>مدة القفز</h3>
-                    <select id="seekDuration" class="remote-focusable" onchange="updateSeekDuration(this.value)">
-                        <option value="5">5 ثوانى</option>
-                        <option value="10" selected>10 ثوانى</option>
-                        <option value="15">15 ثانية</option>
-                        <option value="30">30 ثانية</option>
-                    </select>
                 </div>
             </div>
         </section>
@@ -210,6 +152,7 @@
     </main>
 </div>
 
+<!-- الترتيب الصحيح لاستدعاء الملفات يمنع الـ Exit Code 255 -->
 <script src="js/api.js"></script>
 <script src="js/app.js"></script>
 <script src="js/remote.js"></script>
