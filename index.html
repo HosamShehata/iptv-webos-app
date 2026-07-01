@@ -18,8 +18,10 @@
       font-family: 'Segoe UI', Arial, sans-serif; overflow: hidden; user-select: none;
     }
     .layout { display: flex; height: 100vh; width: 100vw; }
+    
+    /* القائمة الجانبية للشاشات الـ 10 */
     .sidebar {
-      width: 260px; background: var(--bg-sidebar); border-left: 1px solid #222; border-right: 1px solid #222;
+      width: 270px; background: var(--bg-sidebar); border-left: 1px solid #222; border-right: 1px solid #222;
       display: flex; flex-direction: column; padding: 20px 0; box-sizing: border-box; flex-shrink: 0;
     }
     .brand-area { padding: 0 25px 15px 25px; text-align: center; }
@@ -40,6 +42,7 @@
     html[dir="rtl"] .menu-item.focused { padding-right: 35px; }
     html[dir="ltr"] .menu-item.focused { padding-left: 35px; }
 
+    /* الحاوية الرئيسية للمحتوى */
     .content-container { flex: 1; display: flex; flex-direction: column; height: 100%; overflow: hidden; position: relative; }
     
     .top-info-bar {
@@ -65,7 +68,7 @@
     
     .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; }
 
-    /* كروت الميديا مع إضافة بار المشاهدة السفلي */
+    /* كروت الميديا مع شريط المشاهدة السفلي الأحمر لليوتيوب */
     .media-card {
       background: var(--bg-card); border: 1px solid #222; border-radius: 12px;
       overflow: hidden; transition: transform 0.2s; position: relative; cursor: pointer;
@@ -74,11 +77,10 @@
     .media-card .info { padding: 12px; text-align: center; font-size: 14px; font-weight: bold; }
     .media-card.focused { outline: 4px solid var(--primary-color); transform: scale(1.03); }
     
-    /* بار المشاهدة الصغير أسفل الكارت */
     .card-progress-container { width: 100%; height: 5px; background: #333; position: relative; }
     .card-progress-fill { height: 100%; background: #ff0000; width: 0%; }
 
-    /* واجهة تخصيص الريموت المتقدمة والإعدادات لوحتين */
+    /* لوحة الإعدادات وتخصيص الريموت المتقدمة */
     .settings-layout-box { display: flex; gap: 30px; height: 100%; }
     .settings-sidebar-list { width: 300px; display: flex; flex-direction: column; gap: 12px; }
     .settings-item { background: var(--bg-card); padding: 16px 20px; border-radius: 10px; border: 1px solid #222; display: flex; justify-content: space-between; align-items: center; font-size: 15px; cursor: pointer; }
@@ -143,13 +145,13 @@
 
     <div id="view-playlist" class="view-panel">
       <div class="grid-container" id="pl-main-menu-grid">
-        <div class="media-card" onclick="openPlaylistInputForm('xtream')"><div class="info">Xtream Codes API</div></div>
-        <div class="media-card" onclick="openPlaylistInputForm('m3u_url')"><div class="info">M3U URL</div></div>
+        <div class="media-card" onclick="alert('Xtream Codes API Triggered')"><div class="info">Xtream Codes API</div></div>
+        <div class="media-card" onclick="alert('M3U URL Triggered')"><div class="info">M3U URL</div></div>
       </div>
     </div>
 
     <div id="view-search" class="view-panel">
-      <input id="search-input" class="form-input" placeholder="ابحث هنا..." oninput="triggerGlobalSearch()" style="width:100%; padding:14px; background:#fff; color:#000; border-radius:8px;" />
+      <input id="search-input" style="width:100%; padding:14px; background:#fff; color:#000; border-radius:8px; border:none;" placeholder="ابحث هنا..." />
       <div class="grid-container" id="search-results-grid" style="margin-top:20px;"></div>
     </div>
 
@@ -161,7 +163,7 @@
           <div class="settings-item settings-focusable" onclick="clickSettingsItem(2)"><span>برمجة أزرار الريموت كاملة</span></div>
         </div>
         <div class="settings-details-container">
-          <div id="sub-set-account" class="sub-settings-panel active"><h3>Premium Account</h3><p>الحالة: مستقر</p></div>
+          <div id="sub-set-account" class="sub-settings-panel active"><h3>Premium Account</h3><p>الحالة: مستقر ونشط</p></div>
           <div id="sub-set-theme" class="sub-settings-panel">
             <h3 class="txt-lang" data-key="seek_sec_title">تخصيص ثواني قفز الريموت</h3>
             <select class="custom-select" onchange="updateSeekDurationSetting(this.value)">
