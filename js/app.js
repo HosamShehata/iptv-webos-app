@@ -1,240 +1,197 @@
-// ============================================
-// VISION TV - MAIN APPLICATION CONTROLLER
-// ============================================
+// =====================================================
+// VISION TV - APP UI CONTROLLER (متحكم الواجهة والربط)
+// =====================================================
 
 let currentView = "home";
-let currentLanguage = localStorage.getItem("app_lang") || "ar";
 
-const LANG = {
-    ar: {
-        home: "الرئيسية", live: "البث المباشر", movies: "الأفلام", series: "المسلسلات",
-        favorites: "المفضلة", history: "أكمل المشاهدة", playlist: "إضافة اشتراك",
-        search: "البحث", settings: "الإعدادات", playlist_title: "بيانات اشتراك Xtream"
-    },
-    en: {
-        home: "Home", live: "Live TV", movies: "Movies", series: "Series",
-        favorites: "Favorites", history: "Continue Watching", playlist: "Playlist",
-        search: "Search", settings: "Settings", playlist_title: "Xtream Playlist"
-    }
-};
-
-// التوجيه الصحيح للصفحات وحل مشكلة عدم التفاعل
-const viewsMap = {
+// خريطة الربط بين الأزرار والـ Sections في الـ HTML
+const viewPanels = {
     home: "view-home",
     live: "view-live",
     movies: "view-movies",
     series: "view-series",
-    favorites: "view-favorites",
-    history: "view-history",
-    playlist: "view-iptv",
-    search: "view-search",
-    settings: "view-settings",
-    details: "view-details"
+    playlist: "view-playlist",
+    settings: "view-settings"
 };
 
-function openView(name) {
-    currentView = name;
+// التبديل بين الصفحات بشكل سليم
+function openView(viewName) {
+    if (!viewPanels[viewName]) return;
+    currentView = viewName;
 
-    // إخفاء كل البانلز
-    document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+    // إخفاء كل الصفحات
+    document.querySelectorAll(".view-panel").forEach(panel => panel.classList.remove("active"));
     
-    // إظهار العنصر المطلوب بناء على الخريطة الصحيحة المحدثة
-    const targetPanel = document.getElementById(viewsMap[name]);
-    if (targetPanel) targetPanel.classList.add("active");
+    // إظهار الصفحة المستهدفة
+    const activePanel = document.getElementById(viewPanels[viewName]);
+    if (activePanel) activePanel.classList.add("active");
 
-    // تحديث الاستايل الخاص بالقائمة النشطة
+    // تحديث أزرار المنيو الجانبي
     document.querySelectorAll(".menu-item").forEach(item => item.classList.remove("active"));
-    const activeMenu = document.querySelector(`.menu-item[data-view="${name}"]`);
+    const activeMenu = document.querySelector(`.menu-item[data-view="${viewName}"]`);
     if (activeMenu) activeMenu.classList.add("active");
 
-    refreshCurrentView();
-    
-    // تحديث عناصر التحكم للريموت كارد فوراً بعد فتح صفحة جديدة
+    // تحديث المحتويات داخل الصفحة المفتوحة فوراً
+    renderViewData();
+
+    // تحديث عناصر التحكم للريموت
     if (window.updateFocusableElements) window.updateFocusableElements();
 }
 
-function sidebarClick(name) {
-    openView(name);
+function sidebarClick(viewName) {
+    openView(viewName);
 }
 
-function refreshCurrentView() {
-    if (currentView === "home") renderHome();
-    if (currentView === "live") renderGrid("live-grid", VisionAPI.getLive());
-    if (currentView === "movies") renderGrid("movies-grid", VisionAPI.getMovies());
-    if (currentView === "series") renderGrid("series-grid", VisionAPI.getSeries());
-    if (currentView === "playlist") loadPlaylists();
+// عرض البيانات بناءً على الصفحة النشطة
+function renderViewData() {
+    if (currentView === "home") {
+        renderGrid("homeGrid", [...VisionAPI.state.live, ...VisionAPI.state.movies]);
+    } else if (currentView === "live") {
+        renderGrid("liveGrid", VisionAPI.state.live);
+    } else if (currentView === "movies") {
+        renderGrid("moviesGrid", VisionAPI.state.movies);
+    } else if (currentView === "series") {
+        renderGrid("seriesGrid", VisionAPI.state.series);
+    } else if (currentView === "playlist") {
+        uiRenderPlaylistsLists(); // تحديث قائمة السيرفرات المضافة فوراً
+    }
 }
 
-function renderHome() {
-    const combined = [...VisionAPI.getLive(), ...VisionAPI.getMovies()];
-    renderGrid("home-main-grid", combined);
-}
+function renderGrid(targetId, items) {
+    const grid = document.getElementById(targetId);
+    if (!grid) return;
+    grid.innerHTML = "";
 
-function renderGrid(containerId, list) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    container.innerHTML = "";
-
-    if (!list || list.length === 0) {
-        container.innerHTML = `<div class="empty-list" style="padding:40px; color:#666;">لا يوجد محتوى حالياً</div>`;
+    if (!items || items.length === 0) {
+        grid.innerHTML = `<div class="empty-msg" style="padding:20px; color:#666;">لا يوجد محتوى، أضف اشتراكاً أولاً.</div>`;
         return;
     }
 
-    list.forEach(item => {
+    items.forEach(item => {
         const card = document.createElement("div");
         card.className = "media-card remote-focusable";
         card.innerHTML = `
-            <img src="${item.image || 'https://placehold.co/400x600'}" onerror="this.src='https://placehold.co/400x600?text=TV'">
+            <img src="${item.stream_icon || 'https://placehold.co/400x600?text=No+Image'}" onerror="this.src='https://placehold.co/400x600?text=VISION+TV'">
             <div class="media-info">
                 <div class="media-title">${item.name}</div>
-                <div class="media-subtitle">${item.type.toUpperCase()}</div>
             </div>
         `;
-        card.onclick = () => openDetails(item);
-        container.appendChild(card);
+        grid.appendChild(card);
     });
 }
 
-function openDetails(item) {
-    window.currentItem = item;
-    openView("details");
-    
-    document.getElementById("detail-item-title").textContent = item.name;
-    document.getElementById("detail-item-img").src = item.image;
+// حل مشكلة البلاي ليست: دالة المعالجة المباشرة والربط الفوري مع الواجهة
+async function handleSavePlaylist() {
+    const name = document.getElementById("playlistName").value.trim();
+    const user = document.getElementById("playlistUser").value.trim();
+    const pass = document.getElementById("playlistPassword").value.trim();
+    const host = document.getElementById("playlistHost").value.trim();
+    const statusDiv = document.getElementById("playlistStatus");
 
-    const actionZone = document.getElementById("movie-action-zone");
-    const epZone = document.getElementById("series-episodes-vertical-zone");
-
-    if (item.type === "series") {
-        actionZone.innerHTML = "";
-        epZone.style.display = "block";
-        renderSeriesEpisodes(item);
-    } else {
-        epZone.style.display = "none";
-        actionZone.innerHTML = `
-            <button class="primary-btn remote-focusable" onclick="playMediaDirectly()">▶ تشغيل الآن</button>
-        `;
-    }
-}
-
-function renderSeriesEpisodes(series) {
-    const container = document.getElementById("episodes-vertical-container");
-    container.innerHTML = "";
-    
-    for (let i = 1; i <= 10; i++) {
-        const ep = { id: `${series.id}_${i}`, name: `الحلقة ${i}`, url: series.url || "#", type: "episode" };
-        const row = document.createElement("div");
-        row.className = "menu-item remote-focusable";
-        row.style.background = "#222";
-        row.style.margin = "5px 0";
-        row.style.padding = "15px";
-        row.textContent = ep.name;
-        row.onclick = () => {
-            localStorage.setItem("current", JSON.stringify(ep));
-            window.location.href = "player.html";
-        };
-        container.appendChild(row);
-    }
-}
-
-function playMediaDirectly() {
-    localStorage.setItem("current", JSON.stringify(window.currentItem));
-    window.location.href = "player.html";
-}
-
-// إدارة الاشتراكات
-async function savePlaylist() {
-    const name = document.getElementById("server-name").value.trim();
-    const user = document.getElementById("server-user").value.trim();
-    const pass = document.getElementById("server-pass").value.trim();
-    const url = document.getElementById("server-url").value.trim();
-    const status = document.getElementById("pl_status");
-
-    if (!VisionAPI.addPlaylist(name, user, pass, url)) {
-        status.innerText = "اكمل البيانات المطلوبة!";
-        status.style.color = "red";
+    if (!name || !user || !pass || !host) {
+        statusDiv.innerText = "برجاء ملء جميع الحقول المطلوبة!";
+        statusDiv.style.color = "#ff4444";
         return;
     }
 
-    status.innerText = "تم الحفظ بنجاح";
-    status.style.color = "#00c851";
-    
-    VisionAPI.loadPlaylists();
-    loadPlaylists();
-    bootApp(); 
+    statusDiv.innerText = "جاري الحفظ والاتصال بالسيرفر...";
+    statusDiv.style.color = "#ffbb33";
+
+    // 1. الحفظ في الـ LocalStorage عبر الـ API
+    const isSaved = VisionAPI.savePlaylist(name, user, pass, host);
+
+    if (isSaved) {
+        statusDiv.innerText = "تم حفظ الاشتراك بنجاح! جاري تحميل القنوات...";
+        statusDiv.style.color = "#00c851";
+
+        // إفراغ خانات الإدخال تلقائياً بعد النجاح
+        document.getElementById("playlistName").value = "";
+        document.getElementById("playlistUser").value = "";
+        document.getElementById("playlistPassword").value = "";
+        document.getElementById("playlistHost").value = "";
+
+        // 2. تحديث قائمة الاشتراكات المعروضة في نفس اللحظة (تسميع فوري)
+        uiRenderPlaylistsLists();
+
+        // 3. جلب قنوات أول سيرفر متاح وتحديث الشاشة الرئيسية
+        const playlists = VisionAPI.loadPlaylists();
+        if(playlists.length > 0) {
+            await VisionAPI.fetchXtreamData(playlists[playlists.length - 1]);
+            renderViewData();
+        }
+    } else {
+        statusDiv.innerText = "حدث خطأ أثناء الحفظ.";
+        statusDiv.style.color = "#ff4444";
+    }
 }
 
-function loadPlaylists() {
-    const container = document.getElementById("playlists-list");
-    if(!container) return;
+// دالة رسم وعرض الاشتراكات المخزنة في الواجهة فوراً
+function uiRenderPlaylistsLists() {
+    const container = document.getElementById("playlistContainerList");
+    if (!container) return;
     container.innerHTML = "";
-    const list = VisionAPI.getPlaylists();
 
-    if (!list.length) {
-        container.innerHTML = "<div style='color:#777;'>لا يوجد اشتراكات مضافة</div>";
+    const list = VisionAPI.loadPlaylists();
+
+    if (list.length === 0) {
+        container.innerHTML = `<div style="color:#777;">لا توجد اشتراكات مضافة حالياً.</div>`;
         return;
     }
 
     list.forEach(server => {
         const row = document.createElement("div");
-        row.style.padding = "15px"; row.style.background = "#151515"; row.style.marginBottom = "10px";
-        row.style.display = "flex"; row.style.justifyContent = "space-between"; row.style.borderRadius = "8px";
+        row.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#161616; padding:15px; margin-bottom:10px; border-radius:10px; border:1px solid var(--border);";
         row.innerHTML = `
-            <div><strong>${server.name}</strong><br><small style='color:#666;'>${server.url}</small></div>
-            <button class="secondary-btn" style="height:35px; padding:0 15px;" onclick="deletePlaylist(${server.id})">حذف</button>
+            <div>
+                <strong style="color:var(--text); font-size:18px;">${server.name}</strong><br>
+                <small style="color:#777;">${server.url}</small>
+            </div>
+            <button class="secondary-btn remote-focusable" style="height:40px; padding:0 15px; background:#cc0000; border:none;" onclick="handleDeletePlaylist(${server.id})">حذف</button>
         `;
         container.appendChild(row);
     });
+
+    if (window.updateFocusableElements) window.updateFocusableElements();
 }
 
-function deletePlaylist(id) {
+function handleDeletePlaylist(id) {
     VisionAPI.deletePlaylist(id);
-    loadPlaylists();
-    refreshCurrentView();
+    uiRenderPlaylistsLists(); // إعادة الرسم بعد الحذف فوراً لـ "تسمع" في الواجهة
+    renderViewData();
 }
 
-function searchInputChanged(input) {
-    VisionAPI.search(input.value);
-    if(input.value.trim() !== "") {
-        openView("search");
-        renderGrid("search-grid", [...VisionAPI.getLive(), ...VisionAPI.getMovies(), ...VisionAPI.getSeries()]);
-    } else {
-        openView("home");
-    }
+function handleSearch(query) {
+    console.log("البحث عن:", query);
+    // يمكن هنا فلترة المصفوفات الأساسية وإعادة إرسالها لـ renderGrid
 }
 
 function applyTheme(theme) {
     document.documentElement.className = theme;
-    localStorage.setItem("selected-theme", theme);
-}
-
-function toggleLanguage() {
-    currentLanguage = currentLanguage === "ar" ? "en" : "ar";
-    localStorage.setItem("app_lang", currentLanguage);
-    document.getElementById("languageText").innerText = currentLanguage === "ar" ? "العربية" : "English";
+    localStorage.setItem("vision_theme", theme);
 }
 
 function updateClock() {
-    const now = new Date();
-    const t = document.getElementById("top-current-time");
-    const d = document.getElementById("top-current-date");
-    if (t) t.textContent = now.toLocaleTimeString("ar-EG", { hour: "2-digit", minute: "2-digit" });
-    if (d) d.textContent = now.toLocaleDateString("ar-EG");
+    const clock = document.getElementById("clockTime");
+    if (clock) {
+        const now = new Date();
+        clock.textContent = now.toLocaleTimeString("ar-EG", { hour: "2-digit", minute: "2-digit" });
+    }
 }
 
-async function bootApp() {
-    VisionAPI.loadPlaylists();
-    const playlists = VisionAPI.getPlaylists();
-    if (playlists.length > 0) {
-        await VisionAPI.loadXtream(playlists[0]);
+// تشغيل وتهيئة التطبيق بالكامل بالترتيب الصحيح لمنع أي انهيار للـ Process
+async function initApp() {
+    updateClock();
+    setInterval(updateClock, 10000); // تحديث كل 10 ثوانٍ بدلاً من ثانية واحدة لمنع ميموري ليك
+    applyTheme(localStorage.getItem("vision_theme") || "theme-netflix");
+
+    const savedPlaylists = VisionAPI.loadPlaylists();
+    if (savedPlaylists.length > 0) {
+        await VisionAPI.fetchXtreamData(savedPlaylists[0]);
     } else {
-        VisionAPI.generateDemo(currentLanguage);
+        VisionAPI.loadDemoData();
     }
+
     openView("home");
 }
 
-window.onload = () => {
-    bootApp();
-    setInterval(updateClock, 1000);
-    applyTheme(localStorage.getItem("selected-theme") || "theme-netflix");
-};
+window.onload = initApp;
