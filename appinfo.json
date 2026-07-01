@@ -1,8 +1,9 @@
 {
-  "id": "com.test.iptv",
+  "id": "com.hosamshehata.visiontv",
   "version": "1.0.0",
-  "vendor": "test",
+  "vendor": "HosamShehata",
   "type": "web",
   "main": "index.html",
-  "title": "IPTV Test"
+  "title": "VISION TV",
+  "icon": "icon.png"
 }
