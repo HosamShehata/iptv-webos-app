@@ -3,13 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VISION TV - ULTRA PREMIUM IPTV ENGINE</title>
+  <title>VISION TV - PREMIUM IPTV ENGINE</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <div class="layout">
+  <!-- السايد بار المكتمل ومبدل اللغة الصريح بالأعلى كصورتك 88618_3.jpg -->
   <div class="sidebar" id="main-sidebar">
     <div class="brand-area"><div class="brand-title">VISION TV</div></div>
     
@@ -29,7 +30,9 @@
     <div class="menu-item remote-focusable" onclick="clickSidebarItem(8)" id="nav-settings"><span class="material-icons">settings</span><span class="txt-lang" data-key="settings">الإعدادات</span></div>
   </div>
 
+  <!-- حاوية المحتويات النشطة -->
   <div class="content-container">
+    <!-- هيدر الساعة واختبار سرعة فاست الحركي الفعال المباشر -->
     <div class="top-info-bar">
       <div class="top-right-clock-area">
         <span class="material-icons">schedule</span> <span id="top-current-day">--</span>
@@ -38,11 +41,12 @@
       </div>
       <div class="top-left-network-area">
         <div class="speed-indicator remote-focusable" onclick="runFastSpeedTest()" id="fast-speed-tester">
-          <span class="material-icons">speed</span><span id="top-net-speed">Fast.com: Click to Test</span>
+          <span class="material-icons">speed</span><span id="top-net-speed">Fast.com: Measuring...</span>
         </div>
       </div>
     </div>
 
+    <!-- بار البحث الموحد السينمائي الفعال الممتد بالكامل كالصورة -->
     <div class="search-area-wrapper" id="search-bar-container">
       <div class="search-input-box">
         <span class="material-icons search-icon-pos">search</span>
@@ -50,6 +54,7 @@
       </div>
     </div>
 
+    <!-- شاشة الرئيسية مع رف تكملة المشاهدة المستمر -->
     <div id="view-home" class="view-panel active">
       <div id="continue-watching-box" class="continue-shelf-container" style="display: none;">
         <div class="shelf-header-title"><span class="material-icons">history</span> <span class="txt-lang" data-key="resume_shelf">تكملة المشاهدة الفورية ⏱️</span></div>
@@ -59,13 +64,15 @@
       <div class="grid-container" id="home-main-grid"></div>
     </div>
 
-    <div id="view-live" class="view-panel"><div class="grid-container" id="live-grid"></div></div>
-    <div id="view-movies" class="view-panel"><div class="grid-container" id="movies-grid"></div></div>
-    <div id="view-series" class="view-panel"><div class="grid-container" id="series-grid"></div></div>
-    <div id="view-favorites" class="view-panel"><div class="grid-container" id="favorites-grid"></div></div>
-    <div id="view-history" class="view-panel"><div class="grid-container" id="history-grid"></div></div>
-    <div id="view-search" class="view-panel"><div class="grid-container" id="search-results-grid"></div></div>
+    <!-- شاشات القوائم الفرعية للأقسام الأساسية والفرعية -->
+    <div id="view-live" class="view-panel"><h3 style="margin:0 0 1.5rem 0; font-size:1.6rem;" class="txt-lang" data-key="live">القنوات المباشرة</h3><div class="grid-container" id="live-grid"></div></div>
+    <div id="view-movies" class="view-panel"><h3 style="margin:0 0 1.5rem 0; font-size:1.6rem;" class="txt-lang" data-key="movies">مكتبة الأفلام</h3><div class="grid-container" id="movies-grid"></div></div>
+    <div id="view-series" class="view-panel"><h3 style="margin:0 0 1.5rem 0; font-size:1.6rem;" class="txt-lang" data-key="series">مكتبة المسلسلات</h3><div class="grid-container" id="series-grid"></div></div>
+    <div id="view-favorites" class="view-panel"><h3 style="margin:0 0 1.5rem 0; font-size:1.6rem;" class="txt-lang" data-key="favorites">المحتوى المفضل</h3><div class="grid-container" id="favorites-grid"></div></div>
+    <div id="view-history" class="view-panel"><h3 style="margin:0 0 1.5rem 0; font-size:1.6rem;" class="txt-lang" data-key="history">سجل تتبع المشاهدة</h3><div class="grid-container" id="history-grid"></div></div>
+    <div id="view-search" class="view-panel"><h3 style="margin:0 0 1.5rem 0; font-size:1.6rem;">نتائج الفرز والبحث الفوري</h3><div class="grid-container" id="search-results-grid"></div></div>
 
+    <!-- شاشة تفاصيل الميديا المدمجة لعرض الفيلم أو قائمة الحلقات الرأسية للمسلسلات بدون تداخل لقائمتين -->
     <div id="view-details" class="view-panel">
       <div class="series-header">
         <img id="detail-item-img" class="series-poster" src="" />
@@ -81,6 +88,7 @@
       </div>
     </div>
 
+    <!-- شاشة البلاي ليست بالأربع خانات كاملة طبقاً لـ 88648.jpg وأزرار الحذف في الجهة المقابلة -->
     <div id="view-iptv" class="view-panel">
       <div class="iptv-login-box">
         <div class="login-box-header">Enter Your Login Details</div>
@@ -104,10 +112,11 @@
         <button class="btn-action-submit" onclick="saveIPTVServer()">ADD USER</button>
         <div id="pl_status" style="margin-top:1.5rem; text-align:center; font-weight:bold; font-size:1.2rem;"></div>
       </div>
-      <h4 style="margin-top:2rem; font-size:1.5rem; color: var(--accent); padding-bottom: 0.5rem;">📋 الاشتراكات المثبتة حالياً:</h4>
+      <h4 style="margin-top:2rem; font-size:1.5rem; color: var(--accent); padding-bottom: 0.5rem;">📋 قوائم التشغيل والاشتراكات المثبتة حالياً بالذاكرة:</h4>
       <div id="playlists-list"></div>
     </div>
 
+    <!-- شاشة الإعدادات والريموت الفسيحة وبدون أي تكدس -->
     <div id="view-settings" class="view-panel">
       <div class="settings-split-layout">
         <div class="settings-left-nav">
@@ -116,7 +125,7 @@
         </div>
         <div class="settings-right-pane">
           <div id="set-pane-0" class="pane-tab active">
-            <h3 style="font-size:1.4rem; margin-top:0; color:var(--accent);">🎨 اختر السمة النشطة (5 ثيمات كاملة متناسقة)</h3>
+            <h3 style="font-size:1.4rem; margin-top:0; color:var(--accent);">🎨 اختر السمة النشطة لواجهات التطبيق (5 ثيمات متناسقة)</h3>
             <div class="theme-flex-row">
               <div class="theme-circle remote-focusable" id="dot-theme-netflix" style="background: #e50914;" onclick="applyTheme('theme-netflix')"></div>
               <div class="theme-circle remote-focusable" id="dot-theme-shahid" style="background: #00ff87;" onclick="applyTheme('theme-shahid')"></div>
@@ -126,8 +135,8 @@
             </div>
             <h3 style="margin-top:2.5rem; font-size:1.4rem; color:var(--accent);">⏱️ معدل قفز الفيديو عند الضغط على الأسهم يمين/يسار</h3>
             <select class="select-dropdown remote-focusable" onchange="updateSeekDurationSetting(this.value)" id="seek-duration-select">
-              <option value="5">5 ثوانٍ</option>
-              <option value="10">10 ثوانٍ (الوضع الافتراضي)</option>
+              <option value="5">5 ثوانٍ من قفز العرض</option>
+              <option value="10" selected>10 ثوانٍ (الوضع الافتراضي)</option>
               <option value="15">15 ثانية متقدمة</option>
               <option value="30">30 ثانية قفز سريع</option>
               <option value="60">60 ثانية كاملة (دقيقة واحدة) 🚀</option>
@@ -136,9 +145,8 @@
           <div id="set-pane-1" class="pane-tab">
             <h3 style="font-size:1.4rem; margin-top:0; color:var(--accent);">🎮 خيارات برمجة وتعيين كافة وظائف أزرار ريموت التلفزيون</h3>
             <div class="remote-config-list">
-              <div class="remote-row-item"><span><span class="material-icons">radio_button_checked</span> زر العجلة الوسطى الرئيسي (OK Click)</span><select class="select-dropdown" style="width:18rem; margin:0;"><option>Play / Pause فوري وعرض الـ OSD</option></select></div>
-              <div class="remote-row-item"><span><span class="material-icons">swap_vert</span> أزرار تقليب القنوات (CH+ / CH-)</span><select class="select-dropdown" style="width:18rem; margin:0;"><option>تقليب قنوات البث المباشر فوراً</option></select></div>
-              <div class="remote-row-item"><span><span class="material-icons" style="color:#e50914;">fiber_manual_record</span> الأسهم الأربعة (الاتجاهات كاملة)</span><select class="select-dropdown" style="width:18rem; margin:0;"><option>التنقل والتقديم بالثواني المحددة</option></select></div>
+              <div class="remote-row-item"><span>يمين ويسار (الأسهم الجانبية)</span><select class="select-dropdown" style="width:18rem; margin:0;"><option>التقديم والتأخير بالثواني المحددة</option></select></div>
+              <div class="remote-row-item"><span>فوق وتحت (الأسهم الرأسية)</span><select class="select-dropdown" style="width:18rem; margin:0;"><option>الانتقال الفوري للحلقة القادمة والسابقة</option></select></div>
             </div>
           </div>
         </div>
@@ -148,6 +156,7 @@
   </div>
 </div>
 
+<!-- الترتيب الصارم والصحيح لاستدعاء الملفات منعاً لظهور خطأ الـ Fail نهائياً -->
 <script src="js/api.js"></script>
 <script src="js/remote.js"></script>
 <script src="js/app.js"></script>
