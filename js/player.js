@@ -10,6 +10,7 @@ const controlsPanel = document.getElementById("controls-panel");
 
 let channel = JSON.parse(localStorage.getItem("current"));
 let player; let osdTimeout;
+let longPressTimeout; let isLongPressing = false;
 
 let seekDuration = parseInt(localStorage.getItem("global_seek_duration")) || 10;
 let currentSpeed = 1.0; let currentAspectRatio = "default"; let isZoomed = false;
@@ -69,6 +70,19 @@ function togglePlayPause() {
 function seekBack() { video.currentTime = Math.max(0, video.currentTime - seekDuration); showOSD(); }
 function seekForward() { video.currentTime = Math.min(video.duration || Infinity, video.currentTime + seekDuration); showOSD(); }
 
+function startLongPress(direction) {
+  isLongPressing = true;
+  longPressTimeout = setInterval(() => {
+    if(direction === "forward") video.currentTime = Math.min(video.duration || Infinity, video.currentTime + 5);
+    else video.currentTime = Math.max(0, video.currentTime - 5);
+    showOSD();
+  }, 150);
+}
+
+function stopLongPress() {
+  if(isLongPressing) { clearInterval(longPressTimeout); isLongPressing = false; }
+}
+
 function changePlaybackSpeed() {
   if (currentSpeed === 1.0) currentSpeed = 1.25;
   else if (currentSpeed === 1.25) currentSpeed = 1.5;
@@ -81,7 +95,7 @@ function changePlaybackSpeed() {
 function toggleAspectRatio() {
   if (currentAspectRatio === "default") { video.style.objectFit = "fill"; currentAspectRatio = "fill"; }
   else if (currentAspectRatio === "fill") { video.style.objectFit = "contain"; currentAspectRatio = "contain"; }
-  else { video.style.style.objectFit = "initial"; currentAspectRatio = "default"; }
+  else { video.style.objectFit = "initial"; currentAspectRatio = "default"; }
   showOSD(); displayStreamStats();
 }
 
@@ -121,7 +135,7 @@ function showOSD() {
 }
 
 function onPlayerError(e) {
-  errorBox.innerText = "اتصال منقطع، جاري إعادة الاتصال التلقائي...";
+  errorBox.innerText = "جاري إعادة الاتصال التلقائي...";
   setTimeout(() => { if(player) player.load(channel.url); }, 3000);
 }
 
@@ -133,15 +147,28 @@ function formatTime(secs) {
   return `${h}:${m}:${s}`;
 }
 
+// السيطرة المباشرة على أزرار ريموت LG Magic وتقليب القنوات والـ Long Press
 document.addEventListener("keydown", function(e) {
   showOSD();
-  if (e.key === "Enter" || e.key === " ") { togglePlayPause(); }
+  if (e.key === "Enter" || e.key === " ") { togglePlayPause(); e.preventDefault(); return; }
+  
+  // برمجة أزرار تقليب القنوات المخصصة للريموت (ChannelUp / ChannelDown) للبث المباشر
+  if (e.key === "ChannelUp" || e.key === "PageUp") { navigatePlaylistChannels("prev"); }
+  if (e.key === "ChannelDown" || e.key === "PageDown") { navigatePlaylistChannels("next"); }
+
+  // السهم فوق وتحت للتنقل بين القنوات أيضاً داخل المشغل
   if (e.key === "ArrowUp") { navigatePlaylistChannels("prev"); }
   if (e.key === "ArrowDown") { navigatePlaylistChannels("next"); }
-  if (e.key === "ArrowLeft") { seekBack(); }
-  if (e.key === "ArrowRight") { seekForward(); }
   
-  // أزرار الألوان للريموت كنترول للشاشات (الاختصارات السريعة الحرة)
+  // الأسهم يمين ويسار للتقديم والتأخير بالثواني المحددة
+  if (e.key === "ArrowLeft" && !isLongPressing) {
+    if(e.repeat) startLongPress("backward"); else seekBack();
+  }
+  if (e.key === "ArrowRight" && !isLongPressing) {
+    if(e.repeat) startLongPress("forward"); else seekForward();
+  }
+  
+  // الأزرار الملونة لريموت التلفزيون
   if (e.key === "r" || e.key === "RedColor") { toggleZoom(); }
   if (e.key === "g" || e.key === "GreenColor") { displayStreamStats(); }
   if (e.key === "y" || e.key === "YellowColor") { changePlaybackSpeed(); }
@@ -149,4 +176,9 @@ document.addEventListener("keydown", function(e) {
   
   if (e.key === "Backspace" || e.key === "Escape") { window.location.href = "details.html"; }
 });
+
+document.addEventListener("keyup", function(e) {
+  if (e.key === "ArrowLeft" || e.key === "ArrowRight") { stopLongPress(); }
+});
+
 window.onload = initPlayer;
