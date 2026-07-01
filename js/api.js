@@ -172,8 +172,12 @@ console.log("================================");
             ]);
 
             const liveData = JSON.parse(liveRes.contents || "[]");
+            console.log("LIVE COUNT:", liveData.length);
+console.log(liveData);
             const moviesData = JSON.parse(moviesRes.contents || "[]");
+            console.log("MOVIES COUNT:", moviesData.length);
             const seriesData = JSON.parse(seriesRes.contents || "[]");
+            console.log("SERIES COUNT:", seriesData.length);
 
             // ==============================
             // Live
@@ -184,8 +188,7 @@ console.log("================================");
                     name: i.name,
                     stream_icon: i.stream_icon,
                     type: "live",
-                    url: `${cleanHost}/live/${server.user}/${server.pass}/${i.stream_id}`
-                }));
+url: `${cleanHost}/live/${server.user}/${server.pass}/${i.stream_id}.m3u8`                }));
             }
 
             // ==============================
@@ -197,7 +200,7 @@ console.log("================================");
                     name: i.name,
                     stream_icon: i.stream_icon,
                     type: "movie",
-                    url: `${cleanHost}/movie/${server.user}/${server.pass}/${i.stream_id}`
+                    url: `${cleanHost}/movie/${server.user}/${server.pass}/${i.stream_id}.mp4`
                 }));
             }
 
