@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VISION TV - CINEMATIC PLAYER</title>
+  <title>VISION TV - CINEMATIC VIDEO ENGINE</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.compiled.js"></script>
   <style>
@@ -13,7 +13,6 @@
     .theme-midnight { --accent: #d4af37; }
     .theme-ocean { --accent: #00b4d8; }
 
-    html { font-size: 1.15vw; }
     body, html { margin:0; padding:0; width:100%; height:100%; background:#000; overflow:hidden; font-family:sans-serif; }
     .video-container { position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
     video { width:100%; height:100%; object-fit:contain; }
@@ -35,15 +34,14 @@
     .control-btn .material-icons { font-size:2.6rem; }
     .control-btn:hover { background:rgba(255,255,255,0.15); transform:scale(1.1); }
     .control-btn.main-center-play { background:var(--accent); width:4.8rem; height:4.8rem; box-shadow:0 0 20px var(--accent); }
-    .control-btn.main-center-play .material-icons { font-size:3rem; }
     
     .badge-selector-box { display:flex; gap:1rem; align-items:center; }
     .speed-badge-selector { background:rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:0.6rem 1.4rem; border-radius:10px; cursor:pointer; font-size:1.15rem; font-weight:bold; outline:none; }
 
-    /* البوب اب الذكي الخاص باقتراح الحلقة التالية في آخر 60 ثانية */
+    /* البوب اب السينمائي لاقتراح الحلقة الجاية بآخر 60 ثانية ويتزامن مع الـ OSD */
     .next-episode-popup-card {
-      position: absolute; bottom: 12rem; left: 3.5rem; background: rgba(20,20,20,0.95); border: 2px solid var(--accent);
-      padding: 1.5rem; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); display: none; transition: 0.3s ease; max-width: 25rem;
+      position: absolute; bottom: 12rem; left: 3.5rem; background: rgba(15,15,15,0.95); border: 2px solid var(--accent);
+      padding: 1.5rem; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); display: none; transition: 0.3s ease; max-width: 25rem; z-index: 99;
     }
     .next-ep-title { font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem; color: #fff; }
     .next-ep-sub { font-size: 1.05rem; color: var(--accent); font-weight: bold; }
@@ -54,19 +52,19 @@
 <div class="video-container" id="player-container-zone">
   <video id="video" autoplay></video>
   
-  <!-- بوب اب الحلقة القادمة الذكي -->
+  <!-- نافذة اقتراح الحلقة القادمة صراحة باسمها -->
   <div class="next-episode-popup-card" id="next-ep-popup">
     <div class="next-ep-sub">التالي تلقائياً خلال دقيقة ⏭️</div>
-    <div class="next-ep-title" id="next-ep-name-lbl">الحلقة 2: المواجهة الفنية وفك تداخل الشبكة</div>
+    <div class="next-ep-title" id="next-ep-name-lbl">الحلقة التالية من القائمة الرأسية للسيرفر</div>
   </div>
 
   <div class="osd-controls-panel" id="controls-panel">
     <div style="display:flex; justify-content:space-between; align-items:center;">
-      <div id="player-title" style="font-size:1.7rem; font-weight:bold; color:#fff;">اسم الحلقة النشطة</div>
+      <div id="player-title" style="font-size:1.7rem; font-weight:bold; color:#fff;">جاري تحميل البث المستقر...</div>
       
       <div class="badge-selector-box">
         <select class="speed-badge-selector" id="quality-selector" onchange="switchVideoQuality(this.value)">
-          <option value="auto">Auto (تلقائي مستقر)</option>
+          <option value="auto">Quality: Auto (مستقر)</option>
           <option value="1080">1080p FHD</option>
           <option value="720">720p HD</option>
         </select>
@@ -97,6 +95,7 @@
   </div>
 </div>
 
+<!-- استدعاء منطق البلاير والأسهم الأربعة -->
 <script src="js/player.js"></script>
 </body>
 </html>
