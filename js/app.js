@@ -1,166 +1,25 @@
 // ============================================
-// VISION TV
-// APP ENGINE
+// VISION TV - MAIN APPLICATION CONTROLLER
 // ============================================
 
 let currentView = "home";
-
-let currentLanguage =
-    localStorage.getItem("app_lang") || "ar";
-
-// ============================================
-// LANGUAGE
-// ============================================
+let currentLanguage = localStorage.getItem("app_lang") || "ar";
 
 const LANG = {
-
     ar: {
-
-        home: "الرئيسية",
-
-        live: "القنوات",
-
-        movies: "الأفلام",
-
-        series: "المسلسلات",
-
-        favorites: "المفضلة",
-
-        history: "المتابعة",
-
-        playlist: "إضافة اشتراك",
-
-        search: "البحث",
-
-        settings: "الإعدادات",
-
-        playlist_title: "بيانات اشتراك Xtream",
-
-        connect: "إضافة الاشتراك"
-
+        home: "الرئيسية", live: "البث المباشر", movies: "الأفلام", series: "المسلسلات",
+        favorites: "المفضلة", history: "أكمل المشاهدة", playlist: "إضافة اشتراك",
+        search: "البحث", settings: "الإعدادات", playlist_title: "بيانات اشتراك Xtream"
     },
-
     en: {
-
-        home: "Home",
-
-        live: "Live TV",
-
-        movies: "Movies",
-
-        series: "Series",
-
-        favorites: "Favorites",
-
-        history: "Continue Watching",
-
-        playlist: "Playlist",
-
-        search: "Search",
-
-        settings: "Settings",
-
-        playlist_title: "Xtream Playlist",
-
-        connect: "Connect"
-
+        home: "Home", live: "Live TV", movies: "Movies", series: "Series",
+        favorites: "Favorites", history: "Continue Watching", playlist: "Playlist",
+        search: "Search", settings: "Settings", playlist_title: "Xtream Playlist"
     }
-
 };
 
-// ============================================
-// LANGUAGE APPLY
-// ============================================
-
-function applyLanguage() {
-
-    const lang = LANG[currentLanguage];
-
-    document.documentElement.lang =
-        currentLanguage;
-
-    document.documentElement.dir =
-        currentLanguage === "ar"
-            ? "rtl"
-            : "ltr";
-
-    document.querySelectorAll("[data-lang]")
-        .forEach(item => {
-
-            const key =
-                item.dataset.lang;
-
-            if (lang[key])
-                item.textContent = lang[key];
-
-        });
-
-}
-
-// ============================================
-
-function toggleLanguage() {
-
-    currentLanguage =
-        currentLanguage === "ar"
-            ? "en"
-            : "ar";
-
-    localStorage.setItem(
-        "app_lang",
-        currentLanguage
-    );
-
-    applyLanguage();
-
-}
-
-// ============================================
-// CLOCK
-// ============================================
-
-function updateClock() {
-
-    const now =
-        new Date();
-
-    const time =
-        now.toLocaleTimeString(
-            currentLanguage === "ar"
-                ? "ar-EG"
-                : "en-US",
-            {
-                hour: "2-digit",
-                minute: "2-digit"
-            }
-        );
-
-    const date =
-        now.toLocaleDateString(
-            currentLanguage === "ar"
-                ? "ar-EG"
-                : "en-US"
-        );
-
-    const t =
-        document.getElementById("top-current-time");
-
-    const d =
-        document.getElementById("top-current-date");
-
-    if (t)
-        t.textContent = time;
-
-    if (d)
-        d.textContent = date;
-
-}
-// ============================================
-// SIDEBAR
-// ============================================
-
-const views = {
-
+// التوجيه الصحيح للصفحات وحل مشكلة عدم التفاعل
+const viewsMap = {
     home: "view-home",
     live: "view-live",
     movies: "view-movies",
@@ -171,769 +30,211 @@ const views = {
     search: "view-search",
     settings: "view-settings",
     details: "view-details"
-
 };
 
-// ============================================
-
 function openView(name) {
-
     currentView = name;
 
-    document
-        .querySelectorAll(".view-panel")
-        .forEach(panel => {
+    // إخفاء كل البانلز
+    document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+    
+    // إظهار العنصر المطلوب بناء على الخريطة الصحيحة المحدثة
+    const targetPanel = document.getElementById(viewsMap[name]);
+    if (targetPanel) targetPanel.classList.add("active");
 
-            panel.classList.remove("active");
-
-        });
-
-    const panel =
-        document.getElementById(
-            views[name]
-        );
-
-    if (panel)
-        panel.classList.add("active");
-
-    document
-        .querySelectorAll(".menu-item")
-        .forEach(item => {
-
-            item.classList.remove("focused");
-
-        });
-
-    const active =
-        document.querySelector(
-            `.menu-item[data-view="${name}"]`
-        );
-
-    if (active)
-        active.classList.add("focused");
-
-    if (window.updateFocusableElements)
-        updateFocusableElements();
+    // تحديث الاستايل الخاص بالقائمة النشطة
+    document.querySelectorAll(".menu-item").forEach(item => item.classList.remove("active"));
+    const activeMenu = document.querySelector(`.menu-item[data-view="${name}"]`);
+    if (activeMenu) activeMenu.classList.add("active");
 
     refreshCurrentView();
-
+    
+    // تحديث عناصر التحكم للريموت كارد فوراً بعد فتح صفحة جديدة
+    if (window.updateFocusableElements) window.updateFocusableElements();
 }
-
-// ============================================
 
 function sidebarClick(name) {
-
     openView(name);
-
 }
-
-// ============================================
 
 function refreshCurrentView() {
-
-    switch (currentView) {
-
-        case "home":
-            renderHome();
-            break;
-
-        case "live":
-            renderLive();
-            break;
-
-        case "movies":
-            renderMovies();
-            break;
-
-        case "series":
-            renderSeries();
-            break;
-
-        case "playlist":
-            loadPlaylists();
-            break;
-
-    }
-
+    if (currentView === "home") renderHome();
+    if (currentView === "live") renderGrid("live-grid", VisionAPI.getLive());
+    if (currentView === "movies") renderGrid("movies-grid", VisionAPI.getMovies());
+    if (currentView === "series") renderGrid("series-grid", VisionAPI.getSeries());
+    if (currentView === "playlist") loadPlaylists();
 }
-
-// ============================================
-// HOME
-// ============================================
 
 function renderHome() {
-
-    const list = [
-
-        ...getLiveChannels(),
-
-        ...getMovies(),
-
-        ...getSeries()
-
-    ];
-
-    renderGrid(
-        "home-main-grid",
-        list
-    );
-
+    const combined = [...VisionAPI.getLive(), ...VisionAPI.getMovies()];
+    renderGrid("home-main-grid", combined);
 }
-
-// ============================================
-
-function renderLive() {
-
-    renderGrid(
-        "live-grid",
-        getLiveChannels()
-    );
-
-}
-
-// ============================================
-
-function renderMovies() {
-
-    renderGrid(
-        "movies-grid",
-        getMovies()
-    );
-
-}
-
-// ============================================
-
-function renderSeries() {
-
-    renderGrid(
-        "series-grid",
-        getSeries()
-    );
-
-}
-// ============================================
-// GRID ENGINE
-// ============================================
 
 function renderGrid(containerId, list) {
-
-    const container =
-        document.getElementById(containerId);
-
-    if (!container)
-        return;
-
+    const container = document.getElementById(containerId);
+    if (!container) return;
     container.innerHTML = "";
 
-    if (list.length === 0) {
-
-        container.innerHTML = `
-            <div class="empty-list">
-                لا يوجد محتوى
-            </div>
-        `;
-
+    if (!list || list.length === 0) {
+        container.innerHTML = `<div class="empty-list" style="padding:40px; color:#666;">لا يوجد محتوى حالياً</div>`;
         return;
-
     }
 
     list.forEach(item => {
-
-        container.appendChild(
-            createMediaCard(item)
-        );
-
-    });
-
-}
-
-// ============================================
-
-function createMediaCard(item) {
-
-    const card =
-        document.createElement("div");
-
-    card.className =
-        "media-card remote-focusable";
-
-    const progress =
-        localStorage.getItem(
-            `progress_ratio_media_${item.id}`
-        ) || 0;
-
-    card.innerHTML = `
-
-        <img
-            src="${item.image}"
-            loading="lazy"
-            draggable="false"
-        >
-
-        <div class="card-progress-bar">
-
-            <div
-                class="card-progress-fill"
-                style="width:${progress}%">
+        const card = document.createElement("div");
+        card.className = "media-card remote-focusable";
+        card.innerHTML = `
+            <img src="${item.image || 'https://placehold.co/400x600'}" onerror="this.src='https://placehold.co/400x600?text=TV'">
+            <div class="media-info">
+                <div class="media-title">${item.name}</div>
+                <div class="media-subtitle">${item.type.toUpperCase()}</div>
             </div>
-
-        </div>
-
-        <div class="info">
-
-            ${item.name}
-
-        </div>
-
-    `;
-
-    card.onclick = () => {
-
-        openDetails(item);
-
-    };
-
-    return card;
-
+        `;
+        card.onclick = () => openDetails(item);
+        container.appendChild(card);
+    });
 }
-
-// ============================================
-// DETAILS
-// ============================================
 
 function openDetails(item) {
-
     window.currentItem = item;
-
     openView("details");
+    
+    document.getElementById("detail-item-title").textContent = item.name;
+    document.getElementById("detail-item-img").src = item.image;
 
-    const title =
-        document.getElementById(
-            "detail-item-title"
-        );
-
-    const image =
-        document.getElementById(
-            "detail-item-img"
-        );
-
-    if (title)
-        title.textContent = item.name;
-
-    if (image)
-        image.src = item.image;
+    const actionZone = document.getElementById("movie-action-zone");
+    const epZone = document.getElementById("series-episodes-vertical-zone");
 
     if (item.type === "series") {
-
+        actionZone.innerHTML = "";
+        epZone.style.display = "block";
         renderSeriesEpisodes(item);
-
     } else {
-
-        renderMovieActions(item);
-
+        epZone.style.display = "none";
+        actionZone.innerHTML = `
+            <button class="primary-btn remote-focusable" onclick="playMediaDirectly()">▶ تشغيل الآن</button>
+        `;
     }
-
 }
-
-// ============================================
-
-function renderMovieActions(item) {
-
-    const zone =
-        document.getElementById(
-            "movie-action-zone"
-        );
-
-    if (!zone)
-        return;
-
-    zone.innerHTML = `
-
-        <button
-            class="btn-action-submit"
-            onclick="playMedia(${item.id})">
-
-            ▶ تشغيل
-
-        </button>
-
-    `;
-
-}
-// ============================================
-// SERIES
-// ============================================
 
 function renderSeriesEpisodes(series) {
-
-    const zone =
-        document.getElementById(
-            "series-episodes-vertical-zone"
-        );
-
-    const container =
-        document.getElementById(
-            "episodes-vertical-container"
-        );
-
-    const movieZone =
-        document.getElementById(
-            "movie-action-zone"
-        );
-
-    if (!zone || !container)
-        return;
-
-    zone.style.display = "block";
-
-    if (movieZone)
-        movieZone.innerHTML = "";
-
+    const container = document.getElementById("episodes-vertical-container");
     container.innerHTML = "";
+    
+    for (let i = 1; i <= 10; i++) {
+        const ep = { id: `${series.id}_${i}`, name: `الحلقة ${i}`, url: series.url || "#", type: "episode" };
+        const row = document.createElement("div");
+        row.className = "menu-item remote-focusable";
+        row.style.background = "#222";
+        row.style.margin = "5px 0";
+        row.style.padding = "15px";
+        row.textContent = ep.name;
+        row.onclick = () => {
+            localStorage.setItem("current", JSON.stringify(ep));
+            window.location.href = "player.html";
+        };
+        container.appendChild(row);
+    }
+}
 
-    const episodes = [];
+function playMediaDirectly() {
+    localStorage.setItem("current", JSON.stringify(window.currentItem));
+    window.location.href = "player.html";
+}
 
-    for (let i = 1; i <= 12; i++) {
+// إدارة الاشتراكات
+async function savePlaylist() {
+    const name = document.getElementById("server-name").value.trim();
+    const user = document.getElementById("server-user").value.trim();
+    const pass = document.getElementById("server-pass").value.trim();
+    const url = document.getElementById("server-url").value.trim();
+    const status = document.getElementById("pl_status");
 
-        episodes.push({
-
-            id: `${series.id}_${i}`,
-
-            type: "episode",
-
-            name: `Episode ${i}`,
-
-            image: series.image,
-
-            url: series.url || ""
-
-        });
-
+    if (!VisionAPI.addPlaylist(name, user, pass, url)) {
+        status.innerText = "اكمل البيانات المطلوبة!";
+        status.style.color = "red";
+        return;
     }
 
-    episodes.forEach(ep => {
-
-        const card =
-            document.createElement("div");
-
-        card.className =
-            "episode-row-card remote-focusable";
-
-        const progress =
-            localStorage.getItem(
-                `progress_ratio_media_${ep.id}`
-            ) || 0;
-
-        card.innerHTML = `
-
-            <div class="thumb-area">
-
-                <img src="${ep.image}">
-
-                <div class="card-progress-bar">
-
-                    <div
-                        class="card-progress-fill"
-                        style="width:${progress}%">
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="ep-details-side">
-
-                <div class="ep-row-title">
-
-                    ${ep.name}
-
-                </div>
-
-            </div>
-
-        `;
-
-        card.onclick = () => {
-
-            playMedia(ep);
-
-        };
-
-        container.appendChild(card);
-
-    });
-
+    status.innerText = "تم الحفظ بنجاح";
+    status.style.color = "#00c851";
+    
+    VisionAPI.loadPlaylists();
+    loadPlaylists();
+    bootApp(); 
 }
-
-// ============================================
-// PLAYER
-// ============================================
-
-function playMedia(item) {
-
-    localStorage.setItem(
-        "current",
-        JSON.stringify(item)
-    );
-
-    let history =
-        JSON.parse(
-            localStorage.getItem(
-                "watch_history"
-            )
-        ) || [];
-
-    history =
-        history.filter(
-            x => x.id !== item.id
-        );
-
-    history.unshift(item);
-
-    if (history.length > 100)
-        history.pop();
-
-    localStorage.setItem(
-        "watch_history",
-        JSON.stringify(history)
-    );
-
-    window.location.href =
-        "player.html";
-
-}
-
-// ============================================
-// CONTINUE WATCHING
-// ============================================
-
-function getHistory() {
-
-    return JSON.parse(
-        localStorage.getItem(
-            "watch_history"
-        )
-    ) || [];
-
-}
-
-function clearHistory() {
-
-    localStorage.removeItem(
-        "watch_history"
-    );
-
-}
-// ============================================
-// PLAYLISTS
-// ============================================
 
 function loadPlaylists() {
-
-    loadPlaylistsFromStorage();
-
-    const container =
-        document.getElementById(
-            "playlists-list"
-        );
-
-    if (!container)
-        return;
-
+    const container = document.getElementById("playlists-list");
+    if(!container) return;
     container.innerHTML = "";
+    const list = VisionAPI.getPlaylists();
 
-    if (AppData.playlists.length === 0) {
-
-        container.innerHTML = `
-
-            <div class="playlist-empty">
-
-                لا توجد اشتراكات
-
-            </div>
-
-        `;
-
+    if (!list.length) {
+        container.innerHTML = "<div style='color:#777;'>لا يوجد اشتراكات مضافة</div>";
         return;
-
     }
 
-    AppData.playlists.forEach(server => {
-
-        const row =
-            document.createElement("div");
-
-        row.className =
-            "playlist-table-row";
-
+    list.forEach(server => {
+        const row = document.createElement("div");
+        row.style.padding = "15px"; row.style.background = "#151515"; row.style.marginBottom = "10px";
+        row.style.display = "flex"; row.style.justifyContent = "space-between"; row.style.borderRadius = "8px";
         row.innerHTML = `
-
-            <div>
-
-                <strong>${server.name}</strong>
-
-                <br>
-
-                <span>${server.url}</span>
-
-            </div>
-
-            <div>
-
-                <button
-                    class="btn-playlist-control edit"
-                    onclick="editPlaylist(${server.id})">
-
-                    تعديل
-
-                </button>
-
-                <button
-                    class="btn-playlist-control delete"
-                    onclick="removePlaylist(${server.id})">
-
-                    حذف
-
-                </button>
-
-            </div>
-
+            <div><strong>${server.name}</strong><br><small style='color:#666;'>${server.url}</small></div>
+            <button class="secondary-btn" style="height:35px; padding:0 15px;" onclick="deletePlaylist(${server.id})">حذف</button>
         `;
-
         container.appendChild(row);
-
     });
-
 }
 
-// ============================================
-
-function removePlaylist(id) {
-
-    deletePlaylist(id);
-
+function deletePlaylist(id) {
+    VisionAPI.deletePlaylist(id);
     loadPlaylists();
-
     refreshCurrentView();
-
 }
-
-// ============================================
-
-function editPlaylist(id) {
-
-    const playlist =
-        AppData.playlists.find(
-            p => p.id === id
-        );
-
-    if (!playlist)
-        return;
-
-    document.getElementById("server-name").value =
-        playlist.name;
-
-    document.getElementById("server-user").value =
-        playlist.user;
-
-    document.getElementById("server-pass").value =
-        playlist.pass;
-
-    document.getElementById("server-url").value =
-        playlist.url;
-
-}
-
-// ============================================
-// SEARCH
-// ============================================
-
-function search(value) {
-
-    searchContent(value);
-
-    refreshCurrentView();
-
-}
-
-// ============================================
 
 function searchInputChanged(input) {
-
-    search(input.value);
-
+    VisionAPI.search(input.value);
+    if(input.value.trim() !== "") {
+        openView("search");
+        renderGrid("search-grid", [...VisionAPI.getLive(), ...VisionAPI.getMovies(), ...VisionAPI.getSeries()]);
+    } else {
+        openView("home");
+    }
 }
-
-// ============================================
-// THEME
-// ============================================
 
 function applyTheme(theme) {
-
-    document.documentElement.className =
-        theme;
-
-    localStorage.setItem(
-        "selected-theme",
-        theme
-    );
-
+    document.documentElement.className = theme;
+    localStorage.setItem("selected-theme", theme);
 }
 
-// ============================================
-
-function loadTheme() {
-
-    applyTheme(
-
-        localStorage.getItem(
-            "selected-theme"
-        ) ||
-
-        "theme-netflix"
-
-    );
-
-}
-// ============================================
-// ADD PLAYLIST
-// ============================================
-
-async function savePlaylist() {
-
-    const name =
-        document.getElementById("server-name").value.trim();
-
-    const user =
-        document.getElementById("server-user").value.trim();
-
-    const pass =
-        document.getElementById("server-pass").value.trim();
-
-    const url =
-        document.getElementById("server-url").value.trim();
-
-    if (!addPlaylist(name, user, pass, url)) {
-
-        alert("برجاء إدخال جميع البيانات");
-
-        return;
-
-    }
-
-    loadPlaylists();
-
-    try {
-
-        await loadXtreamData({
-
-            name,
-            user,
-            pass,
-            url
-
-        });
-
-    } catch (e) {
-
-        console.log(e);
-
-        generateDemoContent(currentLanguage);
-
-    }
-
-    refreshCurrentView();
-
-    document.getElementById("server-name").value = "";
-    document.getElementById("server-user").value = "";
-    document.getElementById("server-pass").value = "";
-    document.getElementById("server-url").value = "";
-
+function toggleLanguage() {
+    currentLanguage = currentLanguage === "ar" ? "en" : "ar";
+    localStorage.setItem("app_lang", currentLanguage);
+    document.getElementById("languageText").innerText = currentLanguage === "ar" ? "العربية" : "English";
 }
 
-// ============================================
-// SETTINGS
-// ============================================
-
-function updateSeekDuration(value) {
-
-    localStorage.setItem(
-        "global_seek_duration",
-        value
-    );
-
+function updateClock() {
+    const now = new Date();
+    const t = document.getElementById("top-current-time");
+    const d = document.getElementById("top-current-date");
+    if (t) t.textContent = now.toLocaleTimeString("ar-EG", { hour: "2-digit", minute: "2-digit" });
+    if (d) d.textContent = now.toLocaleDateString("ar-EG");
 }
 
-function togglePassword() {
-
-    const input =
-        document.getElementById("server-pass");
-
-    if (!input)
-        return;
-
-    input.type =
-        input.type === "password"
-            ? "text"
-            : "password";
-
-}
-
-// ============================================
-// INIT
-// ============================================
-
-function initApp() {
-
-    loadTheme();
-
-    applyLanguage();
-
-    loadPlaylistsFromStorage();
-
-    if (AppData.playlists.length > 0) {
-
-        loadXtreamData(
-            AppData.playlists[0]
-        ).catch(() => {
-
-            generateDemoContent(
-                currentLanguage
-            );
-
-            refreshCurrentView();
-
-        });
-
+async function bootApp() {
+    VisionAPI.loadPlaylists();
+    const playlists = VisionAPI.getPlaylists();
+    if (playlists.length > 0) {
+        await VisionAPI.loadXtream(playlists[0]);
     } else {
-
-        generateDemoContent(
-            currentLanguage
-        );
-
+        VisionAPI.generateDemo(currentLanguage);
     }
-
-    loadPlaylists();
-
     openView("home");
-
-    updateClock();
-
-    setInterval(
-
-        updateClock,
-
-        1000
-
-    );
-
 }
-
-// ============================================
 
 window.onload = () => {
-
-    initApp();
-
+    bootApp();
+    setInterval(updateClock, 1000);
+    applyTheme(localStorage.getItem("selected-theme") || "theme-netflix");
 };
