@@ -4,21 +4,7 @@ let categories = ["All", "Sports", "Movies", "News"];
 let currentCategory = "All";
 let selectedIndex = 0;
 
-// EPG تجريبي
-const epgData = {
-  "Sports": [
-    { time: "10:00", title: "Football Live" },
-    { time: "12:00", title: "Sports News" }
-  ],
-  "Movies": [
-    { time: "11:00", title: "Action Movie" },
-    { time: "13:00", title: "Comedy Film" }
-  ],
-  "News": [
-    { time: "09:00", title: "Morning News" },
-    { time: "18:00", title: "Evening Update" }
-  ]
-};
+let epg = {}; // هيتملأ من الإنترنت
 
 // تحميل M3U
 function loadPlaylist() {
@@ -33,7 +19,9 @@ function loadPlaylist() {
 
       renderCategories();
       renderChannels();
-      renderEPG();
+
+      // نحاول نجيب EPG لو موجود
+      loadEPG(url);
 
     });
 
@@ -66,6 +54,54 @@ function parseM3U(data) {
   return result;
 }
 
+// 🔥 محاولة تحميل EPG (XMLTV)
+function loadEPG(m3uUrl) {
+
+  // بعض السيرفرات بتكون جنبها epg.xml
+  const epgUrl = m3uUrl.replace("playlist.m3u", "epg.xml");
+
+  fetch(epgUrl)
+    .then(res => res.text())
+    .then(data => {
+
+      epg = parseXMLTV(data);
+      renderEPG();
+
+    })
+    .catch(() => {
+      console.log("EPG not found, using fallback");
+      epg = {};
+      renderEPG();
+    });
+
+}
+
+// XMLTV parser (تبسيط)
+function parseXMLTV(xml) {
+
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(xml, "text/xml");
+
+  const programmes = xmlDoc.getElementsByTagName("programme");
+
+  const result = {};
+
+  for (let i = 0; i < programmes.length; i++) {
+
+    const prog = programmes[i];
+
+    const title = prog.getElementsByTagName("title")[0]?.textContent;
+    const channel = prog.getAttribute("channel");
+
+    if (!result[channel]) result[channel] = [];
+
+    result[channel].push(title);
+
+  }
+
+  return result;
+}
+
 // categories
 function renderCategories() {
 
@@ -91,7 +127,7 @@ function renderCategories() {
 
 }
 
-// channels grid
+// channels
 function renderChannels() {
 
   const search = document.getElementById("search").value.toLowerCase();
@@ -137,19 +173,23 @@ function openChannel(ch) {
 
 }
 
-// EPG
+// EPG عرض حقيقي أو fallback
 function renderEPG() {
 
   const box = document.getElementById("epg");
   box.innerHTML = "";
 
-  const data = epgData[currentCategory] || [];
+  const current = filtered[selectedIndex];
 
-  data.forEach(item => {
+  if (!current) return;
+
+  const channelEPG = epg[current.name] || ["No EPG available"];
+
+  channelEPG.forEach(item => {
 
     const div = document.createElement("div");
     div.className = "epg-item";
-    div.innerText = `${item.time} - ${item.title}`;
+    div.innerText = item;
 
     box.appendChild(div);
 
@@ -166,12 +206,14 @@ document.addEventListener("keydown", function(e) {
     selectedIndex++;
     if (selectedIndex >= filtered.length) selectedIndex = 0;
     renderChannels();
+    renderEPG();
   }
 
   if (e.key === "ArrowUp") {
     selectedIndex--;
     if (selectedIndex < 0) selectedIndex = filtered.length - 1;
     renderChannels();
+    renderEPG();
   }
 
   if (e.key === "Enter") {
