@@ -10,7 +10,6 @@ const playIcon = document.getElementById("icon-play");
 const channel = JSON.parse(localStorage.getItem("current"));
 let player;
 
-// جلب قيمة وقت التقديم والتأخير المخصصة من الإعدادات (الافتراضي 10 ثوانٍ)
 let seekDuration = parseInt(localStorage.getItem("global_seek_duration")) || 10;
 
 async function initPlayer() {
@@ -18,14 +17,11 @@ async function initPlayer() {
   document.getElementById("player-title").innerText = channel.name;
   loading.style.display = "block";
 
-  // تمكين التقديم والتأخير بنظام الضغط باللمس أو الماوس مباشرة على أي نقطة في البار
   if(timelineZone) {
     timelineZone.addEventListener("click", function(e) {
       const rect = timelineZone.getBoundingClientRect();
       const clickPosition = (e.clientX - rect.left) / rect.width;
-      if(video.duration) {
-        video.currentTime = clickPosition * video.duration;
-      }
+      if(video.duration) { video.currentTime = clickPosition * video.duration; }
     });
   }
 
@@ -36,13 +32,10 @@ async function initPlayer() {
     video.addEventListener("waiting", () => loading.style.display = "block");
     video.addEventListener("playing", () => loading.style.display = "none");
     video.addEventListener("timeupdate", updateTimeline);
-    
-    // تشغيل الحلقة التالية تلقائياً عند انتهاء الحالية
     video.addEventListener("ended", playNextEpisodeAutomatically);
 
     await player.load(channel.url);
     
-    // استدعاء ميزة استكمال القراءة الذكية من نفس الثانية المفقودة
     const savedTime = localStorage.getItem(`timestamp_media_${channel.id || 905}`);
     if (savedTime) {
       const isAr = localStorage.getItem("app_lang") === "ar";
@@ -59,7 +52,6 @@ function updateTimeline() {
   totalTimeLbl.innerText = formatTime(video.duration);
   if (video.duration) {
     fillBar.style.width = `${(video.currentTime / video.duration) * 100}%`;
-    // تخزين الموضع الحالي للمادة بالثانية دورياً
     localStorage.setItem(`timestamp_media_${channel.id || 905}`, video.currentTime);
   }
 }
@@ -75,24 +67,18 @@ function seekForward() { video.currentTime = Math.min(video.duration || Infinity
 function playNextEpisodeAutomatically() {
   let currentIndex = parseInt(localStorage.getItem("current_ep_index"));
   let episodes = JSON.parse(localStorage.getItem("episodes_pack"));
-  
   if(episodes && currentIndex + 1 < episodes.length) {
     let nextEp = episodes[currentIndex + 1];
     localStorage.setItem("current_ep_index", currentIndex + 1);
-    localStorage.setItem(`last_ep_for_series_905`, nextEp.id); // حفظ التنشيط للمسلسل
-    
+    localStorage.setItem(`last_ep_for_series_905`, nextEp.id);
     const media = { name: nextEp.title, url: nextEp.url, id: nextEp.id };
     localStorage.setItem("current", JSON.stringify(media));
     window.location.reload();
-  } else {
-    alert(localStorage.getItem("app_lang") === "ar" ? "وصلت لنهاية المسلسل" : "End of series reached");
   }
 }
 
 function onPlayerError(e) {
-  console.error(e);
-  errorBox.innerText = "خطأ في تشغيل البث، جاري المحاولة...";
-  loading.style.display = "none";
+  console.error(e); loading.style.display = "none";
 }
 
 function formatTime(secs) {
@@ -103,7 +89,6 @@ function formatTime(secs) {
   return `${h}:${m}:${s}`;
 }
 
-// السيطرة المباشرة على الأزرار وضغط الـ OK
 document.addEventListener("keydown", function(e) {
   if (e.key === "Enter" || e.key === " ") { togglePlayPause(); }
   if (e.key === "ArrowLeft") { seekBack(); }
