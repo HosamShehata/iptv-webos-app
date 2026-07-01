@@ -1,9 +1,12 @@
 let channels = [];
 let filtered = [];
+let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+let lastWatched = JSON.parse(localStorage.getItem("lastWatched")) || null;
+
 let categories = ["All", "Sports", "Movies", "News"];
 let currentCategory = "All";
 
-// بيانات EPG تجريبية
+// EPG تجريبي
 const epgData = {
   "Sports": [
     { time: "10:00", title: "Football Live" },
@@ -29,17 +32,14 @@ function loadPlaylist() {
     .then(data => {
 
       channels = parseM3U(data);
-      filtered = channels;
 
-      renderCategories();
-      renderChannels();
-      renderEPG();
+      renderAll();
 
     });
 
 }
 
-// تحويل M3U
+// M3U Parser
 function parseM3U(data) {
 
   const lines = data.split("\n");
@@ -66,7 +66,15 @@ function parseM3U(data) {
   return result;
 }
 
-// عرض الأقسام
+// Render All
+function renderAll() {
+  renderCategories();
+  renderChannels();
+  renderFavorites();
+  renderEPG();
+}
+
+// Categories
 function renderCategories() {
 
   const box = document.getElementById("categories");
@@ -75,7 +83,6 @@ function renderCategories() {
   categories.forEach(cat => {
 
     const div = document.createElement("div");
-
     div.className = "category";
     div.innerText = cat;
 
@@ -91,7 +98,7 @@ function renderCategories() {
 
 }
 
-// عرض القنوات
+// Channels
 function renderChannels() {
 
   const search = document.getElementById("search").value.toLowerCase();
@@ -111,13 +118,30 @@ function renderChannels() {
   filtered.forEach(ch => {
 
     const div = document.createElement("div");
-
     div.className = "channel";
-    div.innerText = "▶ " + ch.name;
 
+    const isFav = favorites.some(f => f.url === ch.url);
+
+    div.innerHTML = `
+      <span>▶ ${ch.name}</span>
+      <span class="star">${isFav ? "★" : "☆"}</span>
+    `;
+
+    // تشغيل القناة
     div.onclick = function () {
+
       localStorage.setItem("current", JSON.stringify(ch));
+
+      // حفظ آخر مشاهدة
+      localStorage.setItem("lastWatched", JSON.stringify(ch));
+
       window.location.href = "player.html";
+    };
+
+    // إضافة/حذف من المفضلة
+    div.querySelector(".star").onclick = function (e) {
+      e.stopPropagation();
+      toggleFavorite(ch);
     };
 
     container.appendChild(div);
@@ -126,7 +150,48 @@ function renderChannels() {
 
 }
 
-// عرض EPG
+// Favorites
+function toggleFavorite(ch) {
+
+  const index = favorites.findIndex(f => f.url === ch.url);
+
+  if (index === -1) {
+    favorites.push(ch);
+  } else {
+    favorites.splice(index, 1);
+  }
+
+  localStorage.setItem("favorites", JSON.stringify(favorites));
+
+  renderFavorites();
+  renderChannels();
+
+}
+
+function renderFavorites() {
+
+  const box = document.getElementById("favorites");
+  box.innerHTML = "";
+
+  favorites.forEach(ch => {
+
+    const div = document.createElement("div");
+    div.className = "channel";
+    div.innerText = "⭐ " + ch.name;
+
+    div.onclick = function () {
+      localStorage.setItem("current", JSON.stringify(ch));
+      localStorage.setItem("lastWatched", JSON.stringify(ch));
+      window.location.href = "player.html";
+    };
+
+    box.appendChild(div);
+
+  });
+
+}
+
+// EPG
 function renderEPG() {
 
   const box = document.getElementById("epg");
