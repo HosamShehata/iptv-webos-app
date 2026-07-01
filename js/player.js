@@ -1,234 +1,147 @@
-// ============================================
-// VISION TV - ADVANCED PLAYER ENGINE
-// ============================================
-
-let video = document.getElementById("video");
-let fillBar = document.getElementById("fill-bar");
-let knob = document.getElementById("progress-knob");
-let currTimeLbl = document.getElementById("current-time");
-let totalTimeLbl = document.getElementById("total-time");
-let playIcon = document.getElementById("icon-play");
-let controlsPanel = document.getElementById("controls-panel");
+const video = document.getElementById("video");
+const fillBar = document.getElementById("fill-bar");
+const knob = document.getElementById("progress-knob");
+const currTimeLbl = document.getElementById("current-time");
+const totalTimeLbl = document.getElementById("total-time");
+const playIcon = document.getElementById("icon-play");
+const speedBtn = document.getElementById("speed-label-btn");
+const timelineZone = document.getElementById("timeline-click-zone");
+const nextPopup = document.getElementById("next-ep-popup");
 
 let mediaItem = JSON.parse(localStorage.getItem("current")) || {};
-let seekStep = parseInt(localStorage.getItem("global_seek_duration")) || 10;
+let currentSpeed = 1.0; let osdTimeout;
+let isDraggingSlider = false; let shakaPlayerInstance;
+let seekDuration = parseInt(localStorage.getItem("global_seek_duration")) || 10;
+let subMode = "ar";
 
-let osdTimer;
-let isDragging = false;
-let playerInstance;
+function initPlayerEngine() {
+  // عرض اسم الميديا والحلقة النشطة المستلمة من السيرفر
+  document.getElementById("player-title").innerText = mediaItem.name || "VISION TV Premium";
+  document.getElementById("seek-lbl-osd").innerText = seekDuration + "s";
 
-function initPlayer() {
-    // تعيين عنوان المقطع
-    document.getElementById("player-title").innerText = mediaItem.name || "VISION TV";
-    document.getElementById("seek-lbl-osd").innerText = seekStep + "s";
-    
-    // تحديث الأزرار الرسومية بناءً على خيار القفز الزمني المحدد
-    document.getElementById("btn-rewind-action").innerHTML = `<span class="material-icons">replay_${seekStep === 5 || seekStep === 10 || seekStep === 30 ? seekStep : 10}</span>`;
-    document.getElementById("btn-forward-action").innerHTML = `<span class="material-icons">forward_${seekStep === 5 || seekStep === 10 || seekStep === 30 ? seekStep : 10}</span>`;
+  document.getElementById("btn-rewind-action").onclick = () => { video.currentTime -= seekDuration; showOSD(); };
+  document.getElementById("btn-forward-action").onclick = () => { video.currentTime += seekDuration; showOSD(); };
 
-    const url = mediaItem.url;
-    if (!url || url === "#") {
-        console.warn("رابط البث غير صالح، سيتم استخدام الرابط التجريبي كبديل مستقر.");
-        fallbackToNative("https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8");
-        return;
-    }
+  if(timelineZone) {
+    timelineZone.addEventListener("mousedown", (e) => { isDraggingSlider = true; updateSliderPositionOnEvent(e); });
+    window.addEventListener("mousemove", (e) => { if(isDraggingSlider) updateSliderPositionOnEvent(e); });
+    window.addEventListener("mouseup", () => { isDraggingSlider = false; });
+  }
 
-    try {
-        if (window.shaka && shaka.Player.isBrowserSupported()) {
-            playerInstance = new shaka.Player(video);
-            playerInstance.configure({
-                streaming: {
-                    bufferingGoal: 30,
-                    rebufferingGoal: 10,
-                    bufferBehind: 20,
-                    lowLatencyMode: true
-                }
-            });
-
-            playerInstance.load(url).then(() => {
-                console.log("تم تحميل البث بنجاح عبر Shaka Engine.");
-                restoreSavedTime();
-            }).catch(err => {
-                console.error("Shaka error, switching to native video load:", err);
-                fallbackToNative(url);
-            });
-        } else {
-            fallbackToNative(url);
-        }
-    } catch (e) {
-        console.error("Initialization error:", e);
-        fallbackToNative(url);
-    }
-
-    // التنصت للأحداث المتغيرة للفيديو
-    video.addEventListener("timeupdate", updateUI);
-    video.addEventListener("loadedmetadata", updateUI);
-    
-    // نظام إخفاء الـ OSD تلقائياً بعد 5 ثوانٍ عند انقطاع حركة المستخدم
-    resetOSDTimer();
-    document.addEventListener("mousemove", resetOSDTimer);
-    document.addEventListener("keydown", resetOSDTimer);
-
-    initPlayerRemoteControl();
+  // تهيئة مشغل Shaka Player الاحترافي ضد التقطيع واللاغ
+  shakaPlayerInstance = new shaka.Player(video);
+  shakaPlayerInstance.configure({ streaming: { bufferingGoal: 30, rebufferingGoal: 10, bufferBehind: 15 } });
+  
+  // تشغيل رابط البث المباشر المشتق من حساب الـ IPTV الفعلي الخاص بك مع مسار احتياطي
+  shakaPlayerInstance.load(mediaItem.url).catch(err => {
+    console.error("فشل تشغيل بث السيرفر، جاري تجربة الرابط الاحتياطي المباشر...", err);
+    shakaPlayerInstance.load("https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8").catch(e => console.error(e));
+  });
+  
+  video.addEventListener("timeupdate", onVideoTimeUpdateSync);
+  
+  // إظهار شريط التحكم الـ OSD فوراً عند عمل Scroll بالماوس أو الريموت السحري
+  window.addEventListener("wheel", () => { showOSD(); });
 }
 
-function fallbackToNative(url) {
-    video.src = url;
-    video.load();
-    video.play().catch(() => {});
-    restoreSavedTime();
+function updateSliderPositionOnEvent(e) {
+  const rect = timelineZone.getBoundingClientRect();
+  let percentage = (e.clientX - rect.left) / rect.width;
+  if(percentage < 0) percentage = 0; if(percentage > 1) percentage = 1;
+  fillBar.style.width = (percentage * 100) + '%';
+  knob.style.left = (percentage * 100) + '%';
+  if(video.duration) video.currentTime = percentage * video.duration;
+  showOSD();
 }
 
-function restoreSavedTime() {
-    const savedTime = localStorage.getItem("time_" + mediaItem.id);
-    if (savedTime && !isNaN(savedTime)) {
-        video.currentTime = parseFloat(savedTime);
-    }
-}
+function onVideoTimeUpdateSync() {
+  if(isDraggingSlider) return;
+  currTimeLbl.innerText = formatSecondsToTimeStr(video.currentTime);
+  totalTimeLbl.innerText = formatSecondsToTimeStr(video.duration);
+  if (video.duration) {
+    const pct = (video.currentTime / video.duration) * 100;
+    fillBar.style.width = `${pct}%`; knob.style.left = `${pct}%`;
+    localStorage.setItem(`timestamp_media_${mediaItem.id || 201}`, video.currentTime);
+    localStorage.setItem(`progress_ratio_media_${mediaItem.id || 201}`, pct);
 
-function updateUI() {
-    if (isDragging || !video.duration) return;
-
-    let percent = (video.currentTime / video.duration) * 100;
-    if (fillBar) fillBar.style.width = percent + "%";
-    if (knob) knob.style.left = percent + "%";
-
-    if (currTimeLbl) currTimeLbl.innerText = formatTime(video.currentTime);
-    if (totalTimeLbl) totalTimeLbl.innerText = formatTime(video.duration);
-
-    // تخزين الموضع لاستكمال المشاهدة من القائمة الرئيسية
-    localStorage.setItem(`progress_ratio_media_${mediaItem.id}`, percent);
-    localStorage.setItem("time_" + mediaItem.id, video.currentTime);
-
-    checkNextEpisode();
-}
-
-function formatTime(sec) {
-    if (!sec || isNaN(sec)) return "00:00:00";
-    let h = Math.floor(sec / 3600);
-    let m = Math.floor((sec % 3600) / 60);
-    let s = Math.floor(sec % 60);
-    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-}
-
-function togglePlay() {
-    if (video.paused) {
-        video.play().catch(() => {});
-        if (playIcon) playIcon.innerText = "pause";
+    // فحص واقتراح الحلقة القادمة بآخر 60 ثانية بالضبط والربط المباشر بالـ OSD
+    const timeLeft = video.duration - video.currentTime;
+    if (timeLeft <= 60 && timeLeft > 2) {
+      if (document.getElementById("controls-panel").style.opacity === "1") {
+        nextPopup.style.display = "block";
+      } else {
+        nextPopup.style.display = "none";
+      }
     } else {
-        video.disabled = false;
-        video.pause();
-        if (playIcon) playIcon.innerText = "play_arrow";
+      nextPopup.style.display = "none";
     }
-    resetOSDTimer();
+  }
 }
 
-function seek(seconds) {
-    video.currentTime += seconds;
-    resetOSDTimer();
+function togglePlayPauseState() {
+  if (video.paused) { video.play(); playIcon.innerText = "pause"; }
+  else { video.pause(); playIcon.innerText = "play_arrow"; }
 }
 
 function triggerPlaybackSpeedCycle() {
-    let speeds = [1.0, 1.25, 1.5, 2.0];
-    let currentSpeed = video.playbackRate;
-    let nextIndex = (speeds.indexOf(currentSpeed) + 1) % speeds.length;
-    video.playbackRate = speeds[nextIndex];
-    document.getElementById("speed-label-btn").innerText = speeds[nextIndex] + "x";
+  currentSpeed = currentSpeed === 2.0 ? 0.5 : currentSpeed + 0.5;
+  video.playbackRate = currentSpeed; speedBtn.innerText = currentSpeed + "x";
+}
+
+function cycleSubtitles() {
+  subMode = subMode === "ar" ? "en" : (subMode === "en" ? "off" : "ar");
+  document.getElementById("sub-label-btn").innerText = subMode === "off" ? "الترجمة: إيقاف" : `الترجمة: ${subMode.toUpperCase()}`;
 }
 
 function changeOSDSeekStep() {
-    let steps = [5, 10, 15, 30];
-    let nextIndex = (steps.indexOf(seekStep) + 1) % steps.length;
-    seekStep = steps[nextIndex];
-    localStorage.setItem("global_seek_duration", seekStep);
-    document.getElementById("seek-lbl-osd").innerText = seekStep + "s";
-    
-    // تحديث الأزرار
-    document.getElementById("btn-rewind-action").innerHTML = `<span class="material-icons">replay_${seekStep}</span>`;
-    document.getElementById("btn-forward-action").innerHTML = `<span class="material-icons">forward_${seekStep}</span>`;
+  seekDuration = seekDuration === 60 ? 5 : (seekDuration === 30 ? 60 : seekDuration + 10);
+  localStorage.setItem("global_seek_duration", seekDuration);
+  document.getElementById("seek-lbl-osd").innerText = seekDuration + "s";
 }
 
-function checkNextEpisode() {
-    let left = video.duration - video.currentTime;
-    let popup = document.getElementById("next-ep-popup");
-    if (!popup) return;
-
-    if (left <= 60 && left > 2 && mediaItem.type === "episode") {
-        popup.style.display = "block";
-    } else {
-        popup.style.display = "none";
-    }
+function navigateEpisodesStream(direction) {
+  alert(direction > 0 ? "الانتقال الفوري للحلقة التالية رأسياً من السيرفر..." : "الانتقال للحلقة السابقة...");
+  window.location.reload();
 }
 
-function nextEpisode() {
-    console.log("جاري طلب الحلقة القادمة...");
-    // يمكن هنا إدراج دالة لتغيير مأخذ الـ LocalStorage وفتح الملف من جديد
+function formatSecondsToTimeStr(secs) {
+  if (isNaN(secs)) return "00:00:00";
+  const h = Math.floor(secs / 3600).toString().padStart(2, '0');
+  const m = Math.floor((secs % 3600) / 60).toString().padStart(2, '0');
+  const s = Math.floor(secs % 60).toString().padStart(2, '0');
+  return `${h}:${m}:${s}`;
 }
 
-function prevEpisode() {
-    console.log("جاري طلب الحلقة السابقة...");
+// السيطرة الصارمة وتفكيك الاتجاهات الأربعة لريموت شاشات LG Magic
+document.addEventListener("keydown", (e) => {
+  showOSD();
+  // يمين ويسار للتقديم والتأخير الحركي بالثواني
+  if (e.key === "ArrowLeft") { video.currentTime -= seekDuration; e.preventDefault(); }
+  if (e.key === "ArrowRight") { video.currentTime += seekDuration; e.preventDefault(); }
+  // فوق وتحت لتقليب الحلقات الفوري
+  if (e.key === "ArrowUp") { navigateEpisodesStream(1); e.preventDefault(); }
+  if (e.key === "ArrowDown") { navigateEpisodesStream(-1); e.preventDefault(); }
+  
+  if (e.key === "Enter" || e.key === "Ok") { togglePlayPauseState(); e.preventDefault(); }
+  if (e.key === "Backspace") { window.location.href = "index.html"; }
+});
+
+function showOSD() {
+  document.getElementById("controls-panel").style.opacity = "1";
+  const timeLeft = video.duration - video.currentTime;
+  if (timeLeft <= 60 && timeLeft > 2) nextPopup.style.display = "block";
+  
+  clearTimeout(osdTimeout);
+  // التلاشي والاختفاء التلقائي الناعم بعد 3 ثوانٍ بالضبط من ثبات الحركة أو السكرول
+  osdTimeout = setTimeout(() => {
+    document.getElementById("controls-panel").style.opacity = "0";
+    nextPopup.style.display = "none";
+  }, 3000);
 }
 
-function resetOSDTimer() {
-    if (controlsPanel) controlsPanel.style.opacity = "1";
-    clearTimeout(osdTimer);
-    osdTimer = setTimeout(() => {
-        if (!video.paused && controlsPanel) {
-            controlsPanel.style.opacity = "0";
-        }
-    }, 5000);
-}
-
-// أزرار الريموت المخصصة لصفحة المشغل
-function initPlayerRemoteControl() {
-    let playerFocusables = Array.from(document.querySelectorAll("#player-html .remote-focusable"));
-    let pFocusIndex = 2; // الفوكس التلقائي على زر التشغيل الأساسي في الوسط
-
-    if(playerFocusables.length > 0) {
-        playerFocusables.forEach(el => el.classList.remove("focused"));
-        playerFocusables[pFocusIndex].classList.add("focused");
-    }
-
-    document.addEventListener("keydown", (e) => {
-        if (controlsPanel.style.opacity === "0") {
-            resetOSDTimer();
-            e.preventDefault();
-            return;
-        }
-
-        switch (e.key) {
-            case "ArrowLeft":
-                if (pFocusIndex > 0) {
-                    playerFocusables[pFocusIndex].classList.remove("focused");
-                    pFocusIndex--;
-                    playerFocusables[pFocusIndex].classList.add("focused");
-                } else {
-                    seek(-seekStep);
-                }
-                e.preventDefault();
-                break;
-            case "ArrowRight":
-                if (pFocusIndex < playerFocusables.length - 1) {
-                    playerFocusables[pFocusIndex].classList.remove("focused");
-                    pFocusIndex++;
-                    playerFocusables[pFocusIndex].classList.add("focused");
-                } else {
-                    seek(seekStep);
-                }
-                e.preventDefault();
-                break;
-            case "Enter":
-            case "OK":
-                playerFocusables[pFocusIndex].click();
-                e.preventDefault();
-                break;
-            case "Backspace":
-            case "Escape":
-                window.location.href = "index.html";
-                e.preventDefault();
-                break;
-        }
-    });
-}
-
-window.onload = initPlayer;
+window.onload = function() {
+  const activeTheme = localStorage.getItem('selected-theme') || 'theme-netflix';
+  document.getElementById('player-html').className = activeTheme;
+  initPlayerEngine();
+  showOSD();
+};
