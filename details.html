@@ -1,71 +1,217 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" id="details-html" class="theme-netflix">
+<html lang="ar" dir="rtl" id="main-html" class="theme-netflix">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VISION TV - SERIES HUB</title>
+  <title>VISION TV - PREMIUM IPTV ENGINE</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
-    .theme-netflix { --accent: #e50914; --bg-main: #000000; --bg-card: #141414; }
-    .theme-shahid { --accent: #00ff87; --bg-main: #0b0f19; --bg-card: #111827; }
-    .theme-cyberpunk { --accent: #f000ff; --bg-main: #0c0014; --bg-card: #1a0033; }
-    .theme-midnight { --accent: #d4af37; --bg-main: #050b14; --bg-card: #0f172a; }
-    .theme-ocean { --accent: #00b4d8; --bg-main: #011627; --bg-card: #0b3c5d; }
+    /* محرك السمات الخمسة المنسقة بالكامل مع بار التقدم */
+    .theme-netflix { --accent: #e50914; --bg-main: #000000; --bg-card: #141414; --accent-glow: rgba(229, 9, 20, 0.4); }
+    .theme-shahid { --accent: #00ff87; --bg-main: #0b0f19; --bg-card: #111827; --accent-glow: rgba(0, 255, 135, 0.4); }
+    .theme-cyberpunk { --accent: #f000ff; --bg-main: #0c0014; --bg-card: #1a0033; --accent-glow: rgba(240, 0, 255, 0.4); }
+    .theme-midnight { --accent: #d4af37; --bg-main: #050b14; --bg-card: #0f172a; --accent-glow: rgba(212, 175, 55, 0.4); }
+    .theme-ocean { --accent: #00b4d8; --bg-main: #011627; --bg-card: #0b3c5d; --accent-glow: rgba(0, 180, 216, 0.4); }
 
-    html { font-size: 1.15vw; }
-    @media (max-width: 1024px) { html { font-size: 15px; } }
-    body { background: var(--bg-main); color: #fff; padding: 3rem; font-family: 'Segoe UI', sans-serif; margin: 0; }
-    
-    .action-row { display: flex; gap: 1.5rem; margin-bottom: 2.5rem; }
-    .btn-action { background: var(--bg-card); padding: 1.1rem 2.2rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; display: flex; align-items: center; gap: 0.8rem; font-weight: bold; font-size: 1.15rem; text-decoration: none; transition: 0.2s; }
-    .btn-action:hover { background: var(--accent); border-color: transparent; box-shadow: 0 0 15px var(--accent); }
-    
-    .series-header { display: flex; gap: 3rem; background: var(--bg-card); padding: 2.5rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 2.5rem; align-items: center; }
-    .series-poster { width: 17rem; height: 24rem; object-fit: cover; border-radius: 14px; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
-    .series-title { font-size: 2.5rem; font-weight: 900; margin: 0 0 1rem 0; }
+    /* تحجيم ديناميكي مرن نسبة وتناسب للشاشات الضخمة والتلفزيونات */
+    html { font-size: 1.2vw; }
+    @media (max-width: 1024px) { html { font-size: 16px; } }
 
-    /* حقل البحث داخل الحلقات */
-    .ep-search-container { margin-bottom: 2rem; max-width: 30rem; position: relative; display: flex; align-items: center; }
+    body { margin: 0; background: var(--bg-main); color: #fff; font-family: 'Segoe UI', Arial, sans-serif; overflow: hidden; user-select: none; }
+    .layout { display: flex; height: 100vh; width: 100vw; }
+    
+    /* السايد بار الاحترافي */
+    .sidebar { width: 18rem; background: rgba(15, 15, 15, 0.95); backdrop-filter: blur(20px); padding: 1.5rem; border-left: 1px solid rgba(255,255,255,0.08); box-sizing: border-box; display: flex; flex-direction: column; }
+    html[dir="ltr"] .sidebar { border-left: none; border-right: 1px solid rgba(255,255,255,0.08); }
+    .brand-title { font-size: 2.2rem; font-weight: 900; text-align: center; margin-bottom: 2rem; color: var(--accent); text-shadow: 0 0 15px var(--accent-glow); }
+    
+    .lang-toggle-bar { padding: 1rem; background: rgba(255,255,255,0.04); border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 0.8rem; cursor: pointer; font-size: 1.1rem; font-weight: bold; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 1.5rem; }
+    .lang-toggle-bar.focused, .lang-toggle-bar:hover { background: var(--accent); box-shadow: 0 0 15px var(--accent-glow); border-color: transparent; }
 
-    .episodes-grid-youtube { display: grid; grid-template-columns: repeat(auto-fill, minmax(21rem, 1fr)); gap: 2.2rem; }
-    .episode-yt-card { background: var(--bg-card); border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.06); cursor: pointer; position: relative; transition: 0.2s; }
-    .episode-yt-card:hover { transform: scale(1.03); border-color: var(--accent); }
-    .thumb-wrapper { position: relative; width: 100%; height: 12rem; background: #222; }
-    .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+    .menu-item { padding: 1.1rem 1.3rem; font-size: 1.2rem; color: #aaa; cursor: pointer; display: flex; align-items: center; gap: 1rem; border-radius: 12px; transition: 0.2s; margin-bottom: 0.5rem; }
+    .menu-item.focused, .menu-item:hover { background: var(--accent); color: #fff; font-weight: bold; box-shadow: 0 0 15px var(--accent-glow); }
+
+    .content-container { flex: 1; display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+    .top-info-bar { height: 4.5rem; background: rgba(10,10,10,0.6); display: flex; align-items: center; justify-content: space-between; padding: 0 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); flex-shrink: 0; }
+    .top-right-clock-area { display: flex; align-items: center; gap: 0.8rem; font-size: 1.1rem; font-weight: bold; }
+    .date-divider { color: var(--accent); margin: 0 0.3rem; }
+    .speed-indicator { display: flex; align-items: center; gap: 0.5rem; color: #00C851; background: rgba(0,200,81,0.08); padding: 0.5rem 1.2rem; border-radius: 8px; font-size: 1.05rem; font-weight: bold; border: 1px solid rgba(0,200,81,0.15); }
+
+    /* حقل البحث الشامل العريض المطابق للصورة */
+    .search-area-wrapper { padding: 1rem 2.5rem 0 2.5rem; flex-shrink: 0; }
+    .search-input-box { width: 100%; position: relative; display: flex; align-items: center; }
+    .search-field-control { width: 100%; padding: 1.1rem 3.5rem 1.1rem 1.5rem; background: var(--bg-card); border: 2px solid rgba(255,255,255,0.1); border-radius: 14px; color: #fff; font-size: 1.25rem; box-sizing: border-box; }
+    html[dir="ltr"] .search-field-control { padding: 1.1rem 1.5rem 1.1rem 3.5rem; }
+    .search-field-control:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 15px var(--accent-glow); }
+    .search-icon-pos { position: absolute; right: 1.2rem; color: #777; font-size: 1.8rem; }
+    html[dir="ltr"] .search-icon-pos { right: auto; left: 1.2rem; }
+
+    .view-panel { display: none; width: 100%; height: 100%; padding: 1.5rem 2.5rem 3rem 2.5rem; overflow-y: auto; box-sizing: border-box; }
+    .view-panel.active { display: block !important; }
     
-    .yt-progress-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 6px; background: rgba(255,255,255,0.2); }
-    .yt-progress-fill { height: 100%; background: var(--accent); width: 0%; box-shadow: 0 0 6px var(--accent); }
+    /* رف متابعة المشاهدة المطور */
+    .continue-shelf-container { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 16px; margin-bottom: 2rem; }
+    .shelf-header-title { font-size: 1.4rem; font-weight: bold; margin: 0 0 1.2rem 0; color: var(--accent); display: flex; align-items: center; gap: 0.6rem; }
+
+    .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 2.2rem; }
+
+    /* جرافيكس كروت الميديا والداتا */
+    .media-card { background: var(--bg-card); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; overflow: hidden; position: relative; cursor: pointer; transition: 0.25s; }
+    .media-card img { width: 100%; height: 20rem; object-fit: cover; }
+    .media-card .info { padding: 1.1rem; text-align: center; font-size: 1.15rem; font-weight: bold; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+    .media-card.focused, .media-card:hover { outline: 4px solid var(--accent); transform: scale(1.03); box-shadow: 0 0 20px var(--accent-glow); }
     
-    .ep-card-info { padding: 1.2rem; }
-    .ep-card-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .ep-card-status { font-size: 1.05rem; color: var(--accent); font-weight: bold; }
+    .card-progress-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.1); position: relative; }
+    .card-progress-fill { height: 100%; background: var(--accent); width: 0%; box-shadow: 0 0 8px var(--accent); }
+
+    /* شاشة إضافة البلاي ليست بالأربع خانات كاملة طبقا لـ 88648.jpg */
+    .iptv-login-box { max-width: 38rem; background: var(--bg-card); padding: 3rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); margin: 0 auto 2rem auto; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+    .input-field-group { position: relative; margin-bottom: 1.6rem; }
+    .input-field-group label { display: block; margin-bottom: 0.6rem; font-size: 1.1rem; color: #ccc; }
+    .app-input { width: 100%; padding: 1.1rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: #fff; font-size: 1.15rem; box-sizing: border-box; }
+    .app-input:focus { border-color: var(--accent); outline: none; }
+    .eye-toggle-icon { position: absolute; left: 1.2rem; top: 2.8rem; cursor: pointer; color: #aaa; font-size: 1.7rem; }
+    html[dir="ltr"] .eye-toggle-icon { left: auto; right: 1.2rem; }
+    .btn-action-submit { background: var(--accent); color: #fff; border: none; padding: 1.1rem; border-radius: 10px; cursor: pointer; font-size: 1.3rem; width: 100%; font-weight: bold; transition: 0.2s; }
+    .btn-action-submit:hover { box-shadow: 0 0 20px var(--accent-glow); transform: translateY(-2px); }
+
+    .playlist-table-row { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 1.3rem; margin-top: 1rem; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 1.2rem; transition: 0.2s; }
+    .playlist-table-row:hover { border-color: var(--accent); }
+
+    /* شاشة الإعدادات والريموت الفسيحة */
+    .settings-split-layout { display: flex; gap: 2.5rem; height: 100%; }
+    .settings-left-nav { width: 22rem; display: flex; flex-direction: column; gap: 0.8rem; }
+    .settings-right-pane { flex: 1; background: var(--bg-card); padding: 2.5rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); min-height: 28rem; }
+    .pane-tab { display: none; }
+    .pane-tab.active { display: block; }
+    .theme-flex-row { display: flex; gap: 1.5rem; margin-top: 1.5rem; }
+    .theme-circle { width: 3.5rem; height: 3.5rem; border-radius: 50%; cursor: pointer; border: 3px solid rgba(255,255,255,0.2); transition: 0.2s; }
+    .theme-circle.active, .theme-circle:hover { transform: scale(1.15); border-color: #fff; box-shadow: 0 0 15px var(--accent-glow); }
+    .select-dropdown { width: 100%; padding: 1.1rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: #fff; font-size: 1.2rem; outline: none; margin-top: 0.8rem; }
+    
+    .remote-config-list { display: flex; flex-direction: column; gap: 1.2rem; margin-top: 1.5rem; }
+    .remote-row-item { display: flex; align-items: center; justify-content: space-between; padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); }
   </style>
 </head>
 <body>
 
-  <div class="action-row">
-    <a href="index.html" class="btn-action"><span class="material-icons">arrow_forward</span><span id="lbl-back">العودة للرئيسية</span></a>
-    <button class="btn-action" style="background:#00c851; border-color:transparent; box-shadow: 0 4px 12px rgba(0,200,81,0.2);" onclick="resumeLastWatchedEpisode()"><span class="material-icons">play_circle_filled</span><span id="lbl-resume-btn">متابعة الحلقة الأخيرة المتبقية</span></button>
+<div class="layout">
+  <!-- السايد بار الرئيسي للمشروع -->
+  <div class="sidebar">
+    <div class="brand-area"><div class="brand-title">VISION TV</div></div>
+    <div class="lang-toggle-bar" id="sidebarLangBtn" onclick="toggleLanguage()">
+      <span class="material-icons">translate</span> <span id="lbl-sidebar-lang">English</span>
+    </div>
+    <div class="menu-item focused" onclick="clickSidebarItem(0)" id="nav-home"><span class="material-icons">home</span><span class="txt-lang" data-key="home">الرئيسية</span></div>
+    <div class="menu-item" onclick="clickSidebarItem(1)" id="nav-live"><span class="material-icons">live_tv</span><span class="txt-lang" data-key="live">قنوات مباشرة</span></div>
+    <div class="menu-item" onclick="clickSidebarItem(2)" id="nav-movies"><span class="material-icons">movie</span><span class="txt-lang" data-key="movies">الأفلام</span></div>
+    <div class="menu-item" onclick="clickSidebarItem(3)" id="nav-series"><span class="material-icons">tv</span><span class="txt-lang" data-key="series">المسلسلات</span></div>
+    <div class="menu-item" onclick="clickSidebarItem(6)" id="nav-iptv"><span class="material-icons">playlist_add</span><span class="txt-lang" data-key="add_playlist">إضافة قائمة تشغيل</span></div>
+    <div class="menu-item" onclick="clickSidebarItem(8)" id="nav-settings"><span class="material-icons">settings</span><span class="txt-lang" data-key="settings">الإعدادات</span></div>
   </div>
 
-  <div class="series-header">
-    <img id="series-img" class="series-poster" src="https://placehold.co/400x540/ff4444/ffffff?text=Series" />
-    <div>
-      <h1 id="series-title" class="series-title">اسم المسلسل النشط</h1>
-      <p style="color:#aaa; font-size:1.25rem; line-height:1.6;" id="series-desc">عرض تفصيلي وتلقائي لكافة الحلقات المتوفرة ضمن ملفات الـ IPTV المحفوظة بالكامل مع ميزة تتبع الحلقات المشاهدة بدقة عالية.</p>
+  <div class="content-container">
+    <!-- هيدر الساعة والشبكة موزع هندسياً بالملي -->
+    <div class="top-info-bar">
+      <div class="top-right-clock-area">
+        <span class="material-icons">schedule</span> <span id="top-current-day">--</span>
+        <span class="date-divider">|</span> <span id="top-current-date">--/--/----</span>
+        <span class="date-divider">|</span> <span id="top-current-time">00:00 AM</span>
+      </div>
+      <div class="top-left-network-area"><div class="speed-indicator"><span class="material-icons">speed</span><span id="top-net-speed">64.8 Mbps</span></div></div>
+    </div>
+
+    <!-- بار البحث الموحد السينمائي الفعال الممتد بالكامل كالصورة -->
+    <div class="search-area-wrapper" id="search-bar-container">
+      <div class="search-input-box">
+        <span class="material-icons search-icon-pos">search</span>
+        <input type="text" id="main-search-input" class="search-field-control" placeholder="ابحث عن قنوات، أفلام، أو مسلسلات..." oninput="triggerLiveSearchFilter(this.value)">
+      </div>
+    </div>
+
+    <!-- شاشة الرئيسية مع رف متابعة المشاهدة التلقائي المدمج -->
+    <div class="view-panel active" id="view-home">
+      <div id="continue-watching-box" class="continue-shelf-container" style="display: none;">
+        <div class="shelf-header-title"><span class="material-icons">history</span> <span class="txt-lang" data-key="resume_shelf">تكملة المشاهدة الفورية ⏱️</span></div>
+        <div class="grid-container" id="shelf-items-grid"></div>
+      </div>
+      <h3 style="margin: 0 0 1.5rem 0; font-size:1.6rem; color:var(--accent);" class="txt-lang" data-key="recent">⏱️ المحتوى المتوفر والمضاف من السيرفر</h3>
+      <div class="grid-container" id="home-main-grid"></div>
+    </div>
+
+    <!-- القوائم الفرعية للأقسام الثلاثة -->
+    <div id="view-live" class="view-panel"><h3 style="margin:0 0 1.5rem 0; font-size:1.6rem;" class="txt-lang" data-key="live">البث المباشر</h3><div class="grid-container" id="live-grid"></div></div>
+    <div id="view-movies" class="view-panel"><h3 style="margin:0 0 1.5rem 0; font-size:1.6rem;" class="txt-lang" data-key="movies">مكتبة الأفلام</h3><div class="grid-container" id="movies-grid"></div></div>
+    <div id="view-series" class="view-panel"><h3 style="margin:0 0 1.5rem 0; font-size:1.6rem;" class="txt-lang" data-key="series">مكتبة المسلسلات</h3><div class="grid-container" id="series-grid"></div></div>
+
+    <!-- شاشة الإدخال بالأربع خانات وتناسق ألوان القوائم المحفوظة تماماً طبقاً لـ 88648.jpg -->
+    <div id="view-iptv" class="view-panel">
+      <div class="iptv-login-box">
+        <div class="screen-title txt-lang" data-key="xt_title" style="font-size:1.6rem; margin-bottom:2rem; text-align:center; font-weight:bold;">Enter Your Login Details</div>
+        <div class="input-field-group">
+          <label>PlayList Name</label>
+          <input type="text" id="server-name" class="app-input" placeholder="Any Name">
+        </div>
+        <div class="input-field-group">
+          <label>User Name</label>
+          <input type="text" id="server-user" class="app-input" placeholder="Username">
+        </div>
+        <div class="input-field-group">
+          <label>Password</label>
+          <input type="password" id="server-pass" class="app-input" placeholder="Password">
+          <span class="material-icons eye-toggle-icon" onclick="togglePasswordVisibility()">visibility</span>
+        </div>
+        <div class="input-field-group">
+          <label>URL Server Host</label>
+          <input type="text" id="server-url" class="app-input" placeholder="http://url_here.com:port">
+        </div>
+        <button class="btn-action-submit txt-lang" data-key="xt_btn" onclick="saveIPTVServer()">ADD USER</button>
+        <div id="pl_status" style="margin-top:1.5rem; text-align:center; font-weight:bold; font-size:1.2rem;"></div>
+      </div>
+      <h4 style="margin-top:2rem; font-size:1.4rem; color: var(--accent); border-bottom: 2px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem;">📋 قوائم التشغيل والاشتراكات المثبتة حالياً:</h4>
+      <div id="playlists-list"></div>
+    </div>
+
+    <!-- شاشة الإعدادات وجدول برمجة ريموت LG Magic بالكامل -->
+    <div id="view-settings" class="view-panel">
+      <div class="settings-split-layout">
+        <div class="settings-left-nav">
+          <div class="menu-item focused" onclick="switchSettingsTab(0)" id="stab-0"><span class="material-icons">palette</span><span>تخصيص السمات والمظهر</span></div>
+          <div class="menu-item" onclick="switchSettingsTab(1)" id="stab-1"><span class="material-icons">settings_remote</span><span>برمجة أزرار ريموت LG Magic</span></div>
+        </div>
+        <div class="settings-right-pane">
+          <div id="set-pane-0" class="pane-tab active">
+            <h3 style="font-size:1.4rem; margin-top:0; color:var(--accent);">🎨 اختر السمة والمظهر النشط لواجهات التطبيق</h3>
+            <div class="theme-flex-row">
+              <div class="theme-circle" id="dot-theme-netflix" style="background: #e50914;" onclick="applyTheme('theme-netflix')"></div>
+              <div class="theme-circle" id="dot-theme-shahid" style="background: #00ff87;" onclick="applyTheme('theme-shahid')"></div>
+              <div class="theme-circle" id="dot-theme-cyberpunk" style="background: #f000ff;" onclick="applyTheme('theme-cyberpunk')"></div>
+              <div class="theme-circle" id="dot-theme-midnight" style="background: #d4af37;" onclick="applyTheme('theme-midnight')"></div>
+              <div class="theme-circle" id="dot-theme-ocean" style="background: #00b4d8;" onclick="applyTheme('theme-ocean')"></div>
+            </div>
+            <h3 style="margin-top:2.5rem; font-size:1.4rem; color:var(--accent);">⏱️ معدل قفز الفيديو عند الضغط على الأسهم يمين/يسار</h3>
+            <select class="select-dropdown" onchange="updateSeekDurationSetting(this.value)" id="seek-duration-select">
+              <option value="5">5 ثوانٍ</option>
+              <option value="10">10 ثوانٍ (الوضع الافتراضي)</option>
+              <option value="15">15 ثانية متقدمة</option>
+              <option value="30">30 ثانية قفز سريع</option>
+              <option value="60">60 ثانية كاملة (دقيقة واحدة) 🚀</option>
+            </select>
+          </div>
+          <div id="set-pane-1" class="pane-tab">
+            <h3 style="font-size:1.4rem; margin-top:0; color:var(--accent);">🎮 خيارات برمجة وتعيين كافة وظائف أزرار ريموت التلفزيون</h3>
+            <div class="remote-config-list">
+              <div class="remote-row-item"><span><span class="material-icons">radio_button_checked</span> زر العجلة الوسطى الرئيسي (OK Click)</span><select class="select-dropdown" style="width:18rem; margin:0;"><option>Play / Pause فوري وعرض الـ OSD</option></select></div>
+              <div class="remote-row-item"><span><span class="material-icons">swap_vert</span> أزرار تقليب القنوات (CH+ / CH-)</span><select class="select-dropdown" style="width:18rem; margin:0;"><option>تقليب قنوات البث المباشر فوراً</option></select></div>
+              <div class="remote-row-item"><span><span class="material-icons" style="color:#e50914;">fiber_manual_record</span> الأسهم الأربعة (الاتجاهات كاملة)</span><select class="select-dropdown" style="width:18rem; margin:0;"><option>التنقل والتقديم بالثواني المحددة</option></select></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+</div>
 
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-    <h3 style="margin:0; font-size:1.7rem;" id="lbl-episodes-heading">حلقات هذا الموسم</h3>
-    <div class="ep-search-container">
-      <span class="material-icons" style="position:absolute; right:1rem; color:#888;">search</span>
-      <input type="text" id="ep-search-input" class="btn-action" style="width:100%; padding-right:3rem; text-align:right; margin:0;" placeholder="ابحث عن رقم أو اسم الحلقة..." oninput="filterEpisodesList(this.value)">
-    </div>
-  </div>
-
-  <div class="episodes-grid-youtube" id="episodes-container"></div>
-
-<script src="js/details.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
