@@ -5,16 +5,11 @@ let globalFiltered = [];
 let activeSubCategories = ["الكل"];
 
 const sidebarViews = ["view-home", "view-live", "view-movies", "view-series", "view-favorites", "view-history", "view-playlist", "view-search", "view-settings"];
-const subSettingsIds = ["sub-set-account", "sub-set-theme", "sub-set-language", "sub-set-parental", "sub-set-about"];
+const subSettingsIds = ["sub-set-account", "sub-set-theme", "sub-set-language", "sub-set-parental", "sub-set-remote"];
 
 let focusMode = "sidebar"; 
-let sidebarIdx = 0; 
-let filterIdx = 0;
-let cardIdx = 0;
-let formIndex = 2;         
-let settingsIdx = 0;
+let sidebarIdx = 0; let filterIdx = 0; let cardIdx = 0; let formIndex = 0; let settingsIdx = 0; let plMenuIdx = 0;
 let columnsCount = 5;
-
 let currentPlaylistType = "xtream"; 
 let currentLang = localStorage.getItem("app_lang") || "ar";
 
@@ -22,20 +17,14 @@ const languages = {
   ar: {
     home: "الرئيسية", live: "قنوات مباشرة", movies: "الأفلام", series: "المسلسلات", favorites: "المفضلة",
     history: "تابع المشاهدة", add_playlist: "أضف قائمة تشغيل", search: "البحث المتقدم", settings: "الإعدادات",
-    hero_desc: "استمتع بـ تجربة مشاهدة لا حدود لها بدقة 4K ULTRA HD وأحدث تقنيات الصوت الرقمي.",
     recent: "⏱️ تابع المشاهدة مؤخراً", xt_title: "أضف قائمة تشغيل", xt_btn: "إضافة",
-    set_acc: "الحساب والاشتراك", set_theme: "المظهر والسمات", set_parent: "الرقابة الأبوية والقفل", set_about: "حول التطبيق",
-    set_lang_menu: "اللغة والترجمة", no_content: "القائمة فارغة. برجاء إضافة قائمة تشغيل حية من القسم المختص.",
-    sidebar_lang: "English"
+    set_acc: "الحساب والاشتراك", set_theme: "المظهر والسمات", set_parent: "الرقابة الأبوية والقفل", sidebar_lang: "English"
   },
   en: {
     home: "Home", live: "Live TV", movies: "Movies", series: "Series", favorites: "Favorites",
     history: "Continue Watching", add_playlist: "Add Playlist", search: "Advanced Search", settings: "Settings",
-    hero_desc: "Enjoy an unlimited viewing experience with 4K ULTRA HD and the latest digital sound technologies.",
     recent: "⏱️ Continue Watching", xt_title: "Add Playlist", xt_btn: "Add",
-    set_acc: "Account & Subscription", set_theme: "Appearance", set_parent: "Parental Control", set_about: "About App",
-    set_lang_menu: "Language / الترجمة", no_content: "The list is empty. Please add a live playlist from the dedicated section.",
-    sidebar_lang: "العربية"
+    set_acc: "Account & Subscription", set_theme: "Appearance", set_parent: "Parental Control", sidebar_lang: "العربية"
   }
 };
 
@@ -53,6 +42,27 @@ function loadTestData() {
   ];
 }
 
+function openPlaylistInputForm(type) {
+  focusMode = "playlist_form"; formIndex = 0;
+  document.getElementById("pl-main-menu-grid").style.display = "none";
+  document.getElementById("playlist-input-form-box").classList.add("active");
+  const rowUser = document.getElementById("row-user");
+  const rowPass = document.getElementById("row-pass");
+  if(type === "m3u_url" || type === "m3u_file") {
+    rowUser.style.display = "none"; rowPass.style.display = "none";
+  } else {
+    rowUser.style.display = "flex"; rowPass.style.display = "flex";
+  }
+  updateFocus();
+}
+
+function backToPlaylistMenu() {
+  focusMode = "playlist_grid";
+  document.getElementById("playlist-input-form-box").classList.remove("active");
+  document.getElementById("pl-main-menu-grid").style.display = "grid";
+  updateFocus();
+}
+
 function updateClockAndDay() {
   const now = new Date();
   let optionsTime = { hour: '2-digit', minute: '2-digit', hour12: true };
@@ -62,10 +72,7 @@ function updateClockAndDay() {
   document.getElementById("top-current-date").innerText = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
 }
 
-function measureConnectionSpeed() {
-  document.getElementById("top-net-speed").innerText = "54.2 Mbps";
-}
-
+function measureConnectionSpeed() { document.getElementById("top-net-speed").innerText = "48.5 Mbps"; }
 function updateSeekDurationSetting(val) { localStorage.setItem("global_seek_duration", val); }
 function clickSidebarItem(idx) { focusMode = "sidebar"; sidebarIdx = idx; switchView(sidebarViews[sidebarIdx]); updateFocus(); }
 function clickSettingsItem(idx) { focusMode = "settings"; settingsIdx = idx; showSubSettings(idx); updateFocus(); }
@@ -81,8 +88,7 @@ function clearPlaylistData() { localStorage.clear(); window.location.reload(); }
 function saveToGlobalHistory(item) {
   let history = JSON.parse(localStorage.getItem("global_watch_history")) || [];
   history = history.filter(h => h.stream_id !== item.stream_id && h.series_id !== item.series_id);
-  history.unshift(item);
-  localStorage.setItem("global_watch_history", JSON.stringify(history.slice(0, 15)));
+  history.unshift(item); localStorage.setItem("global_watch_history", JSON.stringify(history.slice(0, 15)));
 }
 
 function switchView(viewId) {
@@ -90,7 +96,7 @@ function switchView(viewId) {
   const activePanel = document.getElementById(viewId);
   if(activePanel) activePanel.classList.add("active");
 
-  if(viewId === "view-playlist") { focusMode = "playlist_form"; switchPlaylistType(currentPlaylistType); return; }
+  if(viewId === "view-playlist") { focusMode = "playlist_grid"; plMenuIdx = 0; document.getElementById("playlist-input-form-box").classList.remove("active"); document.getElementById("pl-main-menu-grid").style.display = "grid"; return; }
   if(viewId === "view-settings") { focusMode = "settings"; showSubSettings(settingsIdx); return; }
 
   const defaultAll = (currentLang === "ar") ? "الكل" : "All";
@@ -99,26 +105,12 @@ function switchView(viewId) {
   if (viewId === "view-movies") moviesList.forEach(m => { if(m.category_name) set.add(m.category_name); });
   if (viewId === "view-series") seriesList.forEach(s => { if(s.category_name) set.add(s.category_name); });
   
-  activeSubCategories = Array.from(set);
-  renderSubFilters();
-  renderContentGrid(viewId);
-}
-
-function switchPlaylistType(type) {
-  currentPlaylistType = type;
-  document.getElementById("tab-m3u").className = "tab-btn " + (type === "m3u" ? "active-m3u" : "");
-  document.getElementById("tab-stream").className = "tab-btn " + (type === "stream1" ? "active-stream" : "");
-  document.getElementById("tab-xtream").className = "tab-btn " + (type === "xtream" ? "active-xtream" : "");
-  const rowUser = document.getElementById("row-user");
-  const rowPass = document.getElementById("row-pass");
-  if(type === "m3u") { if(rowUser) rowUser.style.display = "none"; if(rowPass) rowPass.style.display = "none"; }
-  else { if(rowUser) rowUser.style.display = "flex"; if(rowPass) rowPass.style.display = "flex"; }
+  activeSubCategories = Array.from(set); renderSubFilters(); renderContentGrid(viewId);
 }
 
 function togglePasswordVisibility() {
   const passInput = document.getElementById("pl_pass");
-  if(passInput.type === "password") passInput.type = "text";
-  else passInput.type = "password";
+  passInput.type = (passInput.type === "password") ? "text" : "password";
 }
 
 async function processPlaylistAddition() {
@@ -129,7 +121,7 @@ async function processPlaylistAddition() {
   const status = document.getElementById("pl_status");
 
   if(!name || !url) { status.innerText = "برجاء كتابة البيانات كاملة."; status.style.color = "#ff4444"; return; }
-  status.innerText = "جاري الفحص والسحب من السيرفر..."; status.style.color = "#ffffff";
+  status.innerText = "جاري الفحص والسحب الحركي..."; status.style.color = "#ffffff";
 
   const baseUrl = `${url}/player_api.php?username=${user}&password=${pass}`;
   try {
@@ -145,12 +137,10 @@ async function processPlaylistAddition() {
       localStorage.setItem("xt_series", JSON.stringify(seriesList));
       localStorage.setItem("active_playlist_mode", "xtream");
       localStorage.setItem("xtream_creds", JSON.stringify({url, user, pass}));
-      finalizeLogin();
+      setTimeout(() => { sidebarIdx = 1; focusMode = "sidebar"; switchView(sidebarViews[sidebarIdx]); updateFocus(); }, 1000);
     } else { status.innerText = "البيانات خاطئة."; status.style.color = "#ff4444"; }
   } catch(e) { status.innerText = "فشل الاتصال بالسيرفر."; status.style.color = "#ff4444"; }
 }
-
-function finalizeLogin() { setTimeout(() => { sidebarIdx = 1; focusMode = "sidebar"; switchView(sidebarViews[sidebarIdx]); updateFocus(); }, 1000); }
 
 function renderSubFilters() {
   const bar = document.getElementById("subFilterBar"); bar.innerHTML = "";
@@ -218,9 +208,17 @@ function updateFocus() {
   const langBtn = document.getElementById("sidebarLangBtn");
   if(langBtn) langBtn.classList.toggle("focused", focusMode === "sidebar_lang");
   renderSubFilters();
+
   document.querySelectorAll(".view-panel.active .media-card").forEach((el, i) => { el.classList.toggle("focused", focusMode === "cards" && i === cardIdx); });
-  const formFields = document.querySelectorAll(".playlist-focusable");
-  formFields.forEach((el, i) => { el.classList.toggle("focused", focusMode === "playlist_form" && i === formIndex); });
+  document.querySelectorAll(".playlist-menu-card").forEach((el, i) => { el.classList.toggle("focused", focusMode === "playlist_grid" && i === plMenuIdx); });
+  
+  const formFields = document.querySelectorAll(".form-focusable");
+  formFields.forEach((el, i) => {
+    const isFocused = focusMode === "playlist_form" && i === formIndex;
+    el.classList.toggle("focused", isFocused);
+    if(isFocused && el.tagName === "INPUT") el.focus();
+    if(!isFocused && el.tagName === "INPUT") el.blur();
+  });
   document.querySelectorAll(".view-panel.active .settings-focusable").forEach((el, i) => { el.classList.toggle("focused", focusMode === "settings" && i === settingsIdx); });
 }
 
@@ -229,7 +227,6 @@ function applyLanguage() {
   const htmlTag = document.getElementById("main-html");
   htmlTag.setAttribute("dir", currentLang === "ar" ? "rtl" : "ltr");
   htmlTag.setAttribute("lang", currentLang);
-  document.getElementById("lbl-current-lang").innerText = dict.lang_btn;
   document.getElementById("lbl-sidebar-lang").innerText = dict.sidebar_lang;
   document.querySelectorAll(".txt-lang").forEach(el => { const key = el.getAttribute("data-key"); if(dict[key]) el.innerText = dict[key]; });
   updateClockAndDay();
@@ -250,7 +247,7 @@ document.addEventListener("keydown", function(e) {
     else if (focusMode === "cards") cardIdx = Math.max(0, cardIdx - 1);
     else if (focusMode === "sub_filters" && filterIdx === 0) focusMode = "sidebar";
     else if (focusMode === "sub_filters") filterIdx = Math.max(0, filterIdx - 1);
-    else if (focusMode === "playlist_form" || focusMode === "settings" || focusMode === "sidebar_lang") focusMode = "sidebar";
+    else if (focusMode === "playlist_grid" || focusMode === "playlist_form" || focusMode === "settings" || focusMode === "sidebar_lang") focusMode = "sidebar";
   }
   if (e.key === rightKey) {
     if (focusMode === "sidebar" || focusMode === "sidebar_lang") { switchView(activeView); } 
@@ -263,6 +260,8 @@ document.addEventListener("keydown", function(e) {
     else if (focusMode === "sidebar") { if (sidebarIdx < sidebarViews.length - 1) { sidebarIdx++; switchView(sidebarViews[sidebarIdx]); } } 
     else if (focusMode === "sub_filters") { focusMode = "cards"; cardIdx = 0; } 
     else if (focusMode === "cards" && cardIdx + columnsCount < globalFiltered.length) { cardIdx += columnsCount; } 
+    else if (focusMode === "playlist_grid") { plMenuIdx = Math.min(plMenuIdx + 2, 3); }
+    else if (focusMode === "playlist_form") { formIndex = Math.min(formIndex + 1, 5); }
     else if (focusMode === "settings") { settingsIdx = Math.min(settingsIdx + 1, 4); showSubSettings(settingsIdx); }
   }
   if (e.key === "ArrowUp") {
@@ -270,13 +269,17 @@ document.addEventListener("keydown", function(e) {
     else if (focusMode === "sidebar") { sidebarIdx = Math.max(0, sidebarIdx - 1); switchView(sidebarViews[sidebarIdx]); } 
     else if (focusMode === "cards" && cardIdx - columnsCount >= 0) { cardIdx -= columnsCount; } 
     else if (focusMode === "cards" && activeSubCategories.length > 1) { focusMode = "sub_filters"; } 
+    else if (focusMode === "playlist_grid") { plMenuIdx = Math.max(0, plMenuIdx - 2); }
+    else if (focusMode === "playlist_form") { formIndex = Math.max(0, formIndex - 1); }
     else if (focusMode === "settings") { settingsIdx = Math.max(0, settingsIdx - 1); showSubSettings(settingsIdx); }
   }
   if (e.key === "Enter") {
     if (focusMode === "sidebar_lang") toggleLanguage();
-    if (focusMode === "playlist_form") {
-      if(formIndex === 0) switchPlaylistType('m3u'); if(formIndex === 1) switchPlaylistType('stream1'); if(formIndex === 2) switchPlaylistType('xtream'); if(formIndex === 4) togglePasswordVisibility();
-      if((currentPlaylistType === 'm3u' && formIndex === 6) || (currentPlaylistType !== 'm3u' && formIndex === 7)) processPlaylistAddition();
+    if (focusMode === "playlist_grid") {
+      const types = ["xtream", "m3u_url", "m3u_file", "qr"]; openPlaylistInputForm(types[plMenuIdx]);
+    }
+    else if (focusMode === "playlist_form") {
+      const fields = document.querySelectorAll(".form-focusable"); fields[formIndex].click();
     }
     if (focusMode === "settings" && settingsIdx === 2) toggleLanguage();
     if (focusMode === "cards" && globalFiltered[cardIdx]) {
@@ -284,7 +287,6 @@ document.addEventListener("keydown", function(e) {
       window.location.href = (item.url || item.type === "live") ? "player.html" : "details.html";
     }
   }
-  if (focusMode === "sub_filters") renderContentGrid(activeView);
   updateFocus();
 });
 
