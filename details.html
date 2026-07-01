@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="main-html">
 <head>
   <meta charset="utf-8">
   <title>تفاصيل المحتوى - VISION TV</title>
@@ -31,13 +31,12 @@
     .action-btn.primary-play { background: #1f6feb; border: none; }
     .action-btn.focused { outline: 4px solid #fff; transform: scale(1.05); }
 
-    /* متوافق مع شاشة 5 و 6 للمسلسلات والحلقات */
     .episodes-section { display: none; flex-direction: column; width: 100%; }
     .section-title { font-size: 18px; color: #1f6feb; margin-bottom: 10px; font-weight: bold; }
     .episodes-scroll { display: flex; gap: 12px; overflow-x: auto; padding: 10px 0; width: 100%; }
     .ep-card {
       background: #161616; border: 1px solid #222; padding: 12px 20px; border-radius: 6px;
-      min-width: 140px; text-align: center; font-size: 14px; color: #aaa; white-space: nowrap;
+      min-width: 140px; text-align: center; font-size: 14px; color: #aaa; white-space: nowrap; cursor: pointer;
     }
     .ep-card.focused { outline: 3px solid #1f6feb; background: #222; color: #fff; }
   </style>
@@ -50,25 +49,25 @@
   <img class="poster-box" id="media-poster" src="" onerror="this.src='https://placehold.co/280x420/1a1a1a/ffffff?text=VISION+TV'" />
 
   <div class="details-side">
-    <div class="main-title" id="media-title">اسم الفيلم / المسلسل</div>
+    <div class="main-title" id="media-title">اسم المادة</div>
     
     <div class="meta-row">
       <span id="media-rating">⭐ 8.9</span>
       <span class="meta-badge">4K ULTRA HD</span>
-      <span class="meta-badge" id="media-year">2024</span>
+      <span class="meta-badge" id="media-year">2026</span>
       <span style="color:#aaa;" id="media-genre">Drama, Action</span>
     </div>
 
-    <div class="plot" id="media-plot">جاري سحب القصة والوصف الكامل للمادة من السيرفر وعرضها هنا بالتفصيل...</div>
+    <div class="plot" id="media-plot">جاري تحميل الوصف...</div>
 
     <div class="button-group">
-      <button class="action-btn primary-play detail-item" id="btn-play" onclick="triggerPlay()"><span class="material-icons">play_arrow</span>استكمال المشاهدة</button>
-      <button class="action-btn detail-item" id="btn-fav" onclick="toggleFav()"><span class="material-icons">favorite_border</span>قائمتي</button>
-      <button class="action-btn detail-item" onclick="window.location.href='index.html'"><span class="material-icons">arrow_back</span>عودة</button>
+      <button class="action-btn primary-play detail-item" id="btn-play" onclick="triggerPlay()"><span class="material-icons">play_arrow</span><span id="lbl-play-btn">تشغيل</span></button>
+      <button class="action-btn detail-item" id="btn-fav" onclick="toggleFav()"><span class="material-icons">favorite_border</span><span id="lbl-fav-btn">قائمتي</span></button>
+      <button class="action-btn detail-item" onclick="window.location.href='index.html'"><span class="material-icons">arrow_back</span><span id="lbl-back-btn">عودة</span></button>
     </div>
 
     <div class="episodes-section" id="episodes-block">
-      <div class="section-title">جميع الحلقات:</div>
+      <div class="section-title" id="lbl-episodes-title">جميع الحلقات:</div>
       <div class="episodes-scroll" id="episodes-tray"></div>
     </div>
   </div>
