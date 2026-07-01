@@ -7,11 +7,15 @@
 
 <body>
 
-<h2>📺 IPTV Player</h2>
+<h2>📺 IPTV Home</h2>
 
-<input id="m3uUrl" placeholder="ضع رابط M3U هنا" style="width:90%;padding:10px;" />
-<button onclick="loadPlaylist()">Load Playlist</button>
+<input id="m3uUrl" placeholder="M3U Link" style="width:90%;padding:10px;" />
+<button onclick="loadPlaylist()">Load</button>
 
+<h3>⭐ Favorites</h3>
+<div id="favorites"></div>
+
+<h3>📡 Channels</h3>
 <div id="channels"></div>
 
 <script src="js/app.js"></script>
