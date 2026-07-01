@@ -1,38 +1,67 @@
-const channels = [
-  {
-    name: "Big Buck Bunny",
-    url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-  },
-  {
-    name: "Sintel",
-    url: "https://test-streams.mux.dev/test_001/stream.m3u8"
-  },
-  {
-    name: "Caminandes",
-    url: "https://storage.googleapis.com/shaka-demo-assets/angel-one-hls/hls.m3u8"
-  }
-];
+let channels = [];
 
-const container = document.getElementById("channels");
+function loadPlaylist() {
+
+  const url = document.getElementById("m3uUrl").value;
+
+  fetch(url)
+    .then(res => res.text())
+    .then(data => {
+
+      channels = parseM3U(data);
+      renderChannels();
+
+    });
+
+}
+
+// تحويل M3U إلى قنوات
+function parseM3U(data) {
+
+  const lines = data.split("\n");
+  const result = [];
+
+  for (let i = 0; i < lines.length; i++) {
+
+    if (lines[i].startsWith("#EXTINF")) {
+
+      const name = lines[i].split(",")[1];
+      const url = lines[i + 1];
+
+      result.push({ name, url });
+
+    }
+
+  }
+
+  return result;
+}
 
 // عرض القنوات
-channels.forEach((ch, index) => {
+function renderChannels() {
 
-  const btn = document.createElement("div");
+  const container = document.getElementById("channels");
+  container.innerHTML = "";
 
-  btn.innerText = ch.name;
+  channels.forEach(ch => {
 
-  btn.style.padding = "15px";
-  btn.style.margin = "10px";
-  btn.style.background = "#222";
-  btn.style.color = "white";
-  btn.style.cursor = "pointer";
+    const div = document.createElement("div");
 
-  btn.onclick = function () {
-    localStorage.setItem("current", JSON.stringify(ch));
-    window.location.href = "player.html";
-  };
+    div.innerText = ch.name;
 
-  container.appendChild(btn);
+    div.style.padding = "15px";
+    div.style.margin = "10px";
+    div.style.background = "#222";
+    div.style.color = "white";
+    div.style.cursor = "pointer";
 
-});
+    div.onclick = function () {
+      localStorage.setItem("current", JSON.stringify(ch));
+      window.location.href = "player.html";
+    };
+
+    container.appendChild(div);
+
+  });
+
+}
