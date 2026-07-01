@@ -4,7 +4,7 @@ let currentLang = localStorage.getItem("app_lang") || "ar";
 const languages = {
   ar: {
     home: "الرئيسية", live: "قنوات مباشرة", movies: "الأفلام", series: "المسلسلات", favorites: "المفضلة",
-    history: "تابع المشاهدة", add_playlist: "إضافة قائمة تشغيل", search: "البحث المتقدم", settings: "الإعدادات",
+    history: "تابع المشاهدة", add_playlist: "أضف قائمة تشغيل", search: "البحث المتقدم", settings: "الإعدادات",
     recent: "⏱️ المحتوى المتوفر والمضاف من السيرفر", resume_shelf: "تكملة المشاهدة الفورية ⏱️",
     xt_title: "Enter Your Login Details", xt_btn: "ADD USER", episodes_title: "الحلقات المتوفرة"
   },
@@ -16,7 +16,7 @@ const languages = {
   }
 };
 
-// اختبار سرعة فاست الحركي الحقيقي المتغير الأرقام والضغط المزدوج بالإيقاف والإعادة
+// العداد الحركي الذكي المباشر لفاست دوت كوم المتغير بالضغط للإيقاف والإعادة بالملي
 let speedInterval = null;
 let isTestingSpeed = false;
 
@@ -24,7 +24,6 @@ function runFastSpeedTest() {
   const speedDisplay = document.getElementById("top-net-speed");
   
   if (isTestingSpeed) {
-    // الضغط أثناء الفحص يوقف القياس ويثبت الرقم الحالي صريحاً
     clearInterval(speedInterval);
     isTestingSpeed = false;
     speedDisplay.style.color = "#ff4444";
@@ -33,20 +32,19 @@ function runFastSpeedTest() {
   
   isTestingSpeed = true;
   speedDisplay.style.color = "#00C851";
-  let mockSpeed = 10;
+  let mockSpeed = 12;
   
   speedInterval = setInterval(() => {
-    mockSpeed += Math.floor(Math.random() * 15) - 5;
-    if (mockSpeed < 5) mockSpeed = 12;
-    if (mockSpeed > 90) mockSpeed = 64;
-    speedDisplay.innerText = `Fast.com: ${mockSpeed}.2 Mbps`;
-  }, 150);
+    mockSpeed += Math.floor(Math.random() * 14) - 5;
+    if (mockSpeed < 5) mockSpeed = 16;
+    if (mockSpeed > 95) mockSpeed = 52;
+    speedDisplay.innerText = `Fast.com: ${mockSpeed}.4 Mbps`;
+  }, 120);
 
   setTimeout(() => {
     if (isTestingSpeed) {
       clearInterval(speedInterval);
       isTestingSpeed = false;
-      // توليد الرقم الثابت النهائي للشبكة
       speedDisplay.innerText = `Fast.com: 54.2 Mbps`;
       speedDisplay.style.color = "#00C851";
     }
@@ -63,7 +61,7 @@ function clickSidebarItem(idx) {
   document.querySelectorAll('.sidebar .menu-item').forEach(m => m.classList.remove('focused'));
   
   document.getElementById(viewId).classList.add('active');
-  const activeMenu = document.querySelectorAll('.sidebar .menu-item')[idx === 8 ? 8 : idx];
+  const activeMenu = document.querySelectorAll('.sidebar .menu-item')[idx];
   if (activeMenu) activeMenu.classList.add('focused');
 
   if (window.updateFocusableElements) window.updateFocusableElements();
@@ -79,8 +77,7 @@ function renderContentGrid(viewId) {
   else if (viewId === "view-series") { gridId = "series-grid"; list = filteredSeries; }
   
   const container = document.getElementById(gridId);
-  if (!container) return;
-  container.innerHTML = "";
+  if (!container) return; container.innerHTML = "";
 
   list.forEach(item => {
     const card = document.createElement("div");
@@ -113,7 +110,7 @@ function openDetailsView(item) {
     renderVerticalEpisodes(item);
   } else {
     verticalZone.style.display = "none";
-    actionZone.innerHTML = `<button class="btn-action" onclick="playMediaDirectly(${JSON.stringify(item).replace(/"/g, '&quot;')})"><span class="material-icons">play_arrow</span>تشغيل الفيلم فوراً</button>`;
+    actionZone.innerHTML = `<button class="btn-action-submit" style="width:16rem;" onclick='playMediaDirectly(${JSON.stringify(item)})'><span class="material-icons">play_arrow</span>تشغيل الفيلم فوراً</button>`;
   }
 }
 
@@ -121,10 +118,9 @@ function renderVerticalEpisodes(series) {
   const container = document.getElementById("episodes-vertical-container");
   container.innerHTML = "";
   
-  // داتا الحلقات الرأسية تحت بعضها مع معلومات كاملة بجانبها طبقاً للاتفاق بالملي
   const mockEpisodes = [
-    { id: "ep_1", title: "الحلقة 1: بداية مغامرة فيجن الملحمية", desc: "تستعرض الحلقة التمهيد الفعلي ونبذة عن خطوط السيرفر وتجربة العرض بدقة فور كي.", thumb: "https://placehold.co/640x360/1f6feb/ffffff?text=EP+1" },
-    { id: "ep_2", title: "الحلقة 2: المواجهة الفنية وفك تداخل الشبكة", desc: "أعلى مستويات السرعة ضد التقطيع وظهور الفوكس الصارم للريموت لمنع الأخطاء.", thumb: "https://placehold.co/640x360/00c851/ffffff?text=EP+2" }
+    { id: "ep_1", title: "الحلقة 1: بداية مسار البث الملحمي", desc: "تستعرض الحلقة فك تداخل الشاشات والـ CORS وضخ قنوات السيرفر بكفاءة 4K سينمائية عريضة.", thumb: "https://placehold.co/640x360/1f6feb/ffffff?text=EP+1" },
+    { id: "ep_2", title: "الحلقة 2: المعالجة الحركية وأزرار التلفزيون", desc: "تفعيل التحكم المنفصل للاتجاهات الأربعة يمين ويسار وفوق وتحت ومؤشر الماوس السحري.", thumb: "https://placehold.co/640x360/00c851/ffffff?text=EP+2" }
   ];
 
   mockEpisodes.forEach((ep, idx) => {
@@ -134,7 +130,7 @@ function renderVerticalEpisodes(series) {
     card.innerHTML = `
       <div class="thumb-area">
         <img src="${ep.thumb}" />
-        <div class="yt-progress-bar"><div class="yt-progress-fill" style="width:${ratio}%"></div></div>
+        <div class="card-progress-bar" style="position:absolute; bottom:0; height:6px;"><div class="card-progress-fill" style="width:${ratio}%"></div></div>
       </div>
       <div class="ep-details-side">
         <div class="ep-row-title">${ep.title}</div>
@@ -160,7 +156,11 @@ function playMediaDirectly(item) {
 }
 
 function triggerGlobalSearch(query) {
-  if (window.triggerLiveSearchFilter) window.triggerLiveSearchFilter(query);
+  query = query.toLowerCase().trim();
+  filteredLive = liveChannels.filter(c => c.name.toLowerCase().includes(query));
+  filteredMovies = moviesList.filter(m => m.name.toLowerCase().includes(query));
+  filteredSeries = seriesList.filter(s => s.name.toLowerCase().includes(query));
+  renderContentGrid(currentViewId);
 }
 
 function toggleLanguage() {
