@@ -2,95 +2,74 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
-  <title>تفاصيل المادة - VISION TV</title>
+  <title>تفاصيل المحتوى - VISION TV</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
     body {
-      margin: 0;
-      background: #0b0b0b;
-      color: white;
-      font-family: 'Segoe UI', Arial, sans-serif;
-      overflow-hidden;
-      user-select: none;
+      margin: 0; background: #0b0b0b; color: white;
+      font-family: 'Segoe UI', Arial, sans-serif; overflow: hidden; user-select: none;
     }
-
-    /* الخلفية الضبابية الكبيرة */
-    .hero-bg {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100vh;
-      background-size: cover;
-      background-position: center;
-      filter: blur(20px) brightness(0.3);
-      z-index: -1;
+    .hero-blur {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100vh;
+      background-size: cover; background-position: center;
+      filter: blur(25px) brightness(0.2); z-index: -1;
     }
-
-    .container {
-      display: flex;
-      padding: 50px;
-      height: calc(100vh - 100px);
-      gap: 50px;
-      align-items: flex-start;
+    .container { display: flex; padding: 60px; height: calc(100vh - 120px); gap: 60px; align-items: flex-start; }
+    .poster-box { width: 280px; height: 420px; object-fit: cover; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.7); border: 1px solid #333; }
+    
+    .details-side { flex: 1; display: flex; flex-direction: column; }
+    .main-title { font-size: 38px; font-weight: bold; margin-bottom: 8px; }
+    .meta-row { display: flex; gap: 15px; align-items: center; color: #1f6feb; font-size: 15px; font-weight: bold; margin-bottom: 20px; }
+    .meta-badge { background: #222; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; border: 1px solid #444; }
+    .plot { font-size: 16px; color: #cccccc; line-height: 1.6; margin-bottom: 25px; max-width: 750px; }
+    
+    .button-group { display: flex; gap: 15px; margin-bottom: 35px; }
+    .action-btn {
+      padding: 12px 28px; font-size: 16px; font-weight: bold; border: none; border-radius: 6px;
+      cursor: pointer; color: white; background: #1c1c1c; border: 1px solid #444; display: flex; align-items: center; gap: 8px;
     }
+    .action-btn.primary-play { background: #1f6feb; border: none; }
+    .action-btn.focused { outline: 4px solid #fff; transform: scale(1.05); }
 
-    .poster-img {
-      width: 300px;
-      height: 450px;
-      object-fit: cover;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
-      border: 1px solid #333;
+    /* متوافق مع شاشة 5 و 6 للمسلسلات والحلقات */
+    .episodes-section { display: none; flex-direction: column; width: 100%; }
+    .section-title { font-size: 18px; color: #1f6feb; margin-bottom: 10px; font-weight: bold; }
+    .episodes-scroll { display: flex; gap: 12px; overflow-x: auto; padding: 10px 0; width: 100%; }
+    .ep-card {
+      background: #161616; border: 1px solid #222; padding: 12px 20px; border-radius: 6px;
+      min-width: 140px; text-align: center; font-size: 14px; color: #aaa; white-space: nowrap;
     }
-
-    .info-side {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .title { font-size: 42px; font-weight: bold; margin-bottom: 10px; }
-    .meta-info { font-size: 16px; color: #1f6feb; margin-bottom: 20px; font-weight: bold; }
-    .description { font-size: 18px; color: #ccc; line-height: 1.6; margin-bottom: 30px; max-width: 800px; }
-
-    /* الأزرار والمواسم */
-    .actions { display: flex; gap: 20px; margin-bottom: 30px; }
-    .btn {
-      padding: 15px 35px; font-size: 18px; font-weight: bold;
-      border: none; border-radius: 8px; cursor: pointer; color: white;
-      background: #222; border: 1px solid #444; transition: transform 0.2s;
-    }
-    .btn.play { background: #1f6feb; border: none; }
-    .btn.focused { outline: 4px solid #fff; transform: scale(1.05); }
-
-    /* مخصص للمسلسلات: قائمة الحلقات والمواسم */
-    .series-section { display: none; flex-direction: column; width: 100%; margin-top: 20px; }
-    .list-container { display: flex; gap: 15px; overflow-x: auto; padding: 10px 0; }
-    .episode-card {
-      background: #161616; border: 1px solid #222; padding: 15px;
-      border-radius: 8px; min-width: 180px; text-align: center; font-size: 14px;
-    }
-    .episode-card.focused { outline: 3px solid #1f6feb; background: #222; }
+    .ep-card.focused { outline: 3px solid #1f6feb; background: #222; color: #fff; }
   </style>
 </head>
 <body>
 
-<div class="hero-bg" id="hero-backdrop"></div>
+<div class="hero-blur" id="backdrop-bg"></div>
 
 <div class="container">
-  <img class="poster-img" id="item-poster" src="" onerror="this.src='https://placehold.co/300x450/1a1a1a/ffffff?text=No+Poster'" />
+  <img class="poster-box" id="media-poster" src="" onerror="this.src='https://placehold.co/280x420/1a1a1a/ffffff?text=VISION+TV'" />
 
-  <div class="info-side">
-    <div class="title" id="item-title">اسم المادة</div>
-    <div class="meta-info" id="item-meta">التصنيف: أفلام</div>
-    <div class="description" id="item-desc">جاري تحميل تفاصيل القصة والوصف الخاص بالفيلم أو المسلسل...</div>
-
-    <div class="actions">
-      <button class="btn play details-focusable" id="btn-play" onclick="startPlayback()">▶ تشغيل</button>
-      <button class="btn details-focusable" id="btn-fav" onclick="toggleFavorite()">❤️ إضافة للمفضلة</button>
-      <button class="btn details-focusable" onclick="window.location.href='index.html'">🔙 عودة</button>
+  <div class="details-side">
+    <div class="main-title" id="media-title">اسم الفيلم / المسلسل</div>
+    
+    <div class="meta-row">
+      <span id="media-rating">⭐ 8.9</span>
+      <span class="meta-badge">4K ULTRA HD</span>
+      <span class="meta-badge" id="media-year">2024</span>
+      <span style="color:#aaa;" id="media-genre">Drama, Action</span>
     </div>
 
-    <div class="series-section" id="series-area">
-      <h3 style="color: #1f6feb; margin-bottom: 5px;">الحلقات المتوفرة:</h3>
-      <div class="list-container" id="episodes-list"></div>
+    <div class="plot" id="media-plot">جاري سحب القصة والوصف الكامل للمادة من السيرفر وعرضها هنا بالتفصيل...</div>
+
+    <div class="button-group">
+      <button class="action-btn primary-play detail-item" id="btn-play" onclick="triggerPlay()"><span class="material-icons">play_arrow</span>استكمال المشاهدة</button>
+      <button class="action-btn detail-item" id="btn-fav" onclick="toggleFav()"><span class="material-icons">favorite_border</span>قائمتي</button>
+      <button class="action-btn detail-item" onclick="window.location.href='index.html'"><span class="material-icons">arrow_back</span>عودة</button>
+    </div>
+
+    <div class="episodes-section" id="episodes-block">
+      <div class="section-title">جميع الحلقات:</div>
+      <div class="episodes-scroll" id="episodes-tray"></div>
     </div>
   </div>
 </div>
