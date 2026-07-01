@@ -1,10 +1,9 @@
-// =====================================
+// ============================================
 // VISION TV API ENGINE
-// مسؤول عن البيانات فقط
-// =====================================
+// Data Layer + Xtream API
+// ============================================
 
 const AppData = {
-
     live: [],
     movies: [],
     series: [],
@@ -13,101 +12,27 @@ const AppData = {
     filteredMovies: [],
     filteredSeries: [],
 
-    playlists: []
+    playlists: [],
 
+    account: null,
+    activePlaylist: null
 };
 
-// =====================================
+// ============================================
+// PLAYLIST STORAGE
+// ============================================
 
 function loadPlaylistsFromStorage() {
-
     AppData.playlists =
         JSON.parse(localStorage.getItem("iptv_playlists_lg")) || [];
-
 }
 
-// =====================================
-
 function savePlaylistsToStorage() {
-
     localStorage.setItem(
         "iptv_playlists_lg",
         JSON.stringify(AppData.playlists)
     );
-
 }
-
-// =====================================
-
-function clearContent() {
-
-    AppData.live = [];
-    AppData.movies = [];
-    AppData.series = [];
-
-    AppData.filteredLive = [];
-    AppData.filteredMovies = [];
-    AppData.filteredSeries = [];
-
-}
-
-// =====================================
-
-function generateDemoContent(language = "ar") {
-
-    const ar = language === "ar";
-
-    AppData.live = [
-
-        {
-            id: 1,
-            type: "live",
-            name: ar ? "beIN Sports 1 HD" : "beIN Sports 1 HD",
-            image: "https://placehold.co/400x600/e50914/ffffff?text=SPORT",
-            url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-        },
-
-        {
-            id: 2,
-            type: "live",
-            name: ar ? "MBC مصر" : "MBC Masr",
-            image: "https://placehold.co/400x600/0f7cff/ffffff?text=MBC",
-            url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-        }
-
-    ];
-
-    AppData.movies = [
-
-        {
-            id: 100,
-            type: "movie",
-            name: "Sintel 4K",
-            image: "https://placehold.co/400x600/181818/ffffff?text=SINTEL",
-            url: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"
-        }
-
-    ];
-
-    AppData.series = [
-
-        {
-            id: 200,
-            type: "series",
-            name: ar ? "مسلسل خيال علمي" : "Sci-Fi Series",
-            image: "https://placehold.co/400x600/8a2be2/ffffff?text=SERIES"
-        }
-
-    ];
-
-    AppData.filteredLive = [...AppData.live];
-    AppData.filteredMovies = [...AppData.movies];
-    AppData.filteredSeries = [...AppData.series];
-
-}
-// =====================================
-// PLAYLISTS
-// =====================================
 
 function addPlaylist(name, user, pass, url) {
 
@@ -119,43 +44,20 @@ function addPlaylist(name, user, pass, url) {
         name,
         user,
         pass,
-        url
+        url: url.replace(/\/$/, "")
     };
 
     AppData.playlists.push(playlist);
 
     savePlaylistsToStorage();
 
-    return true;
+    return playlist;
 }
-
-// =====================================
-
-function deletePlaylist(id) {
-
-    AppData.playlists =
-        AppData.playlists.filter(
-            p => p.id !== id
-        );
-
-    savePlaylistsToStorage();
-
-    if (AppData.playlists.length === 0) {
-
-        clearContent();
-
-    }
-
-}
-
-// =====================================
 
 function updatePlaylist(id, data) {
 
     const playlist =
-        AppData.playlists.find(
-            p => p.id === id
-        );
+        AppData.playlists.find(p => p.id === id);
 
     if (!playlist)
         return false;
@@ -163,91 +65,236 @@ function updatePlaylist(id, data) {
     playlist.name = data.name;
     playlist.user = data.user;
     playlist.pass = data.pass;
-    playlist.url = data.url;
+    playlist.url = data.url.replace(/\/$/, "");
 
     savePlaylistsToStorage();
 
     return true;
 }
 
-// =====================================
+function deletePlaylist(id) {
 
-function getPlaylists() {
+    AppData.playlists =
+        AppData.playlists.filter(p => p.id !== id);
 
-    return AppData.playlists;
+    savePlaylistsToStorage();
+
+    if (AppData.playlists.length === 0)
+        clearContent();
 
 }
 
-// =====================================
+function getPlaylists() {
+    return AppData.playlists;
+}
+
+// ============================================
+// CONTENT
+// ============================================
+
+function clearContent() {
+
+    AppData.live = [];
+    AppData.movies = [];
+    AppData.series = [];
+
+    AppData.filteredLive = [];
+    AppData.filteredMovies = [];
+    AppData.filteredSeries = [];
+
+    AppData.account = null;
+
+}
+// ============================================
+// XTREAM API
+// ============================================
+
+async function loadXtreamData(server) {
+
+    try {
+
+        const base =
+            `${server.url}/player_api.php?username=${encodeURIComponent(server.user)}&password=${encodeURIComponent(server.pass)}`;
+
+        // معلومات الحساب
+        const account =
+            await fetch(base).then(r => r.json());
+
+        if (!account.user_info) {
+            throw new Error("Invalid Xtream Account");
+        }
+
+        AppData.account = account;
+        AppData.activePlaylist = server;
+
+        // تحميل البيانات بالتوازي
+        const [
+            live,
+            movies,
+            series
+        ] = await Promise.all([
+
+            fetch(base + "&action=get_live_streams").then(r => r.json()),
+
+            fetch(base + "&action=get_vod_streams").then(r => r.json()),
+
+            fetch(base + "&action=get_series").then(r => r.json())
+
+        ]);
+
+        // ===========================
+        // LIVE
+        // ===========================
+
+        AppData.live = live.map(item => ({
+
+            id: item.stream_id,
+
+            type: "live",
+
+            name: item.name,
+
+            image: item.stream_icon || "",
+
+            category: item.category_id,
+
+            stream_id: item.stream_id,
+
+            url:
+                `${server.url}/live/${server.user}/${server.pass}/${item.stream_id}.m3u8`
+
+        }));
+
+        // ===========================
+        // MOVIES
+        // ===========================
+
+        AppData.movies = movies.map(item => ({
+
+            id: item.stream_id,
+
+            type: "movie",
+
+            name: item.name,
+
+            image: item.stream_icon || "",
+
+            category: item.category_id,
+
+            stream_id: item.stream_id,
+
+            container: item.container_extension,
+
+            url:
+                `${server.url}/movie/${server.user}/${server.pass}/${item.stream_id}.${item.container_extension}`
+
+        }));
+
+        // ===========================
+        // SERIES
+        // ===========================
+
+        AppData.series = series.map(item => ({
+
+            id: item.series_id,
+
+            type: "series",
+
+            name: item.name,
+
+            image: item.cover || item.stream_icon || "",
+
+            category: item.category_id,
+
+            series_id: item.series_id
+
+        }));
+
+        AppData.filteredLive = [...AppData.live];
+        AppData.filteredMovies = [...AppData.movies];
+        AppData.filteredSeries = [...AppData.series];
+
+        return true;
+
+    } catch (err) {
+
+        console.error(err);
+
+        clearContent();
+
+        return false;
+
+    }
+
+}
+// ============================================
+// SEARCH
+// ============================================
+
+function searchContent(keyword = "") {
+
+    keyword = keyword.trim().toLowerCase();
+
+    if (keyword === "") {
+
+        AppData.filteredLive = [...AppData.live];
+        AppData.filteredMovies = [...AppData.movies];
+        AppData.filteredSeries = [...AppData.series];
+
+        return;
+    }
+
+    AppData.filteredLive = AppData.live.filter(item =>
+        item.name.toLowerCase().includes(keyword)
+    );
+
+    AppData.filteredMovies = AppData.movies.filter(item =>
+        item.name.toLowerCase().includes(keyword)
+    );
+
+    AppData.filteredSeries = AppData.series.filter(item =>
+        item.name.toLowerCase().includes(keyword)
+    );
+
+}
+
+// ============================================
+// GETTERS
+// ============================================
 
 function getLiveChannels() {
-
     return AppData.filteredLive;
-
 }
 
 function getMovies() {
-
     return AppData.filteredMovies;
-
 }
 
 function getSeries() {
-
     return AppData.filteredSeries;
-
 }
 
-// =====================================
-
-function searchContent(keyword) {
-
-    keyword = keyword.toLowerCase();
-
-    AppData.filteredLive =
-        AppData.live.filter(item =>
-            item.name.toLowerCase().includes(keyword)
-        );
-
-    AppData.filteredMovies =
-        AppData.movies.filter(item =>
-            item.name.toLowerCase().includes(keyword)
-        );
-
-    AppData.filteredSeries =
-        AppData.series.filter(item =>
-            item.name.toLowerCase().includes(keyword)
-        );
-
+function getAccountInfo() {
+    return AppData.account;
 }
-async function loadXtreamData(server){
 
-    const base =
-        `${server.url}/player_api.php?username=${server.user}&password=${server.pass}`;
+function getActivePlaylist() {
+    return AppData.activePlaylist;
+}
 
-    const account =
-        await fetch(base).then(r=>r.json());
+// ============================================
+// AUTO LOAD
+// ============================================
 
-    const live =
-        await fetch(base+"&action=get_live_streams")
-        .then(r=>r.json());
+async function restoreLastPlaylist() {
 
-    const movies =
-        await fetch(base+"&action=get_vod_streams")
-        .then(r=>r.json());
+    loadPlaylistsFromStorage();
 
-    const series =
-        await fetch(base+"&action=get_series")
-        .then(r=>r.json());
+    if (AppData.playlists.length === 0)
+        return false;
 
-    AppData.live = live;
-    AppData.movies = movies;
-    AppData.series = series;
+    const playlist = AppData.playlists[0];
 
-    AppData.filteredLive = [...live];
-    AppData.filteredMovies = [...movies];
-    AppData.filteredSeries = [...series];
-
-    return account;
+    return await loadXtreamData(playlist);
 
 }
