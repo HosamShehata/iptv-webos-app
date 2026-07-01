@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="main-html">
 <head>
   <meta charset="utf-8">
   <title>VISION TV - IPTV PLAYER</title>
@@ -21,9 +21,9 @@
 
     .layout { display: flex; height: 100vh; width: 100vw; }
 
-    /* 1. القائمة الجانبية اليمنى الاحترافية (Sidebar) */
+    /* القائمة الجانبية الموحدة */
     .sidebar {
-      width: 260px; background: var(--bg-sidebar); border-left: 1px solid #222;
+      width: 260px; background: var(--bg-sidebar); border-left: 1px solid #222; border-right: 1px solid #222;
       display: flex; flex-direction: column; padding: 20px 0; box-sizing: border-box;
     }
     .brand-area { padding: 0 25px 30px 25px; text-align: center; }
@@ -34,15 +34,13 @@
       display: flex; align-items: center; gap: 15px; transition: all 0.2s ease;
     }
     .menu-item .material-icons { font-size: 22px; }
-    .menu-item.focused {
-      background: var(--primary-color); color: var(--text-color); font-weight: bold;
-      padding-right: 35px; box-shadow: 0 4px 15px rgba(31, 111, 235, 0.4);
-    }
+    .menu-item.focused { background: var(--primary-color); color: var(--text-color); font-weight: bold; }
+    html[dir="rtl"] .menu-item.focused { padding-right: 35px; }
+    html[dir="ltr"] .menu-item.focused { padding-left: 35px; }
 
-    /* 2. منطقة عرض الشاشات الديناميكية المتغيرة */
     .content-container { flex: 1; display: flex; flex-direction: column; height: 100%; overflow: hidden; position: relative; }
     
-    /* شريط الفلاتر العلوي (القوائم الفرعية) */
+    /* شريط القوائم الفرعية (التصنيفات الديناميكية) */
     .sub-filter-bar {
       padding: 15px 30px; background: #141414; display: flex; gap: 12px;
       overflow-x: auto; border-bottom: 1px solid #222; box-sizing: border-box; align-items: center;
@@ -53,29 +51,24 @@
     }
     .filter-item.focused { background: var(--text-color); color: #000; font-weight: bold; }
 
-    /* منطقة العرض الرئيسية للشبكات */
     .view-panel { display: none; flex: 1; padding: 30px; overflow-y: auto; box-sizing: border-box; height: 100%; }
     .view-panel.active { display: block; }
     
     .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; }
 
-    /* تصميم الكروت الاحترافي بالبوسترات الدائرية الحواف */
+    /* كروت القنوات والأفلام */
     .media-card {
       background: var(--bg-card); border: 1px solid #222; border-radius: 12px;
       overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; position: relative;
     }
     .media-card img { width: 100%; height: 270px; object-fit: cover; }
     .media-card .info { padding: 12px; text-align: center; font-size: 14px; font-weight: bold; }
-    .media-card.focused {
-      outline: 4px solid var(--primary-color); transform: scale(1.05);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.6);
-    }
-    .media-card .badge {
-      position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8);
-      padding: 4px 8px; font-size: 11px; border-radius: 4px; color: var(--primary-color);
-    }
+    .media-card.focused { outline: 4px solid var(--primary-color); transform: scale(1.05); }
+    .media-card .badge { position: absolute; top: 10px; background: rgba(0,0,0,0.8); padding: 4px 8px; font-size: 11px; border-radius: 4px; color: var(--primary-color); }
+    html[dir="rtl"] .media-card .badge { left: 10px; }
+    html[dir="ltr"] .media-card .badge { right: 10px; }
 
-    /* شاشة البانر البطل (Hero Banner) في الرئيسية */
+    /* الرئيسية والبانر */
     .hero-banner {
       height: 250px; background: linear-gradient(to left, rgba(0,0,0,0.1), #000), url('https://placehold.co/1200x400/1a1a1a/ffffff?text=VISION+TV+HERO') center/cover;
       border-radius: 12px; margin-bottom: 30px; padding: 30px; display: flex; flex-direction: column; justify-content: center;
@@ -83,26 +76,42 @@
     .hero-title { font-size: 32px; font-weight: bold; margin-bottom: 10px; }
     .hero-desc { font-size: 14px; color: var(--text-dim); max-width: 500px; margin-bottom: 15px; }
 
-    /* شاشات الإدخال وقوائم التشغيل (شاشة 8 و 9) */
-    .input-form-container { max-width: 600px; margin: 30px auto; background: var(--bg-card); padding: 40px; border-radius: 16px; border: 1px solid #222; }
-    .form-title { font-size: 22px; font-weight: bold; margin-bottom: 25px; color: var(--primary-color); text-align: center; }
-    .form-input {
-      width: 100%; padding: 14px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #333;
-      background: #0b0b0b; color: #fff; font-size: 16px; box-sizing: border-box;
-    }
-    .form-input:focus { outline: 2px solid var(--primary-color); }
-    .form-button {
-      width: 100%; padding: 15px; background: var(--primary-color); color: #fff; border: none;
-      border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;
-    }
-    .form-button.focused { outline: 4px solid #fff; background: #3b82f6; }
+    /* تصنيع فورم "أضف قائمة تشغيل" متطابق تماماً مع صورة 88595.jpg */
+    .playlist-screen { max-width: 850px; margin: 40px auto; background: #19222d; border-radius: 16px; padding: 35px; border: 1px solid #2c3a4a; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+    .screen-title { font-size: 24px; font-weight: bold; text-align: center; margin-bottom: 25px; color: white; }
+    
+    /* أزرار التبويبات الثلاثة العلوية */
+    .type-tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
+    .tab-btn { padding: 12px 30px; font-size: 16px; font-weight: bold; border-radius: 8px; border: none; color: white; background: #3a4a5a; cursor: pointer; min-width: 160px; text-align: center; }
+    .tab-btn.active-xtream { background: #2563eb; } /* أزرق حساب Xtream */
+    .tab-btn.active-stream { background: #d97706; } /* برتقالي حساب Stream-1 */
+    .tab-btn.active-m3u { background: #4b5563; }    /* رمادي قائمة M3U */
+    .tab-btn.focused { outline: 4px solid #fff; }
 
-    /* شاشة الإعدادات المتقدمة (شاشة 10) */
-    .settings-list { display: flex; flex-direction: column; gap: 15px; max-width: 700px; margin: 0 auto; }
-    .settings-item {
-      background: var(--bg-card); padding: 18px 25px; border-radius: 10px; border: 1px solid #222;
-      display: flex; justify-content: space-between; align-items: center; font-size: 16px;
+    /* الحقول الطويلة المدخلة */
+    .field-wrapper { width: 100%; margin-bottom: 15px; position: relative; display: flex; align-items: center; }
+    .form-input {
+      width: 100%; padding: 14px 20px; border-radius: 8px; border: 1px solid #3a4a5a;
+      background: #ffffff; color: #000000; font-size: 16px; box-sizing: border-box; text-align: right;
     }
+    html[dir="ltr"] .form-input { text-align: left; }
+    .form-input::placeholder { color: #888888; }
+    .form-input:focus { outline: 3px solid var(--primary-color); }
+    
+    /* حقل الباسورد مع زر العين الجانبي */
+    .password-input-box { flex: 1; }
+    .eye-btn { background: #ffffff; border: 1px solid #3a4a5a; border-radius: 8px; padding: 11px 15px; margin-right: 10px; display: flex; align-items: center; color: #333; cursor: pointer; }
+    html[dir="ltr"] .eye-btn { margin-right: 0; margin-left: 10px; }
+    .eye-btn.focused { outline: 3px solid var(--primary-color); background: #f0f0f0; }
+
+    /* زر إضافة السفلي المحاذي للمنتصف */
+    .add-action-container { display: flex; justify-content: center; margin-top: 25px; }
+    .btn-add-playlist { width: 220px; padding: 14px; background: #ffffff; color: #000000; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; text-align: center; }
+    .btn-add-playlist.focused { outline: 4px solid var(--primary-color); background: #f0f0f0; }
+
+    /* الإعدادات والبحث */
+    .settings-list { display: flex; flex-direction: column; gap: 15px; max-width: 700px; margin: 0 auto; }
+    .settings-item { background: var(--bg-card); padding: 18px 25px; border-radius: 10px; border: 1px solid #222; display: flex; justify-content: space-between; align-items: center; font-size: 16px; }
     .settings-item.focused { outline: 3px solid var(--primary-color); background: #222; }
     .settings-left { display: flex; align-items: center; gap: 15px; }
   </style>
@@ -113,64 +122,88 @@
   
   <div class="sidebar" id="sidebarMenu">
     <div class="brand-area"><div class="brand-title">VISION TV</div></div>
-    <div class="menu-item" data-view="view-home"><span class="material-icons">home</span>الرئيسية</div>
-    <div class="menu-item" data-view="view-live"><span class="material-icons">live_tv</span>قنوات مباشرة</div>
-    <div class="menu-item" data-view="view-movies"><span class="material-icons">movie</span>الأفلام</div>
-    <div class="menu-item" data-view="view-series"><span class="material-icons">tv</span>المسلسلات</div>
-    <div class="menu-item" data-view="view-favorites"><span class="material-icons">favorite</span>المفضلة</div>
-    <div class="menu-item" data-view="view-history"><span class="material-icons">history</span>تابع المشاهدة</div>
-    <div class="menu-item" data-view="view-playlist"><span class="material-icons">playlist_add</span>إضافة قائمة تشغيل</div>
-    <div class="menu-item" data-view="view-search"><span class="material-icons">search</span>البحث المتقدم</div>
-    <div class="menu-item" data-view="view-settings"><span class="material-icons">settings</span>الإعدادات</div>
+    <div class="menu-item" data-view="view-home"><span class="material-icons">home</span><span class="txt-lang" data-key="home">الرئيسية</span></div>
+    <div class="menu-item" data-view="view-live"><span class="material-icons">live_tv</span><span class="txt-lang" data-key="live">قنوات مباشرة</span></div>
+    <div class="menu-item" data-view="view-movies"><span class="material-icons">movie</span><span class="txt-lang" data-key="movies">الأفلام</span></div>
+    <div class="menu-item" data-view="view-series"><span class="material-icons">tv</span><span class="txt-lang" data-key="series">المسلسلات</span></div>
+    <div class="menu-item" data-view="view-favorites"><span class="material-icons">favorite</span><span class="txt-lang" data-key="favorites">المفضلة</span></div>
+    <div class="menu-item" data-view="view-history"><span class="material-icons">history</span><span class="txt-lang" data-key="history">تابع المشاهدة</span></div>
+    <div class="menu-item" data-view="view-playlist"><span class="material-icons">playlist_add</span><span class="txt-lang" data-key="add_playlist">أضف قائمة تشغيل</span></div>
+    <div class="menu-item" data-view="view-search"><span class="material-icons">search</span><span class="txt-lang" data-key="search">البحث المتقدم</span></div>
+    <div class="menu-item" data-view="view-settings"><span class="material-icons">settings</span><span class="txt-lang" data-key="settings">الإعدادات</span></div>
   </div>
 
   <div class="content-container">
     <div class="sub-filter-bar" id="subFilterBar"></div>
 
+    <!-- الشاشات المختلفة -->
     <div id="view-home" class="view-panel">
       <div class="hero-banner">
         <div class="hero-title">House of the Dragon</div>
-        <div class="hero-desc">استمتع بـ تجربة مشاهدة لا حدود لها بدقة 4K ULTRA HD وأحدث تقنيات الصوت الرقمي.</div>
+        <div class="hero-desc" class="txt-lang" data-key="hero_desc">استمتع بـ تجربة مشاهدة لا حدود لها بدقة 4K ULTRA HD وأحدث تقنيات الصوت الرقمي.</div>
       </div>
-      <h3 style="margin-bottom:15px; color:var(--primary-color);">⏱️ تابع المشاهدة مؤخراً</h3>
+      <h3 style="margin-bottom:15px; color:var(--primary-color);" class="txt-lang" data-key="recent">⏱️ تابع المشاهدة مؤخراً</h3>
       <div class="grid-container" id="home-history-grid"></div>
     </div>
 
     <div id="view-live" class="view-panel"><div class="grid-container" id="live-grid"></div></div>
-
     <div id="view-movies" class="view-panel"><div class="grid-container" id="movies-grid"></div></div>
-
     <div id="view-series" class="view-panel"><div class="grid-container" id="series-grid"></div></div>
-
     <div id="view-favorites" class="view-panel"><div class="grid-container" id="favorites-grid"></div></div>
-
     <div id="view-history" class="view-panel"><div class="grid-container" id="history-grid"></div></div>
 
+    <!-- شاشة أضف قائمة تشغيل المطابقة تماماً لـ 88595.jpg -->
     <div id="view-playlist" class="view-panel">
-      <div class="input-form-container">
-        <div class="form-title">ربط اشتراك Xtream Codes API</div>
-        <input id="xt_url" class="form-input xtream-field" placeholder="رابط السيرفر (مثال: http://line.tv:8080)" value="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" />
-        <input id="xt_user" class="form-input xtream-field" placeholder="اسم المستخدم (Username)" value="test" />
-        <input id="xt_pass" class="form-input xtream-field" type="password" placeholder="كلمة المرور (Password)" value="test" />
-        <button id="xt_btn" class="form-button xtream-field" onclick="connectXtream()">اتصال وحفظ القائمة</button>
-        <div id="xt_status" style="margin-top:15px; text-align:center; color:var(--primary-color);"></div>
+      <div class="playlist-screen">
+        <div class="screen-title txt-lang" data-key="xt_title">أضف قائمة تشغيل</div>
+        
+        <!-- التبويبات الثلاثة الملونة -->
+        <div class="type-tabs">
+          <button class="tab-btn active-m3u playlist-focusable" id="tab-m3u" onclick="switchPlaylistType('m3u')">قائمة تشغيل M3U</button>
+          <button class="tab-btn active-stream playlist-focusable" id="tab-stream" onclick="switchPlaylistType('stream1')">حساب Stream-1</button>
+          <button class="tab-btn active-xtream playlist-focusable" id="tab-xtream" onclick="switchPlaylistType('xtream')">حساب Xtream</button>
+        </div>
+
+        <!-- حقول الإدخال الأربعة -->
+        <div class="field-wrapper">
+          <input id="pl_name" class="form-input playlist-focusable" placeholder="إسم قائمة التشغيل" />
+        </div>
+        <div class="field-wrapper" id="row-user">
+          <input id="pl_user" class="form-input playlist-focusable" placeholder="إسم المستخدم" />
+        </div>
+        <div class="field-wrapper" id="row-pass">
+          <button class="eye-btn playlist-focusable" id="btn-eye-toggle" onclick="togglePasswordVisibility()"><span class="material-icons" id="eye-icon">visibility</span></button>
+          <input id="pl_pass" class="form-input password-input-box playlist-focusable" type="password" placeholder="كلمة المرور" />
+        </div>
+        <div class="field-wrapper">
+          <input id="pl_url" class="form-input playlist-focusable" placeholder="رابط السيرفر Host" />
+        </div>
+
+        <!-- زر إضافة السفلي الموحد المحاذي للمنتصف -->
+        <div class="add-action-container">
+          <button id="pl_add_btn" class="btn-add-playlist playlist-focusable txt-lang" data-key="xt_btn" onclick="processPlaylistAddition()">إضافة</button>
+        </div>
+        
+        <div id="pl_status" style="margin-top:20px; text-align:center; color:#fff; font-weight:bold;"></div>
       </div>
     </div>
 
+    <!-- شاشة البحث المتقدم -->
     <div id="view-search" class="view-panel">
       <div style="max-width:600px; margin: 0 auto 30px auto;">
-        <input id="search-input" class="form-input" placeholder="ابحث هنا عن قنوات، أفلام، مسلسلات..." oninput="triggerGlobalSearch()" />
+        <input id="search-input" class="form-input" placeholder="ابحث هنا عن قنوات، أفلام، مسلسلات..." oninput="triggerGlobalSearch()" style="text-align:center;" />
       </div>
       <div class="grid-container" id="search-results-grid"></div>
     </div>
 
+    <!-- شاشة الإعدادات -->
     <div id="view-settings" class="view-panel">
       <div class="settings-list">
-        <div class="settings-item settings-focusable"><div class="settings-left"><span class="material-icons">account_circle</span>الحساب والاشتراك</div><span class="material-icons">chevron_left</span></div>
-        <div class="settings-item settings-focusable"><div class="settings-left"><span class="material-icons">palette</span>المظهر والسمات (Dark Premium)</div><span class="material-icons">chevron_left</span></div>
-        <div class="settings-item settings-focusable"><div class="settings-left"><span class="material-icons">language</span>اللغة الافتراضية (العربية)</div><span class="material-icons">chevron_left</span></div>
-        <div class="settings-item settings-focusable"><div class="settings-left"><span class="material-icons">security</span>الرقابة الأبوية والقفل</div><span class="material-icons">chevron_left</span></div>
-        <div class="settings-item settings-focusable"><div class="settings-left"><span class="material-icons">info</span>حول تطبيق VISION TV v1.0</div><span class="material-icons">chevron_left</span></div>
+        <div class="settings-item settings-focusable"><div class="settings-left"><span class="material-icons">account_circle</span><span class="txt-lang" data-key="set_acc">الحساب والاشتراك</span></div><span class="material-icons">chevron_left</span></div>
+        <div class="settings-item settings-focusable"><div class="settings-left"><span class="material-icons">palette</span><span class="txt-lang" data-key="set_theme">المظهر والسمات (Dark Premium)</span></div><span class="material-icons">chevron_left</span></div>
+        <div class="settings-item settings-focusable" onclick="toggleLanguage()"><div class="settings-left"><span class="material-icons">language</span><span id="lbl-current-lang">اللغة الحالية: العربية (اضغط للتبديل)</span></div><span class="material-icons">translate</span></div>
+        <div class="settings-item settings-focusable"><div class="settings-left"><span class="material-icons">security</span><span class="txt-lang" data-key="set_parent">الرقابة الأبوية والقفل</span></div><span class="material-icons">chevron_left</span></div>
+        <div class="settings-item settings-focusable"><div class="settings-left"><span class="material-icons">info</span><span class="txt-lang" data-key="set_about">حول تطبيق VISION TV v1.0</span></div><span class="material-icons">chevron_left</span></div>
       </div>
     </div>
 
