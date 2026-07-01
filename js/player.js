@@ -4,13 +4,14 @@ const errorBox = document.getElementById("error");
 const fillBar = document.getElementById("fill-bar");
 const currTimeLbl = document.getElementById("current-time");
 const totalTimeLbl = document.getElementById("total-time");
+const playIcon = document.getElementById("icon-play");
 
 const channel = JSON.parse(localStorage.getItem("current"));
 let player;
-const SEEK_SEC = 10; 
+const SEEK_SEC = 10; // القفز 10 ثوانٍ عند التقديم/الترجيع
 
 async function initPlayer() {
-  if (!channel) { errorBox.innerText = "خطأ في جلب الرابط."; return; }
+  if (!channel) { errorBox.innerText = "Error fetching stream URL."; return; }
   document.getElementById("player-title").innerText = channel.name;
   loading.style.display = "block";
 
@@ -20,19 +21,12 @@ async function initPlayer() {
 
     video.addEventListener("waiting", () => loading.style.display = "block");
     video.addEventListener("playing", () => loading.style.display = "none");
-    
-    // تحديث التايم لاين تلقائياً (شاشة 7)
     video.addEventListener("timeupdate", updateTimeline);
 
+    // تشغيل الرابط الحي (سواء كان تيست أو حقيقي من السيرفر)
     await player.load(channel.url);
     video.play();
     
-    // إضافة لتابع المشاهدة في الرئيسية
-    let history = JSON.parse(localStorage.getItem("watch_history")) || [];
-    history = history.filter(h => h.url !== channel.url);
-    history.unshift(channel);
-    localStorage.setItem("watch_history", JSON.stringify(history.slice(0, 30)));
-
   } catch (e) { onPlayerError(e); }
 }
 
@@ -54,28 +48,47 @@ function updateTimeline() {
   }
 }
 
+// دوال التحكم القابلة للنقر المباشر باللمس والماوس
+function togglePlayPause() {
+  if (video.paused) { video.play(); playIcon.innerText = "pause"; }
+  else { video.pause(); playIcon.innerText = "play_arrow"; }
+}
+
+function seekBack() {
+  video.currentTime = Math.max(0, video.currentTime - SEEK_SEC);
+}
+
+function seekForward() {
+  video.currentTime = Math.min(video.duration || Infinity, video.currentTime + SEEK_SEC);
+}
+
 function onPlayerError(e) {
   console.error(e);
-  errorBox.innerText = "خطأ في البث.. جاري إعادة المحاولة تلقائياً بعد 3 ثوانٍ";
+  errorBox.innerText = "حدث خطأ في البث.. جاري إعادة المحاولة تلقائياً";
   loading.style.display = "none";
   setTimeout(() => { errorBox.innerText = ""; initPlayer(); }, 3000);
 }
 
+// ربط أزرار الريموت كنترول للـ TV مع الأيقونات المضيئة
 document.addEventListener("keydown", function(e) {
-  const playIcon = document.getElementById("icon-play");
+  document.getElementById("icon-play").classList.remove("active-focus");
+  document.getElementById("icon-rewind").classList.remove("active-focus");
+  document.getElementById("icon-forward").classList.remove("active-focus");
 
   if (e.key === "Enter" || e.key === " ") {
-    if (video.paused) { video.play(); playIcon.innerText = "pause"; }
-    else { video.pause(); playIcon.innerText = "play_arrow"; }
+    document.getElementById("icon-play").classList.add("active-focus");
+    togglePlayPause();
   }
   if (e.key === "ArrowLeft") {
-    video.currentTime = Math.max(0, video.currentTime - SEEK_SEC);
+    document.getElementById("icon-rewind").classList.add("active-focus");
+    seekBack();
   }
   if (e.key === "ArrowRight") {
-    video.currentTime = Math.min(video.duration || Infinity, video.currentTime + SEEK_SEC);
+    document.getElementById("icon-forward").classList.add("active-focus");
+    seekForward();
   }
   if (e.key === "Backspace" || e.key === "Escape") {
-    window.location.href = "index.html";
+    window.location.href = "details.html";
   }
 });
 
