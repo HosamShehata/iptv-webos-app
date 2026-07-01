@@ -21,7 +21,7 @@
 
     .layout { display: flex; height: 100vh; width: 100vw; }
 
-    /* القائمة الجانبية الموحدة */
+    /* القائمة الجانبية */
     .sidebar {
       width: 260px; background: var(--bg-sidebar); border-left: 1px solid #222; border-right: 1px solid #222;
       display: flex; flex-direction: column; padding: 20px 0; box-sizing: border-box; flex-shrink: 0;
@@ -29,11 +29,10 @@
     .brand-area { padding: 0 25px 15px 25px; text-align: center; }
     .brand-title { font-size: 26px; font-weight: bold; color: var(--primary-color); letter-spacing: 1px; }
     
-    /* زر تبديل اللغة الخارجي في السايد بار */
     .lang-toggle-bar {
-      margin: 0 20px 20px 20px; padding: 10px; background: #1c2430; border-radius: 8px;
+      margin: 0 20px 20px 20px; padding: 12px; background: #1c2430; border-radius: 8px;
       display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer;
-      font-size: 14px; font-weight: bold; color: #fff; border: 1px solid #2c3a4a;
+      font-size: 14px; font-weight: bold; color: #fff; border: 1px solid #2c3a4a; box-sizing: border-box;
     }
     .lang-toggle-bar.focused { outline: 3px solid var(--primary-color); background: #2563eb; }
 
@@ -46,10 +45,18 @@
     html[dir="rtl"] .menu-item.focused { padding-right: 35px; }
     html[dir="ltr"] .menu-item.focused { padding-left: 35px; }
 
-    /* حاوية المحتوى الرئيسي الواسع */
     .content-container { flex: 1; display: flex; flex-direction: column; height: 100%; overflow: hidden; position: relative; }
     
-    /* شريط القوائم الفرعية (التصنيفات الديناميكية) */
+    /* الـ Top Bar الجديد بالملي: ساعة، يوم، سرعة اتصال */
+    .top-info-bar {
+      height: 60px; background: #111111; border-bottom: 1px solid #222;
+      display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-sizing: border-box;
+    }
+    .top-right-status { display: flex; align-items: center; gap: 20px; font-size: 15px; font-weight: bold; }
+    .top-left-clock { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: bold; color: var(--primary-color); }
+    .speed-indicator { display: flex; align-items: center; gap: 6px; color: #00C851; background: rgba(0,200,81,0.1); padding: 4px 12px; border-radius: 6px; font-size: 13px; }
+
+    /* شريط القوائم الفرعية */
     .sub-filter-bar {
       padding: 15px 30px; background: #141414; display: flex; gap: 12px;
       overflow-x: auto; border-bottom: 1px solid #222; box-sizing: border-box; align-items: center;
@@ -60,7 +67,7 @@
     }
     .filter-item.focused { background: var(--text-color); color: #000; font-weight: bold; }
 
-    /* لوحات العرض (الشاشات) */
+    /* لوحات العرض */
     .view-panel { display: none; width: 100%; height: 100%; padding: 30px; overflow-y: auto; box-sizing: border-box; }
     .view-panel.active { display: block !important; }
     
@@ -92,9 +99,9 @@
     
     .type-tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
     .tab-btn { padding: 12px 25px; font-size: 15px; font-weight: bold; border-radius: 8px; border: none; color: white; background: #3a4a5a; cursor: pointer; min-width: 150px; text-align: center; }
-    .tab-btn.active-xtream { background: #2563eb; } 
-    .tab-btn.active-stream { background: #d97706; } 
-    .tab-btn.active-m3u { background: #4b5563; }    
+    .tab-btn.active-xtream { background: #2563eb !important; } 
+    .tab-btn.active-stream { background: #d97706 !important; } 
+    .tab-btn.active-m3u { background: #4b5563 !important; }    
     .tab-btn.focused { outline: 4px solid #fff; }
 
     .field-wrapper { width: 100%; margin-bottom: 15px; display: flex; align-items: center; }
@@ -125,7 +132,6 @@
 
 <div class="layout">
   
-  <!-- القائمة الجانبية الموحدة المربوطة بالضغط الفوري -->
   <div class="sidebar" id="sidebarMenu">
     <div class="brand-area"><div class="brand-title">VISION TV</div></div>
     
@@ -134,7 +140,6 @@
       <span id="lbl-sidebar-lang">العربية / EN</span>
     </div>
 
-    <!-- تم ربط أحداث clickSidebarItem لتعمل فوراً عند اللمس أو الضغط بالماوس -->
     <div class="menu-item" onclick="clickSidebarItem(0)"><span class="material-icons">home</span><span class="txt-lang" data-key="home">الرئيسية</span></div>
     <div class="menu-item" onclick="clickSidebarItem(1)"><span class="material-icons">live_tv</span><span class="txt-lang" data-key="live">قنوات مباشرة</span></div>
     <div class="menu-item" onclick="clickSidebarItem(2)"><span class="material-icons">movie</span><span class="txt-lang" data-key="movies">الأفلام</span></div>
@@ -147,9 +152,23 @@
   </div>
 
   <div class="content-container">
+    
+    <div class="top-info-bar">
+      <div class="top-right-status">
+        <span id="top-current-day">الأربعاء</span>
+        <div class="speed-indicator">
+          <span class="material-icons" style="font-size:16px;">speed</span>
+          <span id="top-net-speed">-- Mbps</span>
+        </div>
+      </div>
+      <div class="top-left-clock">
+        <span class="material-icons" style="font-size:18px;">schedule</span>
+        <span id="top-current-time">10:30 PM</span>
+      </div>
+    </div>
+
     <div class="sub-filter-bar" id="subFilterBar"></div>
 
-    <!-- شاشة الرئيسية -->
     <div id="view-home" class="view-panel">
       <div class="hero-banner">
         <div class="hero-title">House of the Dragon</div>
@@ -159,14 +178,12 @@
       <div class="grid-container" id="home-history-grid"></div>
     </div>
 
-    <!-- باقي الشاشات والشبكات -->
     <div id="view-live" class="view-panel"><div class="grid-container" id="live-grid"></div></div>
     <div id="view-movies" class="view-panel"><div class="grid-container" id="movies-grid"></div></div>
     <div id="view-series" class="view-panel"><div class="grid-container" id="series-grid"></div></div>
     <div id="view-favorites" class="view-panel"><div class="grid-container" id="favorites-grid"></div></div>
     <div id="view-history" class="view-panel"><div class="grid-container" id="history-grid"></div></div>
 
-    <!-- شاشة أضف قائمة تشغيل -->
     <div id="view-playlist" class="view-panel">
       <div class="playlist-screen">
         <div class="screen-title txt-lang" data-key="xt_title">أضف قائمة تشغيل</div>
@@ -199,7 +216,6 @@
       </div>
     </div>
 
-    <!-- شاشة البحث المتقدم -->
     <div id="view-search" class="view-panel">
       <div style="max-width:600px; margin: 0 auto 30px auto;">
         <input id="search-input" class="form-input" placeholder="ابحث هنا عن قنوات، أفلام، مسلسلات..." oninput="triggerGlobalSearch()" style="text-align:center;" />
@@ -207,13 +223,12 @@
       <div class="grid-container" id="search-results-grid"></div>
     </div>
 
-    <!-- شاشة الإعدادات الكاملة -->
     <div id="view-settings" class="view-panel">
       <div class="settings-list">
-        <div class="settings-item settings-focusable" onclick="alert('الحساب نشط')"><div class="settings-left"><span class="material-icons">account_circle</span><span class="txt-lang" data-key="set_acc">الحساب والاشتراك</span></div><span class="material-icons">chevron_left</span></div>
-        <div class="settings-item settings-focusable" onclick="alert('السمة داكنة ممتازة')"><div class="settings-left"><span class="material-icons">palette</span><span class="txt-lang" data-key="set_theme">المظهر والسمات (Dark Premium)</span></div><span class="material-icons">chevron_left</span></div>
+        <div class="settings-item settings-focusable" onclick="alert('Account active')"><div class="settings-left"><span class="material-icons">account_circle</span><span class="txt-lang" data-key="set_acc">الحساب والاشتراك</span></div><span class="material-icons">chevron_left</span></div>
+        <div class="settings-item settings-focusable" onclick="alert('Theme Dark Premium')"><div class="settings-left"><span class="material-icons">palette</span><span class="txt-lang" data-key="set_theme">المظهر والسمات (Dark Premium)</span></div><span class="material-icons">chevron_left</span></div>
         <div class="settings-item settings-focusable" onclick="toggleLanguage()"><div class="settings-left"><span class="material-icons">language</span><span id="lbl-current-lang">اللغة الحالية: العربية (اضغط للتبديل)</span></div><span class="material-icons">translate</span></div>
-        <div class="settings-item settings-focusable" onclick="alert('مفتوح بالكامل')"><div class="settings-left"><span class="material-icons">security</span><span class="txt-lang" data-key="set_parent">الرقابة الأبوية والقفل</span></div><span class="material-icons">chevron_left</span></div>
+        <div class="settings-item settings-focusable" onclick="alert('Parental Control active')"><div class="settings-left"><span class="material-icons">security</span><span class="txt-lang" data-key="set_parent">الرقابة الأبوية والقفل</span></div><span class="material-icons">chevron_left</span></div>
         <div class="settings-item settings-focusable" onclick="alert('VISION TV v1.0')"><div class="settings-left"><span class="material-icons">info</span><span class="txt-lang" data-key="set_about">حول تطبيق VISION TV v1.0</span></div><span class="material-icons">chevron_left</span></div>
       </div>
     </div>
