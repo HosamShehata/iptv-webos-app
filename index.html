@@ -58,10 +58,17 @@
       background: #222;
       cursor: pointer;
       border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
     }
 
     .channel:hover {
       background: #0d6efd;
+    }
+
+    .star {
+      color: gold;
+      cursor: pointer;
     }
 
     .epg-box {
@@ -74,6 +81,12 @@
       padding: 6px;
       border-bottom: 1px solid #333;
       font-size: 14px;
+    }
+
+    .section-title {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #aaa;
     }
   </style>
 </head>
@@ -89,12 +102,18 @@
   <div class="sidebar" id="categories"></div>
 
   <div class="content">
+
+    <div class="section-title">📺 Channels</div>
     <div id="channels"></div>
+
+    <div class="section-title">⭐ Favorites</div>
+    <div id="favorites"></div>
 
     <div class="epg-box">
       <h3>📺 EPG</h3>
       <div id="epg"></div>
     </div>
+
   </div>
 
 </div>
