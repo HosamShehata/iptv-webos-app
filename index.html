@@ -53,7 +53,7 @@
       height: calc(100vh - 80px);
     }
 
-    /* القائمة الجانبية المتقدمة */
+    /* القائمة الجانبية الاحترافية */
     .sidebar {
       width: 240px;
       background: #111;
@@ -86,7 +86,7 @@
       background: #0f0f0f;
     }
 
-    /* شريط التصنيفات (رياضة، أفلام...) */
+    /* شريط التصنيفات الفرعية */
     .sub-bar {
       padding: 15px 30px;
       background: #141414;
@@ -111,7 +111,7 @@
       font-weight: bold;
     }
 
-    /* شبكة عرض القنوات */
+    /* شبكة عرض الكروت الرائعة */
     .main-content {
       flex: 1;
       padding: 30px;
@@ -148,7 +148,7 @@
 <header>
   <input id="m3uUrl" placeholder="أدخل رابط ملف M3U هنا..." value="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" />
   <button onclick="loadPlaylist()">تحميل القائمة</button>
-  <input id="search" placeholder="بحث عن قنوات..." oninput="renderChannels()" style="max-width: 300px; margin-right: auto;" />
+  <input id="search" placeholder="بحث..." oninput="renderChannels()" style="max-width: 300px; margin-right: auto;" />
 </header>
 
 <div class="layout">
@@ -158,11 +158,11 @@
     <div class="menu-item" data-section="movies">الأفلام</div>
     <div class="menu-item" data-section="series">المسلسلات</div>
     <div class="menu-item" data-section="favorites">المفضلة</div>
+    <div class="menu-item" data-section="history">تابع المشاهدة</div>
   </div>
 
   <div class="content-area">
     <div class="sub-bar" id="categories"></div>
-    
     <div class="main-content">
       <div id="channels" class="grid"></div>
     </div>
