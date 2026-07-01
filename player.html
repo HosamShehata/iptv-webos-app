@@ -1,63 +1,75 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" id="player-html">
+<html lang="ar" dir="rtl" id="player-html" class="theme-netflix">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VISION TV - PREMIUM PLAYER</title>
+  <title>VISION TV - ULTRA LIGHT PLAYER</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.compiled.js"></script>
   <style>
-    /* ربط ألوان بار التقدم ومقبض السحب الدائري بالثيمات الخمسة */
     .theme-netflix { --accent: #e50914; }
     .theme-shahid { --accent: #00ff87; }
     .theme-cyberpunk { --accent: #f000ff; }
     .theme-midnight { --accent: #d4af37; }
     .theme-ocean { --accent: #00b4d8; }
 
-    html { font-size: 1.2vw; }
-    @media (max-width: 1024px) { html { font-size: 16px; } }
+    html { font-size: 1.15vw; }
+    @media (max-width: 1024px) { html { font-size: 15px; } }
 
     body, html { margin:0; padding:0; width:100%; height:100%; background:#000; overflow:hidden; font-family:sans-serif; }
     .video-container { position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
-    video { width:100%; height:100%; object-fit:contain; }
+    video { width:100%; height:100%; object-fit:contain; background:#000; }
     
+    /* شاشة التحكم الشفافة OSD الفخمة */
     .osd-controls-panel {
-      position:absolute; bottom:0; left:0; right:0; background:linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0));
-      padding:3.5rem; box-sizing:border-box; display:flex; flex-direction:column; gap:1.5rem; transition:opacity 0.3s; opacity:1;
+      position:absolute; bottom:0; left:0; right:0; background:linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.4), rgba(0,0,0,0));
+      padding:3.5rem; box-sizing:border-box; display:flex; flex-direction:column; gap:1.5rem; transition:opacity 0.3s ease; opacity:1;
     }
     .timeline-container { display:flex; align-items:center; gap:1.5rem; width:100%; }
-    .time-txt { color:#aaa; font-family:monospace; font-size:1.1rem; }
+    .time-txt { color:#ccc; font-family:monospace; font-size:1.15rem; font-weight:bold; }
     
-    /* شريط تقدم اليوتيوب التفاعلي المصلح والمحكم للسحب بنسبة وتناسب */
-    .progress-bar-clickable-zone { flex:1; height:1.5rem; display:flex; align-items:center; cursor:pointer; position:relative; }
-    .progress-bg { width:100%; height:0.6rem; background:rgba(255,255,255,0.2); border-radius:4px; position:relative; }
+    /* ستايل شريط سحب اليوتيوب ممسوك ومحكم مائة بالمائة */
+    .progress-bar-clickable-zone { flex:1; height:1.6rem; display:flex; align-items:center; cursor:pointer; position:relative; }
+    .progress-bg { width:100%; height:0.6rem; background:rgba(255,255,255,0.25); border-radius:4px; position:relative; }
     .progress-fill { height:100%; width:0%; background:var(--accent); border-radius:4px; position:relative; box-shadow:0 0 10px var(--accent); }
     
-    /* مقبض السحب الدائري الأنيق الممسوك المتفاعل مع الثيم بالملي */
     .progress-knob {
-      position:absolute; top:50%; transform:translate(-50%, -50%); width:1.4rem; height:1.4rem;
-      background:#ffffff; border:4px solid var(--accent); border-radius:50%; box-shadow:0 0 10px rgba(0,0,0,0.8); transition: left 0.05s linear;
+      position:absolute; top:50%; transform:translate(-50%, -50%); width:1.5rem; height:1.5rem;
+      background:#ffffff; border:4px solid var(--accent); border-radius:50%; box-shadow:0 0 12px rgba(0,0,0,0.9); transition: left 0.05s linear;
     }
 
     .controls-row-buttons { display:flex; align-items:center; justify-content:center; gap:2.5rem; width:100%; }
-    .control-btn { background:none; border:none; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; width:3.5rem; height:3.5rem; border-radius:50%; transition:0.2s; }
-    .control-btn .material-icons { font-size:2.4rem; }
-    .control-btn:hover { background:rgba(255,255,255,0.1); transform:scale(1.1); }
-    .control-btn.main-center-play { background:var(--accent); width:4.5rem; height:4.5rem; box-shadow:0 0 15px var(--accent); }
-    .control-btn.main-center-play .material-icons { font-size:2.8rem; }
+    .control-btn { background:none; border:none; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; width:3.6rem; height:3.6rem; border-radius:50%; transition:0.2s; }
+    .control-btn .material-icons { font-size:2.6rem; }
+    .control-btn:hover { background:rgba(255,255,255,0.15); transform:scale(1.1); }
+    .control-btn.main-center-play { background:var(--accent); width:4.8rem; height:4.8rem; box-shadow:0 0 20px var(--accent); }
+    .control-btn.main-center-play .material-icons { font-size:3rem; }
     
-    .speed-badge-selector { background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:0.6rem 1.4rem; border-radius:8px; cursor:pointer; font-size:1.1rem; font-weight:bold; }
+    .badge-selector-box { display:flex; gap:1rem; align-items:center; }
+    .speed-badge-selector { background:rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:0.6rem 1.4rem; border-radius:10px; cursor:pointer; font-size:1.15rem; font-weight:bold; outline:none; }
+    .speed-badge-selector:focus { border-color: var(--accent); }
   </style>
 </head>
 <body>
 
-<div class="video-container" onmousemove="showOSD()">
+<div class="video-container" onmousemove="triggerOSDVisibility()">
   <video id="video" autoplay></video>
   
   <div class="osd-controls-panel" id="controls-panel">
     <div style="display:flex; justify-content:space-between; align-items:center;">
-      <div id="player-title" style="font-size:1.6rem; font-weight:bold; color:#fff; text-shadow:0 2px 5px #000;">Episode Title</div>
-      <button class="speed-badge-selector" onclick="changePlaybackSpeed()" id="speed-label-btn">1.0x</button>
+      <div id="player-title" style="font-size:1.7rem; font-weight:bold; color:#fff; text-shadow:0 2px 6px #000;">عنوان البث المباشر أو الفيلم</div>
+      
+      <div class="badge-selector-box">
+        <span style="font-size:1.1rem; color:#ccc;"><span class="material-icons" style="vertical-align:middle; font-size:1.3rem;">hd</span> الجودة:</span>
+        <select class="speed-badge-selector" id="quality-selector" onchange="switchVideoQuality(this.value)">
+          <option value="auto">Auto (تلقائي مستقر)</option>
+          <option value="1080">1080p FHD</option>
+          <option value="720">720p HD</option>
+          <option value="480">480p SD</option>
+        </select>
+        
+        <button class="speed-badge-selector" onclick="triggerPlaybackSpeedCycle()" id="speed-label-btn">1.0x</button>
+      </div>
     </div>
     
     <div class="timeline-container">
@@ -72,11 +84,11 @@
     </div>
 
     <div class="controls-row-buttons">
-      <button class="control-btn" onclick="navigatePlaylistEpisodes(-1)"><span class="material-icons">skip_previous</span></button>
+      <button class="control-btn" onclick="navigateEpisodesStream(-1)"><span class="material-icons">skip_previous</span></button>
       <button class="control-btn" id="btn-rewind-action"><span class="material-icons">replay_10</span></button>
-      <button class="control-btn main-center-play" onclick="togglePlayPause()"><span class="material-icons" id="icon-play">pause</span></button>
+      <button class="control-btn main-center-play" onclick="togglePlayPauseState()"><span class="material-icons" id="icon-play">pause</span></button>
       <button class="control-btn" id="btn-forward-action"><span class="material-icons">forward_10</span></button>
-      <button class="control-btn" onclick="navigatePlaylistEpisodes(1)"><span class="material-icons">skip_next</span></button>
+      <button class="control-btn" onclick="navigateEpisodesStream(1)"><span class="material-icons">skip_next</span></button>
     </div>
   </div>
 </div>
