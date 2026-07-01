@@ -34,11 +34,17 @@
     .episodes-section { display: none; flex-direction: column; width: 100%; }
     .section-title { font-size: 18px; color: #1f6feb; margin-bottom: 10px; font-weight: bold; }
     .episodes-scroll { display: flex; gap: 12px; overflow-x: auto; padding: 10px 0; width: 100%; }
+    
     .ep-card {
       background: #161616; border: 1px solid #222; padding: 12px 20px; border-radius: 6px;
-      min-width: 140px; text-align: center; font-size: 14px; color: #aaa; white-space: nowrap; cursor: pointer;
+      min-width: 160px; text-align: center; font-size: 14px; color: #aaa; position: relative; cursor: pointer; white-space: nowrap;
     }
     .ep-card.focused { outline: 3px solid #1f6feb; background: #222; color: #fff; }
+    .ep-card.last-watched-badge::after {
+      content: '👁️ الأخيرة'; position: absolute; top: -8px; right: 5px; background: #1f6feb;
+      color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold;
+    }
+    html[dir="ltr"] .ep-card.last-watched-badge::after { content: '👁️ Last'; left: 5px; right: auto; }
   </style>
 </head>
 <body>
