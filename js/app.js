@@ -1,10 +1,7 @@
 let channels = [];
 let filtered = [];
-let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-
 let categories = ["All", "Sports", "Movies", "News"];
 let currentCategory = "All";
-
 let selectedIndex = 0;
 
 // EPG تجريبي
@@ -42,7 +39,7 @@ function loadPlaylist() {
 
 }
 
-// تحويل M3U
+// M3U parser
 function parseM3U(data) {
 
   const lines = data.split("\n");
@@ -69,7 +66,7 @@ function parseM3U(data) {
   return result;
 }
 
-// عرض الأقسام
+// categories
 function renderCategories() {
 
   const box = document.getElementById("categories");
@@ -94,7 +91,7 @@ function renderCategories() {
 
 }
 
-// عرض القنوات
+// channels grid
 function renderChannels() {
 
   const search = document.getElementById("search").value.toLowerCase();
@@ -114,12 +111,12 @@ function renderChannels() {
   filtered.forEach((ch, index) => {
 
     const div = document.createElement("div");
-    div.className = "channel";
+    div.className = "card";
 
-    div.innerText = "▶ " + ch.name;
+    div.innerText = ch.name;
 
     if (index === selectedIndex) {
-      div.style.background = "#0d6efd";
+      div.style.outline = "2px solid #1f6feb";
     }
 
     div.onclick = function () {
@@ -132,30 +129,11 @@ function renderChannels() {
 
 }
 
-// فتح قناة
+// open player
 function openChannel(ch) {
 
   localStorage.setItem("current", JSON.stringify(ch));
-  localStorage.setItem("lastWatched", JSON.stringify(ch));
-
   window.location.href = "player.html";
-
-}
-
-// Favorites toggle
-function toggleFavorite(ch) {
-
-  const index = favorites.findIndex(f => f.url === ch.url);
-
-  if (index === -1) {
-    favorites.push(ch);
-  } else {
-    favorites.splice(index, 1);
-  }
-
-  localStorage.setItem("favorites", JSON.stringify(favorites));
-
-  renderChannels();
 
 }
 
@@ -179,7 +157,7 @@ function renderEPG() {
 
 }
 
-// ريموت كنترول
+// remote control
 document.addEventListener("keydown", function(e) {
 
   if (!filtered.length) return;
