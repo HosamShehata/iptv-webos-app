@@ -2,96 +2,140 @@
 <html lang="ar" dir="rtl" id="main-html">
 <head>
   <meta charset="utf-8">
-  <title>VISION TV - IPTV PLAYER</title>
+  <title>VISION TV - ULTRA PREMIUM PLAYER</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
+    /* محرك السمات الحديثة الـ 5 المتنوعة بأعلى جودة */
     :root {
       --primary-color: #1f6feb;
-      --bg-main: #0b0b0b;
-      --bg-sidebar: #111111;
-      --bg-card: #161616;
+      --primary-glow: rgba(31, 111, 235, 0.4);
+      --bg-main: #06070d;
+      --bg-sidebar: rgba(14, 16, 27, 0.75);
+      --bg-card: rgba(22, 26, 43, 0.6);
+      --glass-border: rgba(255, 255, 255, 0.06);
       --text-color: #ffffff;
-      --text-dim: #aaaaaa;
+      --text-dim: #8fa0b5;
     }
+    
+    /* 1. ثيم نيتفلكس */
+    .theme-netflix {
+      --primary-color: #e50914;
+      --primary-glow: rgba(229, 9, 20, 0.4);
+      --bg-main: #000000;
+      --bg-sidebar: rgba(20, 20, 20, 0.85);
+      --bg-card: rgba(47, 47, 47, 0.6);
+    }
+    /* 2. ثيم شاهد */
+    .theme-shahid {
+      --primary-color: #00ff87;
+      --primary-glow: rgba(0, 255, 135, 0.4);
+      --bg-main: #0b0f19;
+      --bg-sidebar: rgba(15, 23, 42, 0.8);
+      --bg-card: rgba(30, 41, 59, 0.6);
+    }
+    /* 3. ثيم سايبربانك */
+    .theme-cyberpunk {
+      --primary-color: #f000ff;
+      --primary-glow: rgba(240, 0, 255, 0.4);
+      --bg-main: #0c0014;
+      --bg-sidebar: rgba(26, 0, 41, 0.8);
+      --bg-card: rgba(53, 0, 82, 0.6);
+      --text-dim: #00f0ff;
+    }
+    /* 4. ثيم ميدينايت الملكي */
+    .theme-midnight {
+      --primary-color: #d4af37;
+      --primary-glow: rgba(212, 175, 55, 0.4);
+      --bg-main: #050b14;
+      --bg-sidebar: rgba(10, 20, 38, 0.85);
+      --bg-card: rgba(18, 35, 64, 0.6);
+    }
+
     body {
       margin: 0; background: var(--bg-main); color: var(--text-color);
       font-family: 'Segoe UI', Arial, sans-serif; overflow: hidden; user-select: none;
+      transition: background 0.3s ease;
     }
+
     .layout { display: flex; height: 100vh; width: 100vw; }
-    
-    /* القائمة الجانبية للشاشات الـ 10 */
+
+    /* جرافيك السايد بار الزجاجي المطور */
     .sidebar {
-      width: 270px; background: var(--bg-sidebar); border-left: 1px solid #222; border-right: 1px solid #222;
-      display: flex; flex-direction: column; padding: 20px 0; box-sizing: border-box; flex-shrink: 0;
+      width: 280px; background: var(--bg-sidebar); backdrop-filter: blur(25px);
+      border-left: 1px solid var(--glass-border); border-right: 1px solid var(--glass-border);
+      display: flex; flex-direction: column; padding: 25px 0; box-sizing: border-box; flex-shrink: 0;
     }
-    .brand-area { padding: 0 25px 15px 25px; text-align: center; }
-    .brand-title { font-size: 26px; font-weight: bold; color: var(--primary-color); letter-spacing: 1px; }
+    html[dir="ltr"] .sidebar { border-left: none; border-right: 1px solid var(--glass-border); }
+
+    .brand-area { padding: 0 30px 20px 30px; text-align: center; }
+    .brand-title { font-size: 28px; font-weight: 900; color: #fff; letter-spacing: 1px; text-shadow: 0 0 12px var(--primary-glow); }
     
     .lang-toggle-bar {
-      margin: 0 20px 20px 20px; padding: 12px; background: #1c2430; border-radius: 8px;
+      margin: 0 25px 25px 25px; padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 12px;
       display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer;
-      font-size: 14px; font-weight: bold; color: #fff; border: 1px solid #2c3a4a; box-sizing: border-box;
+      font-size: 14px; font-weight: bold; color: #fff; border: 1px solid var(--glass-border); transition: all 0.2s;
     }
-    .lang-toggle-bar.focused { outline: 3px solid var(--primary-color); background: #2563eb; }
+    .lang-toggle-bar.focused, .lang-toggle-bar:hover { background: var(--primary-color); box-shadow: 0 4px 20px var(--primary-glow); }
 
     .menu-item {
-      padding: 14px 25px; font-size: 16px; color: var(--text-dim); cursor: pointer;
-      display: flex; align-items: center; gap: 15px; transition: all 0.2s ease;
+      padding: 14px 30px; font-size: 16px; color: var(--text-dim); cursor: pointer;
+      display: flex; align-items: center; gap: 18px; transition: all 0.2s; position: relative;
     }
-    .menu-item.focused { background: var(--primary-color); color: var(--text-color); font-weight: bold; }
-    html[dir="rtl"] .menu-item.focused { padding-right: 35px; }
-    html[dir="ltr"] .menu-item.focused { padding-left: 35px; }
+    .menu-item.focused, .menu-item:hover {
+      background: linear-gradient(90deg, rgba(31, 111, 235, 0.15) 0%, rgba(0,0,0,0) 100%); color: #fff; font-weight: bold;
+    }
+    .menu-item.focused::before {
+      content: ''; width: 4px; height: 24px; background: var(--primary-color); position: absolute; right: 0; border-radius: 4px 0 0 4px; box-shadow: 0 0 10px var(--primary-color);
+    }
+    html[dir="ltr"] .menu-item.focused::before { left: 0; right: auto; border-radius: 0 4px 4px 0; }
 
-    /* الحاوية الرئيسية للمحتوى */
     .content-container { flex: 1; display: flex; flex-direction: column; height: 100%; overflow: hidden; position: relative; }
     
-    .top-info-bar {
-      height: 60px; background: #111111; border-bottom: 1px solid #222;
-      display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-sizing: border-box; flex-shrink: 0;
-    }
-    .top-right-clock-area { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: bold; color: var(--text-color); }
-    .top-right-clock-area .date-divider { color: var(--primary-color); margin: 0 4px; }
-    .speed-indicator { display: flex; align-items: center; gap: 6px; color: #00C851; background: rgba(0,200,81,0.1); padding: 5px 14px; border-radius: 6px; font-size: 13px; font-weight: bold; }
+    .top-info-bar { height: 65px; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; box-shrink: 0; }
+    .top-right-clock-area { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: bold; color: #fff; }
+    .top-right-clock-area .material-icons { color: var(--primary-color); }
+    .top-right-clock-area .date-divider { color: rgba(255,255,255,0.15); margin: 0 4px; }
+    .speed-indicator { display: flex; align-items: center; gap: 6px; color: #00C851; background: rgba(0,200,81,0.08); padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: bold; border: 1px solid rgba(0,200,81,0.15); }
 
-    .sub-filter-bar {
-      padding: 15px 30px; background: #141414; display: flex; gap: 12px;
-      overflow-x: auto; border-bottom: 1px solid #222; box-sizing: border-box; align-items: center; flex-shrink: 0;
-    }
-    .filter-item {
-      padding: 8px 18px; background: #222; border-radius: 20px; font-size: 14px;
-      color: var(--text-dim); white-space: nowrap; transition: background 0.2s; cursor: pointer;
-    }
-    .filter-item.focused { background: var(--text-color); color: #000; font-weight: bold; }
+    .sub-filter-bar { padding: 10px 40px 20px 40px; display: flex; gap: 14px; overflow-x: auto; box-sizing: border-box; align-items: center; flex-shrink: 0; }
+    .sub-filter-bar::-webkit-scrollbar { display: none; }
+    .filter-item { padding: 8px 22px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 25px; font-size: 14px; color: var(--text-dim); white-space: nowrap; transition: all 0.2s; cursor: pointer; }
+    .filter-item.focused { background: #fff; color: #000; font-weight: bold; box-shadow: 0 4px 15px rgba(255,255,255,0.2); }
 
-    .view-panel { display: none; width: 100%; height: 100%; padding: 30px; overflow-y: auto; box-sizing: border-box; }
+    .view-panel { display: none; width: 100%; height: 100%; padding: 10px 40px 40px 40px; overflow-y: auto; box-sizing: border-box; }
     .view-panel.active { display: block !important; }
     
-    .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; }
+    .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 30px; }
 
-    /* كروت الميديا مع شريط المشاهدة السفلي الأحمر لليوتيوب */
+    /* جرافيكس الكروت والبوسترات العالي الدقة */
     .media-card {
-      background: var(--bg-card); border: 1px solid #222; border-radius: 12px;
-      overflow: hidden; transition: transform 0.2s; position: relative; cursor: pointer;
+      background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 16px;
+      overflow: hidden; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); position: relative; cursor: pointer;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.4);
     }
-    .media-card img { width: 100%; height: 270px; object-fit: cover; }
-    .media-card .info { padding: 12px; text-align: center; font-size: 14px; font-weight: bold; }
-    .media-card.focused { outline: 4px solid var(--primary-color); transform: scale(1.03); }
+    .media-card img { width: 100%; height: 285px; object-fit: cover; }
+    .media-card .info { padding: 14px; text-align: center; font-size: 14px; font-weight: bold; color: #fff; }
+    .media-card.focused { outline: 3px solid var(--primary-color); transform: scale(1.04); box-shadow: 0 15px 35px var(--primary-glow); }
     
-    .card-progress-container { width: 100%; height: 5px; background: #333; position: relative; }
-    .card-progress-fill { height: 100%; background: #ff0000; width: 0%; }
+    .card-progress-container { width: 100%; height: 6px; background: rgba(255,255,255,0.1); position: relative; }
+    .card-progress-fill { height: 100%; background: #ff0000; width: 0%; box-shadow: 0 0 6px #ff0000; }
 
-    /* لوحة الإعدادات وتخصيص الريموت المتقدمة */
-    .settings-layout-box { display: flex; gap: 30px; height: 100%; }
-    .settings-sidebar-list { width: 300px; display: flex; flex-direction: column; gap: 12px; }
-    .settings-item { background: var(--bg-card); padding: 16px 20px; border-radius: 10px; border: 1px solid #222; display: flex; justify-content: space-between; align-items: center; font-size: 15px; cursor: pointer; }
-    .settings-item.focused { outline: 3px solid var(--primary-color); background: #222; }
-    
-    .settings-details-container { flex: 1; background: #111111; border: 1px solid #222; border-radius: 12px; padding: 30px; box-sizing: border-box; overflow-y: auto; }
+    /* رف تكملة المشاهدة الفورية بكل فئة */
+    .continue-shelf-box { padding: 15px 40px; display: none; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--glass-border); margin-bottom: 15px; border-radius: 16px; }
+
+    /* الإعدادات لوحتين المودرن مع خيارات الثيمات الخمسة المذهلة */
+    .settings-layout-box { display: flex; gap: 35px; height: 100%; }
+    .settings-sidebar-list { width: 310px; display: flex; flex-direction: column; gap: 14px; }
+    .settings-item { background: rgba(255,255,255,0.02); padding: 18px 24px; border-radius: 14px; border: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; font-size: 16px; cursor: pointer; transition: all 0.2s; }
+    .settings-item.focused { border-color: var(--primary-color); background: rgba(31,111,235,0.08); }
+    .settings-left-side { display: flex; align-items: center; gap: 14px; }
+
+    .settings-details-container { flex: 1; background: rgba(14,16,27,0.4); border: 1px solid var(--glass-border); border-radius: 20px; padding: 35px; box-sizing: border-box; overflow-y: auto; }
     .sub-settings-panel { display: none; }
     .sub-settings-panel.active { display: block !important; }
     
-    .custom-select { padding: 12px; border-radius: 8px; background: #222; color: #fff; width: 100%; font-size: 15px; border: 1px solid #444; outline: none; margin-bottom: 15px; }
-    .remote-btn-mapping-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #222; }
+    .custom-select { padding: 14px; border-radius: 10px; background: #0e101b; color: #fff; width: 100%; font-size: 15px; border: 1px solid var(--glass-border); outline: none; margin-bottom: 20px; }
+    .remote-btn-mapping-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--glass-border); }
   </style>
 </head>
 <body>
@@ -127,8 +171,8 @@
 
     <div class="sub-filter-bar" id="subFilterBar"></div>
 
-    <div id="continue-watching-sub-shelf" style="padding: 15px 30px; display:none; background: rgba(31,111,235,0.05); border-bottom: 1px solid #222;">
-      <h4 style="margin:0 0 10px 0; color: #1f6feb;" class="txt-lang" data-key="resume_shelf">تكملة المشاهدة الفورية ⏱️</h4>
+    <div id="continue-watching-sub-shelf" class="continue-shelf-box">
+      <h4 style="margin:0 0 15px 0; color: var(--primary-color); font-size:16px;" class="txt-lang" data-key="resume_shelf">تكملة المشاهدة الفورية ⏱️</h4>
       <div class="grid-container" id="sub-shelf-grid"></div>
     </div>
 
@@ -145,38 +189,51 @@
 
     <div id="view-playlist" class="view-panel">
       <div class="grid-container" id="pl-main-menu-grid">
-        <div class="media-card" onclick="alert('Xtream Codes API Triggered')"><div class="info">Xtream Codes API</div></div>
-        <div class="media-card" onclick="alert('M3U URL Triggered')"><div class="info">M3U URL</div></div>
+        <div class="media-card" onclick="alert('Xtream codes active')"><div class="info">Xtream Codes API</div></div>
+        <div class="media-card" onclick="alert('M3U active')"><div class="info">M3U URL Link</div></div>
       </div>
     </div>
 
     <div id="view-search" class="view-panel">
-      <input id="search-input" style="width:100%; padding:14px; background:#fff; color:#000; border-radius:8px; border:none;" placeholder="ابحث هنا..." />
-      <div class="grid-container" id="search-results-grid" style="margin-top:20px;"></div>
+      <input id="search-input" class="form-input" placeholder="ابحث هنا عن قنوات، أفلام، مسلسلات..." oninput="triggerGlobalSearch()" style="width:100%; padding:15px; background:rgba(255,255,255,0.05); color:#fff; border:1px solid var(--glass-border); border-radius:12px;" />
+      <div class="grid-container" id="search-results-grid" style="margin-top:30px;"></div>
     </div>
 
     <div id="view-settings" class="view-panel">
       <div class="settings-layout-box">
         <div class="settings-sidebar-list">
-          <div class="settings-item settings-focusable" onclick="clickSettingsItem(0)"><span>الحساب والاشتراك</span></div>
-          <div class="settings-item settings-focusable" onclick="clickSettingsItem(1)"><span>المظهر والسرعة</span></div>
-          <div class="settings-item settings-focusable" onclick="clickSettingsItem(2)"><span>برمجة أزرار الريموت كاملة</span></div>
+          <div class="settings-item settings-focusable" onclick="clickSettingsItem(0)"><div class="settings-left-side"><span class="material-icons">account_circle</span><span>الحساب والاشتراك</span></div></div>
+          <div class="settings-item settings-focusable" onclick="clickSettingsItem(1)"><div class="settings-left-side"><span class="material-icons">palette</span><span>المظهر والسمات الحديثة</span></div></div>
+          <div class="settings-item settings-focusable" onclick="clickSettingsItem(2)"><div class="settings-left-side"><span class="material-icons">settings_remote</span><span>برمجة أزرار الريموت الكاملة</span></div></div>
         </div>
         <div class="settings-details-container">
-          <div id="sub-set-account" class="sub-settings-panel active"><h3>Premium Account</h3><p>الحالة: مستقر ونشط</p></div>
+          <div id="sub-set-account" class="sub-settings-panel active"><h3>Premium Subscription</h3><p>نوع الحساب: سيرفر حركي نشط بالكامل</p><button onclick="clearPlaylistData()" style="background:#ff4444; max-width:250px; padding:12px; border:none; border-radius:8px; color:#fff; font-weight:bold; cursor:pointer;">إعادة ضبط المصنع وحذف الداتا</button></div>
+          
           <div id="sub-set-theme" class="sub-settings-panel">
-            <h3 class="txt-lang" data-key="seek_sec_title">تخصيص ثواني قفز الريموت</h3>
+            <h3>🎨 اختر المظهر والسمة الحديثة (5 السمات المتنوعة)</h3>
+            <select class="custom-select" onchange="changeGlobalAppTheme(this.value)">
+              <option value="default">Dark Vision (الأصلية الفخمة)</option>
+              <option value="theme-netflix">Netflix Crimson (أسود وأحمر سينمائي)</option>
+              <option value="theme-shahid">Shahid Jade (الزيتي الفاخر)</option>
+              <option value="theme-cyberpunk">Neon Cyberpunk (بنفسجي نيون مضيء)</option>
+              <option value="theme-midnight">Midnight Luxury (الأزرق والذهبي الملكي)</option>
+            </select>
+
+            <h3 style="margin-top:25px;">⏱️ تخصيص ثواني قفز الريموت (يمين / يسار)</h3>
             <select class="custom-select" onchange="updateSeekDurationSetting(this.value)">
               <option value="5">5 ثوانٍ</option>
-              <option value="10" selected>10 ثوانٍ</option>
+              <option value="10" selected>10 ثوانٍ (افتراضي)</option>
+              <option value="15">15 ثانية</option>
               <option value="30">30 ثانية</option>
+              <option value="60">60 ثانية كاملة 🚀</option>
             </select>
           </div>
+
           <div id="sub-set-remote" class="sub-settings-panel">
-            <h3 class="txt-lang" data-key="remote_config">لوحة تحكم وبرمجة ريموت LG Magic</h3>
-            <div class="remote-btn-mapping-row"><span>زر OK / ENTER الرئيسي</span><select class="custom-select" style="width:180px;"><option>تشغيل / إيقاف مؤقت</option><option>إظهار البيانات</option></select></div>
-            <div class="remote-btn-mapping-row"><span>الأزرار يمين / يسار</span><select class="custom-select" style="width:180px;"><option>تقديم وتأخير بالثواني</option><option>التنقل بين القنوات</option></select></div>
-            <div class="remote-btn-mapping-row"><span>أزرار تقليب القنوات (CH+/CH-)</span><select class="custom-select" style="width:180px;"><option>تقليب قنوات البث المباشر</option><option>تقديم سريع</option></select></div>
+            <h3>🎮 برمجة ريموت التلفزيون الذكي LG Magic</h3>
+            <div class="remote-btn-mapping-row"><span>كبسة زر الـ OK / ENTER الرئيسي</span><select class="custom-select" style="width:200px; margin-bottom:0;"><option>Play / Pause تلقائي</option><option>إظهار معلومات البث</option></select></div>
+            <div class="remote-btn-mapping-row"><span>الضغط يمين / يسار (الأسهم العادية)</span><select class="custom-select" style="width:200px; margin-bottom:0;"><option>التقديم والتأخير بالثواني المحددة</option><option>تسريع وتبطيء الـ Rate</option></select></div>
+            <div class="remote-btn-mapping-row"><span>أزرار تقليب القنوات (CH + / CH -)</span><select class="custom-select" style="width:200px; margin-bottom:0;"><option>تقليب القنوات بالبث المباشر فوراً</option><option>تقديم سريع للمسلسلات</option></select></div>
           </div>
         </div>
       </div>
