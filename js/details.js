@@ -1,177 +1,139 @@
 const item = JSON.parse(localStorage.getItem("current"));
 const creds = JSON.parse(localStorage.getItem("xtream_creds"));
 
-let focusMode = "buttons"; // buttons | episodes
-let buttonIndex = 0;
-let episodeIndex = 0;
-let episodesData = [];
+let focusMode = "buttons"; 
+let btnIdx = 0;
+let epIdx = 0;
+let episodesList = [];
 
-// دالة جلب بيانات وتفاصيل المادة الشاملة
-async function loadDetails() {
-  if (!item) {
-    window.location.href = "index.html";
-    return;
-  }
+async function initDetails() {
+  if (!item) { window.location.href = "index.html"; return; }
 
-  // 1. حقن البيانات الأساسية في الـ HTML
-  document.getElementById("item-title").innerText = item.name;
-  document.getElementById("item-meta").innerText = `التصنيف: ${item.category_name || "عام"}`;
-  
+  document.getElementById("media-title").innerText = item.name;
   const imgUrl = item.stream_icon || item.cover || "";
   if(imgUrl) {
-    document.getElementById("item-poster").src = imgUrl;
-    document.getElementById("hero-backdrop").style.backgroundImage = `url('${imgUrl}')`;
+    document.getElementById("media-poster").src = imgUrl;
+    document.getElementById("backdrop-bg").style.backgroundImage = `url('${imgUrl}')`;
   }
 
-  // 2. التحقق لو المادة فيلم أو مسلسل لجلب تفاصيل إضافية (القصة والحلقات)
   const baseUrl = `${creds.url}/player_api.php?username=${creds.user}&password=${creds.pass}`;
-  
+
   try {
     if (item.series_id) {
-      // المادة "مسلسل": جلب تفاصيل الحلقات
-      document.getElementById("series-area").style.display = "flex";
+      [span_0](start_span)// جلب الحلقات لو مسلسل (شاشة 5 و 6)[span_0](end_span)
+      document.getElementById("episodes-block").style.display = "flex";
       const res = await fetch(`${baseUrl}&action=get_series_info&series_id=${item.series_id}`);
-      const infoData = await res.json();
+      const data = await res.json();
       
-      if(infoData.info && infoData.info.plot) {
-        document.getElementById("item-desc").innerText = infoData.info.plot;
-      }
+      if(data.info && data.info.plot) document.getElementById("media-plot").innerText = data.info.plot;
+      if(data.info && data.info.rating) document.getElementById("media-rating").innerText = `⭐ ${data.info.rating}`;
+      if(data.info && data.info.releaseDate) document.getElementById("media-year").innerText = data.info.releaseDate.split("-")[0];
 
-      // تحضير قائمة الحلقات (دمج كل المواسم في قائمة واحدة مسطحة لتسهيل الريموت)
-      episodesData = [];
-      if(infoData.episodes) {
-        Object.keys(infoData.episodes).forEach(seasonNum => {
-          infoData.episodes[seasonNum].forEach(ep => {
-            episodesData.push({
-              name: `الموسم ${seasonNum} - الحلقة ${ep.episode_num}: ${ep.title}`,
+      episodesList = [];
+      if(data.episodes) {
+        Object.keys(data.episodes).forEach(season => {
+          data.episodes[season].forEach(ep => {
+            episodesList.push({
+              title: `الموسم ${season} - حلقة ${ep.episode_num}`,
               stream_id: ep.id,
-              container_extension: ep.container_extension || "mp4"
+              ext: ep.container_extension || "mp4"
             });
           });
         });
       }
-      renderEpisodes();
+      renderEpisodesTray();
     } else {
-      // المادة "فيلم": جلب بيانات الفيلم الإضافية لو متوفرة
+      // جلب تفاصيل الفيلم
       const res = await fetch(`${baseUrl}&action=get_vod_info&stream_id=${item.stream_id}`);
-      const infoData = await res.json();
-      if(infoData.info && infoData.info.plot) {
-        document.getElementById("item-desc").innerText = infoData.info.plot;
-      }
+      const data = await res.json();
+      if(data.info && data.info.plot) document.getElementById("media-plot").innerText = data.info.plot;
+      if(data.info && data.info.rating) document.getElementById("media-rating").innerText = `⭐ ${data.info.rating}`;
+      if(data.info && data.info.year) document.getElementById("media-year").innerText = data.info.year;
     }
-  } catch (e) {
-    console.error("Error loading rich details:", e);
-  }
+  } catch(e) { console.error(e); }
 
   updateFocus();
 }
 
-function renderEpisodes() {
-  const container = document.getElementById("episodes-list");
-  container.innerHTML = "";
-  episodesData.forEach((ep) => {
+function renderEpisodesTray() {
+  const tray = document.getElementById("episodes-tray");
+  tray.innerHTML = "";
+  episodesList.forEach(ep => {
     const div = document.createElement("div");
-    div.className = "episode-card";
-    div.innerText = ep.name;
-    container.appendChild(div);
+    div.className = "ep-card";
+    div.innerText = ep.title;
+    tray.appendChild(div);
   });
 }
 
 function updateFocus() {
-  // تركيز الأزرار العليا
-  const buttons = document.querySelectorAll(".details-focusable");
-  buttons.forEach((btn, i) => {
-    btn.classList.toggle("focused", focusMode === "buttons" && i === buttonIndex);
-  });
+  const btns = document.querySelectorAll(".detail-item");
+  btns.forEach((b, i) => b.classList.toggle("focused", focusMode === "buttons" && i === btnIdx));
 
-  // تركيز الحلقات
-  const epCards = document.querySelectorAll(".episode-card");
-  epCards.forEach((card, i) => {
-    const isFocused = focusMode === "episodes" && i === episodeIndex;
-    card.classList.toggle("focused", isFocused);
-    if(isFocused) {
-      card.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
-    }
+  const eps = document.querySelectorAll(".ep-card");
+  eps.forEach((e, i) => {
+    const isFocused = focusMode === "episodes" && i === epIdx;
+    e.classList.toggle("focused", isFocused);
+    if(isFocused) e.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
   });
 }
 
-// دالة بدء تشغيل البث المباشر للأفلام أو الحلقات المختارة
-function startPlayback() {
-  if (item.series_id) {
-    // لو مسلسل ولم يحدد حلقة، يشغل الحلقة الأولى افتراضياً
-    if(episodesData.length > 0) playEpisode(episodesData[0]);
+function triggerPlay() {
+  if (item.series_id && episodesList.length > 0) {
+    playEp(episodesList[0]);
   } else {
-    // لو فيلم: بناء رابط تشغيل الفيلم المباشر من Xtream
     item.url = `${creds.url}/movie/${creds.user}/${creds.pass}/${item.stream_id}.${item.container_extension || "mp4"}`;
     localStorage.setItem("current", JSON.stringify(item));
     window.location.href = "player.html";
   }
 }
 
-function playEpisode(ep) {
-  const playItem = {
-    name: `${item.name} - ${ep.name}`,
-    url: `${creds.url}/series/${creds.user}/${creds.pass}/${ep.stream_id}.${ep.container_extension}`
+function playEp(ep) {
+  const media = {
+    name: `${item.name} - ${ep.title}`,
+    url: `${creds.url}/series/${creds.user}/${creds.pass}/${ep.stream_id}.${ep.ext}`
   };
-  localStorage.setItem("current", JSON.stringify(playItem));
+  localStorage.setItem("current", JSON.stringify(media));
   window.location.href = "player.html";
 }
 
-// إضافة/إزالة من المفضلة
-function toggleFavorite() {
-  let favorites = JSON.parse(localStorage.getItem("favorites_list")) || [];
-  const isFav = favorites.some(f => f.stream_id === item.stream_id || f.series_id === item.series_id);
-  
-  if(isFav) {
-    favorites = favorites.filter(f => (item.stream_id ? f.stream_id !== item.stream_id : f.series_id !== item.series_id));
-    document.getElementById("btn-fav").innerText = "❤️ إضافة للمفضلة";
+function toggleFav() {
+  let favs = JSON.parse(localStorage.getItem("favorites_list")) || [];
+  const exists = favs.some(f => f.stream_id === item.stream_id || f.series_id === item.series_id);
+  if(exists) {
+    favs = favs.filter(f => item.stream_id ? f.stream_id !== item.stream_id : f.series_id !== item.series_id);
+    document.getElementById("btn-fav").innerHTML = `<span class="material-icons">favorite_border</span>قائمتي`;
   } else {
-    favorites.unshift(item);
-    document.getElementById("btn-fav").innerText = "💚 إزالة من المفضلة";
+    favs.unshift(item);
+    document.getElementById("btn-fav").innerHTML = `<span class="material-icons">favorite</span>في قائمتي`;
   }
-  localStorage.setItem("favorites_list", JSON.stringify(favorites));
+  localStorage.setItem("favorites_list", JSON.stringify(favs));
 }
 
-// تحكم الريموت الذكي المتوافق مع شاشات الـ TV لصفحة التفاصيل
 document.addEventListener("keydown", function(e) {
-  const buttons = document.querySelectorAll(".details-focusable");
+  const btns = document.querySelectorAll(".detail-item");
 
   if (e.key === "ArrowLeft") {
-    if (focusMode === "buttons") buttonIndex = Math.max(0, buttonIndex - 1);
-    if (focusMode === "episodes") episodeIndex = Math.max(0, episodeIndex - 1);
+    if (focusMode === "buttons") btnIdx = Math.max(0, btnIdx - 1);
+    if (focusMode === "episodes") epIdx = Math.max(0, epIdx - 1);
   }
-
   if (e.key === "ArrowRight") {
-    if (focusMode === "buttons") buttonIndex = Math.min(buttons.length - 1, buttonIndex + 1);
-    if (focusMode === "episodes") episodeIndex = Math.min(episodesData.length - 1, episodeIndex + 1);
+    if (focusMode === "buttons") btnIdx = Math.min(btns.length - 1, btnIdx + 1);
+    if (focusMode === "episodes") epIdx = Math.min(episodesList.length - 1, epIdx + 1);
   }
-
-  if (e.key === "ArrowDown") {
-    if (focusMode === "buttons" && episodesData.length > 0) {
-      focusMode = "episodes";
-      episodeIndex = 0;
-    }
+  if (e.key === "ArrowDown" && focusMode === "buttons" && episodesList.length > 0) {
+    focusMode = "episodes"; epIdx = 0;
   }
-
-  if (e.key === "ArrowUp") {
-    if (focusMode === "episodes") {
-      focusMode = "buttons";
-    }
+  if (e.key === "ArrowUp" && focusMode === "episodes") {
+    focusMode = "buttons";
   }
-
   if (e.key === "Enter") {
-    if (focusMode === "buttons") {
-      buttons[buttonIndex].click();
-    } else if (focusMode === "episodes" && episodesData[episodeIndex]) {
-      playEpisode(episodesData[episodeIndex]);
-    }
+    if (focusMode === "buttons") btns[btnIdx].click();
+    else if (focusMode === "episodes") playEp(episodesList[epIdx]);
   }
-
-  if (e.key === "Backspace" || e.key === "Escape") {
-    window.location.href = "index.html";
-  }
+  if (e.key === "Backspace" || e.key === "Escape") { window.location.href = "index.html"; }
 
   updateFocus();
 });
 
-window.onload = loadDetails;
+window.onload = initDetails;
