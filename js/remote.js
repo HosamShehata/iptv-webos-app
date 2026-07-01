@@ -1,75 +1,64 @@
 // =====================================================
-// VISION TV - LG SMART TV REMOTE FOCUS LAYER
+// VISION TV - TV REMOTE CONTROLLER (التحكم في الريموت)
 // =====================================================
 
 let focusableElements = [];
 let currentFocusIndex = 0;
 
 function updateFocusableElements() {
-    // تجميع العناصر التفاعلية في الصفحة المفتوحة حالياً فقط بالإضافة إلى القائمة الجانبية
+    // جلب العناصر القابلة للفوكس من الصفحة النشطة فقط + القائمة الجانبية
     focusableElements = Array.from(
-        document.querySelectorAll(".sidebar .menu-item, .sidebar .language-btn, .view-panel.active .remote-focusable, .search-container input")
+        document.querySelectorAll(".sidebar .menu-item, .sidebar .language-btn, .view-panel.active .remote-focusable, .view-panel.active input")
     );
 
     if (focusableElements.length === 0) return;
     if (currentFocusIndex >= focusableElements.length) currentFocusIndex = 0;
 
-    applyFocus();
+    applyFocusStyle();
 }
 
-function applyFocus() {
+function applyFocusStyle() {
     document.querySelectorAll(".focused").forEach(el => el.classList.remove("focused"));
-    const item = focusableElements[currentFocusIndex];
-    if (!item) return;
-
-    item.classList.add("focused");
-    item.focus(); // تفعيل الفوكس الفعلي للمتصفح لدعم الكيبورد والريموت
+    const currentActiveItem = focusableElements[currentFocusIndex];
     
-    item.scrollIntoView({
-        block: "nearest",
-        inline: "nearest",
-        behavior: "smooth"
-    });
-}
-
-function focusNext() {
-    if (!focusableElements.length) return;
-    currentFocusIndex = (currentFocusIndex + 1) % focusableElements.length;
-    applyFocus();
-}
-
-function focusPrevious() {
-    if (!focusableElements.length) return;
-    currentFocusIndex = (currentFocusIndex - 1 + focusableElements.length) % focusableElements.length;
-    applyFocus();
+    if (currentActiveItem) {
+        currentActiveItem.classList.add("focused");
+        currentActiveItem.focus();
+        
+        currentActiveItem.scrollIntoView({
+            block: "nearest",
+            inline: "nearest",
+            behavior: "smooth"
+        });
+    }
 }
 
 document.addEventListener("keydown", e => {
+    if (focusableElements.length === 0) return;
+
     switch (e.key) {
         case "ArrowRight":
-            focusNext();
-            e.preventDefault();
-            break;
-        case "ArrowLeft":
-            focusPrevious();
-            e.preventDefault();
-            break;
         case "ArrowDown":
-            focusNext();
+            currentFocusIndex = (currentFocusIndex + 1) % focusableElements.length;
+            applyFocusStyle();
             e.preventDefault();
             break;
+            
+        case "ArrowLeft":
         case "ArrowUp":
-            focusPrevious();
+            currentFocusIndex = (currentFocusIndex - 1 + focusableElements.length) % focusableElements.length;
+            applyFocusStyle();
             e.preventDefault();
             break;
+            
         case "Enter":
         case "OK":
-        case "Ok":
             if (focusableElements[currentFocusIndex]) {
                 focusableElements[currentFocusIndex].click();
                 e.preventDefault();
             }
             break;
+
         case "Backspace":
         case "Escape":
             if (currentView !== "home") {
@@ -80,19 +69,14 @@ document.addEventListener("keydown", e => {
     }
 });
 
-// تفعيل العمل بالماجيك ريموت الماوس لشاشات LG
+// دعم مؤشر الريموت السحري لشاشات LG (Magic Remote)
 document.addEventListener("mouseover", e => {
-    const target = e.target.closest(".remote-focusable, .menu-item");
+    const target = e.target.closest(".remote-focusable, .menu-item, .iptv-input");
     if (!target) return;
-    
+
     const index = focusableElements.indexOf(target);
     if (index !== -1) {
         currentFocusIndex = index;
-        applyFocus();
+        applyFocusStyle();
     }
-});
-
-// تحديث اللائحة التفاعلية تلقائياً عند تحميل الصفحة بالكامل
-window.addEventListener("load", () => {
-    setTimeout(updateFocusableElements, 500);
 });
