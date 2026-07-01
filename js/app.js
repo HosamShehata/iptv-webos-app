@@ -3,92 +3,80 @@ let filtered = [];
 let categories = ["الكل"];
 let currentCategory = "الكل";
 
-// مصفوفة الأقسام المكتوبة بالـ HTML
-const sidebarItems = ["home", "live", "movies", "series", "favorites", "history"];
+// الأقسام متضمنة إضافة القائمة[span_4](start_span)[span_4](end_span)
+const sidebarItems = ["home", "live", "movies", "series", "favorites", "history", "add-playlist"];
 
-let focusMode = "sidebar"; 
-let sidebarIndex = 1;      // الوقوف افتراضياً على البث المباشر لإظهار قنوات البث الفوري
+let focusMode = "sidebar"; // sidebar | categories | channels | xtream_form
+let sidebarIndex = 1;      
 let catIndex = 0;
 let channelIndex = 0;
+let formIndex = 0; // للتحكم في حقول إدخال Xtream
 let columnsCount = 4;      
 
-// تحميل الفايل
-function loadPlaylist() {
-  const url = document.getElementById("m3uUrl").value;
-  if (!url) return;
+// دالة تسجيل الدخول لـ Xtream API[span_5](start_span)[span_5](end_span)[span_6](start_span)[span_6](end_span)
+async function connectXtream() {
+  const url = document.getElementById("xt_url").value.replace(/\/$/, ""); // إزالة الشرطة الأخيرة لو موجودة
+  const user = document.getElementById("xt_user").value;
+  const pass = document.getElementById("xt_pass").value;
+  const statusBox = document.getElementById("xt_status");
 
-  fetch(url)
-    .then(res => res.text())
-    .then(data => {
-      channels = parseM3U(data);
-      extractCategories();
-      renderSidebar();
-      renderCategories();
-      renderChannels();
-      updateFocus();
-    })
-    .catch(err => console.error("Error loading playlist:", err));
-}
+  if (!url || !user || !pass) {
+    statusBox.innerText = "برجاء ملء جميع الحقول!";
+    statusBox.style.color = "#ff4444";
+    return;
+  }
 
-// البارسير الذكي لتصنيف القنوات والمسلسلات والأفلام ومجموعاتها
-function parseM3U(data) {
-  const lines = data.split("\n");
-  const result = [];
-  
-  for (let i = 0; i < lines.length; i++) {
-    if (lines[i].startsWith("#EXTINF")) {
-      const infoLine = lines[i];
-      const name = (infoLine.split(",")[1] || "عنوان غير معروف").trim();
+  statusBox.innerText = "جاري الاتصال بالسيرفر...";
+  statusBox.style.color = "#fff";
+
+  try {
+    // نداء التوثيق الأساسي لـ Xtream (يجلب بيانات الحساب)
+    const authUrl = `${url}/player_api.php?username=${user}&password=${pass}`;
+    const response = await fetch(authUrl);
+    const data = await response.json();
+
+    if (data.user_info && data.user_info.auth === 1) {
+      statusBox.innerText = "تم تسجيل الدخول بنجاح! جاري جلب القنوات...";
+      statusBox.style.color = "#00C851";
       
-      let category = "أخرى";
-      const groupMatch = infoLine.match(/group-title="([^"]+)"/);
-      if (groupMatch) {
-        category = groupMatch[1].trim();
-      }
+      // حفظ بيانات السيرفر في الـ LocalStorage لاستخدامها في التطبيق
+      localStorage.setItem("xtream_creds", JSON.stringify({ url, user, pass }));
+      
+      // هنا سيتم استدعاء دوال جلب (اللايف، الأفلام، المسلسلات) - الخطوة القادمة
+      setTimeout(() => {
+        alert("تم الحفظ! في الخطوة القادمة سنبرمج جلب البوسترات والأقسام.");
+      }, 1000);
 
-      // تحديد نوع الداتا بناءً على اسم الجروب والكلمات المفتاحية
-      let type = "live"; 
-      const lowerName = name.toLowerCase();
-      const lowerCat = category.toLowerCase();
-
-      if (lowerCat.includes("movie") || lowerCat.includes("film") || lowerCat.includes("أفلام") || lowerCat.includes("افلام")) {
-        type = "movie";
-      } else if (lowerCat.includes("series") || lowerCat.includes("مسلسلات") || lowerName.includes("s01") || lowerName.includes("e01")) {
-        type = "series";
-      }
-
-      let url = "";
-      for (let j = i + 1; j < lines.length; j++) {
-        if (lines[j].trim() && !lines[j].startsWith("#")) {
-          url = lines[j].trim();
-          break;
-        }
-      }
-
-      if (url) {
-        result.push({ name, url, category, type });
-      }
+    } else {
+      statusBox.innerText = "بيانات الدخول غير صحيحة أو الحساب منتهي.";
+      statusBox.style.color = "#ff4444";
     }
+  } catch (error) {
+    statusBox.innerText = "خطأ في الاتصال بالسيرفر. تأكد من الرابط والإنترنت.";
+    statusBox.style.color = "#ff4444";
+    console.error(error);
   }
-  return result;
 }
 
-// فحص واستخراج الأقسام حسب الاختيار من القائمة الجانبية
-function extractCategories() {
-  const activeSection = sidebarItems[sidebarIndex];
-  const set = new Set(["الكل"]);
+// التبديل بين شاشة القنوات وشاشة التسجيل
+function toggleView(section) {
+  const contentView = document.getElementById("content-view");
+  const playlistManager = document.getElementById("playlist-manager");
 
-  channels.forEach(ch => {
-    if (activeSection === "live" && ch.type === "live") set.add(ch.category);
-    if (activeSection === "movies" && ch.type === "movie") set.add(ch.category);
-    if (activeSection === "series" && ch.type === "series") set.add(ch.category);
-  });
-
-  if (activeSection === "home" || activeSection === "history" || activeSection === "favorites") {
-    categories = ["الكل"];
+  if (section === "add-playlist") {
+    contentView.style.display = "none";
+    playlistManager.style.display = "block";
+    focusMode = "xtream_form";
+    formIndex = 0;
   } else {
-    categories = Array.from(set);
+    playlistManager.style.display = "none";
+    contentView.style.display = "flex";
+    if (focusMode === "xtream_form") focusMode = "channels";
   }
+}
+
+function extractCategories() {
+  categories = ["الكل"]; // حالياً نعتمد على الأساسيات حتى نربط جلب تصنيفات Xtream
 }
 
 function renderSidebar() {
@@ -108,163 +96,82 @@ function renderCategories() {
   });
 }
 
-// رندرة الكروت مع إدراج نظام الـ Continue Watching
 function renderChannels() {
-  const search = document.getElementById("search").value.toLowerCase();
   const container = document.getElementById("channels");
-  container.innerHTML = "";
-
-  const activeSection = sidebarItems[sidebarIndex];
-  
-  let history = JSON.parse(localStorage.getItem("watch_history")) || [];
-  let favorites = JSON.parse(localStorage.getItem("favorites_list")) || [];
-
-  if (activeSection === "home") {
-    // الصفحة الرئيسية تعرض آخر المشاهدات عالمياً
-    filtered = history.slice(0, 6); 
-  } else if (activeSection === "history") {
-    filtered = history;
-  } else if (activeSection === "favorites") {
-    filtered = favorites;
-  } else {
-    filtered = channels.filter(ch => {
-      const matchSection = (activeSection === "live" && ch.type === "live") ||
-                           (activeSection === "movies" && ch.type === "movie") ||
-                           (activeSection === "series" && ch.type === "series");
-      const matchCategory = currentCategory === "الكل" || ch.category === currentCategory;
-      const matchSearch = ch.name.toLowerCase().includes(search);
-      return matchSection && matchCategory && matchSearch;
-    });
-
-    // رفع المشاهدات مؤخراً الخاصة بالقسم في المقدمة
-    if (currentCategory === "الكل" && !search) {
-      const sectionHistory = history.filter(h => h.type === (activeSection === "live" ? "live" : activeSection === "movies" ? "movie" : "series"));
-      filtered = [...sectionHistory, ...filtered.filter(f => !sectionHistory.some(h => h.url === f.url))];
-    }
-  }
-
-  if (filtered.length === 0) {
-    container.innerHTML = "<div style='padding:20px; color:#666;'>لا يوجد محتوى متوفر حالياً</div>";
-    return;
-  }
-
-  filtered.forEach((ch) => {
-    const div = document.createElement("div");
-    div.className = "card";
-    
-    const isInHistory = history.some(h => h.url === ch.url);
-    div.innerText = isInHistory ? `⏱️ ${ch.name}` : ch.name;
-
-    container.appendChild(div);
-  });
-  
-  if (container.clientWidth) {
-    columnsCount = Math.floor(container.clientWidth / 240) || 1; 
-  }
+  container.innerHTML = "<div style='padding:20px; color:#666;'>قم بتسجيل الدخول من 'إضافة قائمة تشغيل' لعرض المحتوى.</div>";
 }
 
 function updateFocus() {
+  // القائمة الجانبية
   document.querySelectorAll(".menu-item").forEach((el, i) => {
     el.classList.toggle("focused", focusMode === "sidebar" && i === sidebarIndex);
   });
 
+  // شريط التصنيفات
   document.querySelectorAll(".category-item").forEach((el, i) => {
     el.classList.toggle("focused", focusMode === "categories" && i === catIndex);
   });
 
-  const cards = document.querySelectorAll(".card");
-  cards.forEach((el, i) => {
-    const isFocused = focusMode === "channels" && i === channelIndex;
-    el.classList.toggle("focused", isFocused);
-    if (isFocused) {
-      el.scrollIntoView({ block: "center", behavior: "smooth" });
+  // نموذج إدخال Xtream
+  const formFields = document.querySelectorAll(".xtream-field");
+  formFields.forEach((el, i) => {
+    const isFocused = focusMode === "xtream_form" && i === formIndex;
+    if (el.tagName === "BUTTON") {
+      el.classList.toggle("focused", isFocused);
+    } else {
+      isFocused ? el.focus() : el.blur();
     }
   });
 }
 
-function openChannel(ch) {
-  let history = JSON.parse(localStorage.getItem("watch_history")) || [];
-  history = history.filter(h => h.url !== ch.url);
-  history.unshift(ch); 
-  
-  if (history.length > 50) history.pop();
-  
-  localStorage.setItem("watch_history", JSON.stringify(history));
-  localStorage.setItem("current", JSON.stringify(ch));
-  window.location.href = "player.html";
-}
-
-// ريموت الكنترول والملاحة الذكية
+// نظام الملاحة الذكي المتوافق مع النماذج (Forms)
 document.addEventListener("keydown", function(e) {
+  
   if (e.key === "ArrowLeft") {
-    if (focusMode === "channels") {
-      if (channelIndex % columnsCount === 0) focusMode = "sidebar";
-      else channelIndex = Math.max(0, channelIndex - 1);
-    } else if (focusMode === "categories") {
-      if (catIndex === 0) focusMode = "sidebar";
-      else catIndex = Math.max(0, catIndex - 1);
+    if (focusMode === "xtream_form" || focusMode === "channels" || focusMode === "categories") {
+      focusMode = "sidebar";
     }
   }
 
   if (e.key === "ArrowRight") {
     if (focusMode === "sidebar") {
-      focusMode = categories.length > 0 ? "categories" : "channels";
-    } else if (focusMode === "categories") {
-      if (catIndex < categories.length - 1) catIndex++;
-      else focusMode = "channels";
-    } else if (focusMode === "channels") {
-      if ((channelIndex + 1) % columnsCount !== 0 && channelIndex < filtered.length - 1) {
-        channelIndex++;
-      }
+      const activeSection = sidebarItems[sidebarIndex];
+      if (activeSection === "add-playlist") focusMode = "xtream_form";
+      else focusMode = categories.length > 0 ? "categories" : "channels";
     }
   }
 
   if (e.key === "ArrowDown") {
     if (focusMode === "sidebar") {
       sidebarIndex = Math.min(sidebarIndex + 1, sidebarItems.length - 1);
-      resetContentPosition();
-    } else if (focusMode === "categories") {
-      focusMode = "channels";
-      channelIndex = 0;
-    } else if (focusMode === "channels") {
-      if (channelIndex + columnsCount < filtered.length) channelIndex += columnsCount;
+      toggleView(sidebarItems[sidebarIndex]);
+    } else if (focusMode === "xtream_form") {
+      formIndex = Math.min(formIndex + 1, 3); // 3 حقول + زر
     }
   }
 
   if (e.key === "ArrowUp") {
     if (focusMode === "sidebar") {
       sidebarIndex = Math.max(0, sidebarIndex - 1);
-      resetContentPosition();
-    } else if (focusMode === "channels") {
-      if (channelIndex - columnsCount >= 0) channelIndex -= columnsCount;
-      else focusMode = "categories";
+      toggleView(sidebarItems[sidebarIndex]);
+    } else if (focusMode === "xtream_form") {
+      formIndex = Math.max(0, formIndex - 1);
     }
   }
 
   if (e.key === "Enter") {
-    if (focusMode === "channels" && filtered[channelIndex]) {
-      openChannel(filtered[channelIndex]);
+    if (focusMode === "xtream_form" && formIndex === 3) { // الزر
+      connectXtream();
     }
-  }
-
-  if (focusMode === "categories" && categories[catIndex] !== currentCategory) {
-    currentCategory = categories[catIndex];
-    channelIndex = 0;
-    renderChannels();
   }
 
   updateFocus();
 });
 
-function resetContentPosition() {
-  currentCategory = "الكل";
-  catIndex = 0;
-  channelIndex = 0;
-  extractCategories();
+// عند بدء التطبيق
+window.onload = () => {
+  renderSidebar();
   renderCategories();
   renderChannels();
-}
-
-window.onload = () => {
-  loadPlaylist();
+  toggleView(sidebarItems[sidebarIndex]); // عرض القسم الافتراضي
 };
