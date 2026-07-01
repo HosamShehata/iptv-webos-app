@@ -3,9 +3,7 @@ const creds = JSON.parse(localStorage.getItem("xtream_creds"));
 let currentLang = localStorage.getItem("app_lang") || "ar";
 
 let focusMode = "buttons"; 
-let btnIdx = 0;
-let epIdx = 0;
-let episodesList = [];
+let btnIdx = 0; let epIdx = 0; let episodesList = [];
 
 const detailsLanguages = {
   ar: { play: "تشغيل", fav_add: "قائمتي", fav_rem: "في قائمتي", back: "عودة", eps: "جميع الحلقات:" },
@@ -14,10 +12,8 @@ const detailsLanguages = {
 
 async function initDetails() {
   if (!item) { window.location.href = "index.html"; return; }
-
   const htmlTag = document.getElementById("main-html");
   htmlTag.setAttribute("dir", currentLang === "ar" ? "rtl" : "ltr");
-  htmlTag.setAttribute("lang", currentLang);
 
   const dict = detailsLanguages[currentLang];
   document.getElementById("lbl-play-btn").innerText = dict.play;
@@ -37,34 +33,25 @@ async function initDetails() {
 
   if (item.series_id || item.type === "series") {
     document.getElementById("episodes-block").style.display = "flex";
-    document.getElementById("media-plot").innerText = currentLang === "ar" ? "مسلسل خيال علمي وتجربة بصرية فريدة لاختبار جودة تشغيل الفيديو والتحكم." : "A sci-fi demo series for testing video playback and player controls.";
-    
     episodesList = [
-      { id: 101, title: currentLang === "ar" ? "الموسم 1 - الحلقة 1" : "Season 1 - Episode 1", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
-      { id: 102, title: currentLang === "ar" ? "الموسم 1 - الحلقة 2" : "Season 1 - Episode 2", url: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8" }
+      { id: 201, title: currentLang === "ar" ? "الموسم 1 - الحلقة 1" : "Season 1 - Episode 1", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+      { id: 202, title: currentLang === "ar" ? "الموسم 1 - الحلقة 2" : "Season 1 - Episode 2", url: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8" }
     ];
     renderEpisodesTray();
   } else {
-    document.getElementById("media-plot").innerText = currentLang === "ar" ? "فيلم ممتع وعالي الجودة متاح للمشاهدة الفورية والـ Seek." : "An enjoyable movie available for instant playback and custom seek.";
+    document.getElementById("episodes-block").style.display = "none";
+    document.getElementById("media-plot").innerText = item.plot || (currentLang === "ar" ? "فيلم ممتع وعالي الجودة متاح للمشاهدة الفورية." : "An enjoyable movie available for instant playback.");
   }
   updateFocus();
 }
 
 function renderEpisodesTray() {
-  const tray = document.getElementById("episodes-tray");
-  tray.innerHTML = "";
+  const tray = document.getElementById("episodes-tray"); tray.innerHTML = "";
   const lastEpId = localStorage.getItem(`last_ep_for_series_${item.series_id || 905}`);
-
   episodesList.forEach((ep, idx) => {
-    const div = document.createElement("div");
-    div.className = "ep-card";
-    div.innerText = ep.title;
-    
+    const div = document.createElement("div"); div.className = "ep-card"; div.innerText = ep.title;
     if(lastEpId && lastEpId == ep.id) { div.classList.add("last-watched-badge"); }
-
-    div.onclick = function() {
-      epIdx = idx; focusMode = "episodes"; playEp(ep, idx);
-    };
+    div.onclick = function() { epIdx = idx; focusMode = "episodes"; playEp(ep, idx); };
     tray.appendChild(div);
   });
 }
@@ -73,18 +60,13 @@ function playEp(ep, index) {
   localStorage.setItem("current_ep_index", index);
   localStorage.setItem("episodes_pack", JSON.stringify(episodesList));
   localStorage.setItem(`last_ep_for_series_${item.series_id || 905}`, ep.id);
-  
-  const media = { name: `${item.name} - ${ep.title}`, url: ep.url, id: ep.id, type: "movie" };
-  localStorage.setItem("current", JSON.stringify(media));
-  window.location.href = "player.html";
+  const media = { name: `${item.name} - ${ep.title}`, url: ep.url, id: ep.id, type: "series_episode" };
+  localStorage.setItem("current", JSON.stringify(media)); window.location.href = "player.html";
 }
 
 function triggerPlay() {
-  if (item.series_id && episodesList.length > 0) { playEp(episodesList[0], 0); } 
-  else {
-    if(!item.url && creds) { item.url = `${creds.url}/movie/${creds.user}/${creds.pass}/${item.stream_id}.${item.container_extension || "mp4"}`; }
-    localStorage.setItem("current", JSON.stringify(item)); window.location.href = "player.html";
-  }
+  if ((item.series_id || item.type === "series") && episodesList.length > 0) { playEp(episodesList[0], 0); } 
+  else { window.location.href = "player.html"; }
 }
 
 function toggleFav() {
@@ -129,5 +111,4 @@ document.addEventListener("keydown", function(e) {
   if (e.key === "Backspace" || e.key === "Escape") { window.location.href = "index.html"; }
   updateFocus();
 });
-
 window.onload = initDetails;
