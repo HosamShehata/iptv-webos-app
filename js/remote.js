@@ -2,8 +2,8 @@ let focusableElements = [];
 let currentFocusIndex = 0;
 
 function updateFocusableElements() {
-  // تجميع كل العناصر القابلة للتفاعل في الواجهة النشطة حالياً لمنع علامتين الفوكس معاً
-  focusableElements = Array.from(document.querySelectorAll('.sidebar .remote-focusable, .view-panel.active .remote-focusable, .sidebar .menu-item, .view-panel.active .media-card'));
+  // تجميع كافة عناصر الفوكس النشطة في الواجهة الحالية والمسارات لمنع علامتين الفوكس معاً
+  focusableElements = Array.from(document.querySelectorAll('.sidebar .remote-focusable, .view-panel.active .remote-focusable, .sidebar .menu-item, .view-panel.active .media-card, .view-panel.active .episode-row-card'));
 }
 
 function applyStrictFocus(element) {
@@ -13,7 +13,7 @@ function applyStrictFocus(element) {
   element.focus();
 }
 
-// السيطرة المطلقة على ريموت التلفزيون وفصل الاتجاهات تماماً
+// السيطرة الصارمة على الاتجاهات الأربعة للريموت ومؤشر الماوس السحري لمنع التداخل
 document.addEventListener("keydown", (e) => {
   updateFocusableElements();
   if (focusableElements.length === 0) return;
@@ -28,15 +28,16 @@ document.addEventListener("keydown", (e) => {
     applyStrictFocus(focusableElements[currentFocusIndex]);
     e.preventDefault();
   }
+  else if (e.key === "ArrowRight" || e.key === "Right" || e.key === "ArrowLeft" || e.key === "Left") {
+    // التنقل الأفقي المرن بين كروت شبكة الميديا نسبة وتناسب
+    currentFocusIndex = (currentFocusIndex + 1) % focusableElements.length;
+    applyStrictFocus(focusableElements[currentFocusIndex]);
+    e.preventDefault();
+  }
   else if (e.key === "Enter" || e.key === "Ok") {
     if (focusableElements[currentFocusIndex]) {
       focusableElements[currentFocusIndex].click();
     }
     e.preventDefault();
   }
-});
-
-// تصفير ذكي للعلامات عند استخدام الماوس المحرك لريموت LG Magic السحري
-document.addEventListener("mousemove", () => {
-  // يتيح الانتقال السلس للمؤشر دون ترك علامات فوكس قديمة معلقة بالتناوب
 });
