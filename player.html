@@ -1,37 +1,52 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" id="player-html-tag">
+<html lang="ar" dir="rtl" id="player-html">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VISION TV - PREMIUM PLAYER</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.compiled.js"></script>
   <style>
+    /* ربط ألوان بار التقدم ومقبض السحب الدائري بالثيمات الخمسة */
+    .theme-netflix { --accent: #e50914; }
+    .theme-shahid { --accent: #00ff87; }
+    .theme-cyberpunk { --accent: #f000ff; }
+    .theme-midnight { --accent: #d4af37; }
+    .theme-ocean { --accent: #00b4d8; }
+
+    html { font-size: 1.2vw; }
+    @media (max-width: 1024px) { html { font-size: 16px; } }
+
     body, html { margin:0; padding:0; width:100%; height:100%; background:#000; overflow:hidden; font-family:sans-serif; }
     .video-container { position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
     video { width:100%; height:100%; object-fit:contain; }
     
     .osd-controls-panel {
       position:absolute; bottom:0; left:0; right:0; background:linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0));
-      padding:40px; box-sizing:border-box; display:flex; flex-direction:column; gap:20px; transition:opacity 0.3s;
+      padding:3.5rem; box-sizing:border-box; display:flex; flex-direction:column; gap:1.5rem; transition:opacity 0.3s; opacity:1;
     }
-    .timeline-container { display:flex; align-items:center; gap:15px; width:100%; }
+    .timeline-container { display:flex; align-items:center; gap:1.5rem; width:100%; }
+    .time-txt { color:#aaa; font-family:monospace; font-size:1.1rem; }
     
-    .progress-bar-clickable-zone { flex:1; height:14px; display:flex; align-items:center; cursor:pointer; position:relative; }
-    .progress-bg { width:100%; height:6px; background:rgba(255,255,255,0.2); border-radius:3px; position:relative; width:100%; }
-    .progress-fill { height:100%; width:0%; background:#ff0000; border-radius:3px; position:relative; }
+    /* شريط تقدم اليوتيوب التفاعلي المصلح والمحكم للسحب بنسبة وتناسب */
+    .progress-bar-clickable-zone { flex:1; height:1.5rem; display:flex; align-items:center; cursor:pointer; position:relative; }
+    .progress-bg { width:100%; height:0.6rem; background:rgba(255,255,255,0.2); border-radius:4px; position:relative; }
+    .progress-fill { height:100%; width:0%; background:var(--accent); border-radius:4px; position:relative; box-shadow:0 0 10px var(--accent); }
     
-    /* المقبض الممسوك بلون متباين للتقديم باللمس */
+    /* مقبض السحب الدائري الأنيق الممسوك المتفاعل مع الثيم بالملي */
     .progress-knob {
-      position:absolute; top:50%; transform:translate(-50%, -50%); width:16px; height:16px;
-      background:#ffffff; border:3px solid #ff0000; border-radius:50%; box-shadow:0 0 8px rgba(0,0,0,0.8);
+      position:absolute; top:50%; transform:translate(-50%, -50%); width:1.4rem; height:1.4rem;
+      background:#ffffff; border:4px solid var(--accent); border-radius:50%; box-shadow:0 0 10px rgba(0,0,0,0.8); transition: left 0.05s linear;
     }
 
-    .controls-row-buttons { display:flex; align-items:center; justify-content:center; gap:30px; width:100%; }
-    .control-btn { background:none; border:none; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; width:45px; height:45px; border-radius:50%; }
-    .control-btn .material-icons { font-size:30px; }
-    .control-btn:hover { background:rgba(255,255,255,0.1); }
+    .controls-row-buttons { display:flex; align-items:center; justify-content:center; gap:2.5rem; width:100%; }
+    .control-btn { background:none; border:none; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; width:3.5rem; height:3.5rem; border-radius:50%; transition:0.2s; }
+    .control-btn .material-icons { font-size:2.4rem; }
+    .control-btn:hover { background:rgba(255,255,255,0.1); transform:scale(1.1); }
+    .control-btn.main-center-play { background:var(--accent); width:4.5rem; height:4.5rem; box-shadow:0 0 15px var(--accent); }
+    .control-btn.main-center-play .material-icons { font-size:2.8rem; }
     
-    .speed-badge-selector { background:rgba(255,255,255,0.1); border:1px solid #444; color:#fff; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:bold; }
+    .speed-badge-selector { background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:0.6rem 1.4rem; border-radius:8px; cursor:pointer; font-size:1.1rem; font-weight:bold; }
   </style>
 </head>
 <body>
@@ -41,25 +56,27 @@
   
   <div class="osd-controls-panel" id="controls-panel">
     <div style="display:flex; justify-content:space-between; align-items:center;">
-      <div id="player-title" style="font-size:20px; font-weight:bold; color:#fff;">Episode Title</div>
+      <div id="player-title" style="font-size:1.6rem; font-weight:bold; color:#fff; text-shadow:0 2px 5px #000;">Episode Title</div>
       <button class="speed-badge-selector" onclick="changePlaybackSpeed()" id="speed-label-btn">1.0x</button>
     </div>
     
     <div class="timeline-container">
-      <div id="current-time" style="color:#aaa; font-family:monospace;">00:00:00</div>
+      <div id="current-time" class="time-txt">00:00:00</div>
       <div class="progress-bar-clickable-zone" id="timeline-click-zone">
         <div class="progress-bg">
           <div class="progress-fill" id="fill-bar"></div>
           <div class="progress-knob" id="progress-knob" style="left:0%;"></div>
         </div>
       </div>
-      <div id="total-time" style="color:#aaa; font-family:monospace;">00:00:00</div>
+      <div id="total-time" class="time-txt">00:00:00</div>
     </div>
 
     <div class="controls-row-buttons">
+      <button class="control-btn" onclick="navigatePlaylistEpisodes(-1)"><span class="material-icons">skip_previous</span></button>
       <button class="control-btn" id="btn-rewind-action"><span class="material-icons">replay_10</span></button>
-      <button class="control-btn" onclick="togglePlayPause()"><span class="material-icons" id="icon-play">pause</span></button>
+      <button class="control-btn main-center-play" onclick="togglePlayPause()"><span class="material-icons" id="icon-play">pause</span></button>
       <button class="control-btn" id="btn-forward-action"><span class="material-icons">forward_10</span></button>
+      <button class="control-btn" onclick="navigatePlaylistEpisodes(1)"><span class="material-icons">skip_next</span></button>
     </div>
   </div>
 </div>
