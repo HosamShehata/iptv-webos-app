@@ -1,94 +1,174 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
-  <title>IPTV TV Mode</title>
-
+  <title>VISION TV</title>
   <style>
     body {
       margin: 0;
       background: #0b0b0b;
       color: white;
-      font-family: Arial;
+      font-family: 'Segoe UI', Arial, sans-serif;
       overflow: hidden;
+      user-select: none;
     }
 
+    /* الهيدر العلوي */
     header {
-      padding: 10px;
-      background: #000;
-    }
-
-    input {
-      width: 98%;
-      padding: 12px;
-      border: none;
-      border-radius: 6px;
-    }
-
-    .layout {
-      display: flex;
-      height: calc(100vh - 60px);
-    }
-
-    .sidebar {
-      width: 200px;
+      padding: 15px 30px;
       background: #111;
-      overflow-y: auto;
-    }
-
-    .category {
-      padding: 15px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
       border-bottom: 1px solid #222;
     }
 
-    .category.focused {
-      background: #1f6feb;
+    header input {
+      flex: 1;
+      padding: 12px 20px;
+      border: 1px solid #333;
+      border-radius: 8px;
+      background: #1a1a1a;
+      color: white;
+      font-size: 16px;
     }
 
-    .content {
+    header input:focus {
+      outline: 2px solid #1f6feb;
+    }
+
+    header button {
+      padding: 12px 24px;
+      background: #1f6feb;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* توزيع الواجهة */
+    .layout {
+      display: flex;
+      height: calc(100vh - 80px);
+    }
+
+    /* القائمة الجانبية المتقدمة */
+    .sidebar {
+      width: 240px;
+      background: #111;
+      border-left: 1px solid #222;
+      display: flex;
+      flex-direction: column;
+      padding-top: 10px;
+    }
+
+    .menu-item {
+      padding: 15px 25px;
+      font-size: 18px;
+      color: #aaa;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .menu-item.focused {
+      background: #1f6feb;
+      color: white;
+      font-weight: bold;
+      padding-right: 35px;
+    }
+
+    /* منطقة المحتوى */
+    .content-area {
       flex: 1;
-      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      background: #0f0f0f;
+    }
+
+    /* شريط التصنيفات (رياضة، أفلام...) */
+    .sub-bar {
+      padding: 15px 30px;
+      background: #141414;
+      display: flex;
+      gap: 15px;
+      overflow-x: auto;
+      border-bottom: 1px solid #222;
+    }
+
+    .category-item {
+      padding: 8px 20px;
+      background: #222;
+      border-radius: 20px;
+      font-size: 14px;
+      white-space: nowrap;
+      color: #ccc;
+    }
+
+    .category-item.focused {
+      background: #fff;
+      color: #000;
+      font-weight: bold;
+    }
+
+    /* شبكة عرض القنوات */
+    .main-content {
+      flex: 1;
+      padding: 30px;
       overflow-y: auto;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
     }
 
     .card {
-      background: #1a1a1a;
-      padding: 15px;
-      border-radius: 10px;
+      background: #161616;
+      border: 1px solid #222;
+      padding: 25px 20px;
+      border-radius: 12px;
       text-align: center;
+      font-size: 16px;
+      transition: transform 0.2s;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      word-wrap: break-word;
     }
 
     .card.focused {
-      outline: 3px solid #1f6feb;
+      outline: 4px solid #1f6feb;
       transform: scale(1.05);
+      background: #222;
     }
   </style>
-
 </head>
-
 <body>
 
 <header>
-  <input id="search" placeholder="Search..." oninput="renderChannels()" />
+  <input id="m3uUrl" placeholder="أدخل رابط ملف M3U هنا..." value="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" />
+  <button onclick="loadPlaylist()">تحميل القائمة</button>
+  <input id="search" placeholder="بحث عن قنوات..." oninput="renderChannels()" style="max-width: 300px; margin-right: auto;" />
 </header>
 
 <div class="layout">
-
-  <div class="sidebar" id="categories"></div>
-
-  <div class="content">
-    <div id="channels" class="grid"></div>
+  <div class="sidebar" id="sidebarMenu">
+    <div class="menu-item" data-section="home">الرئيسية</div>
+    <div class="menu-item" data-section="live">البث المباشر</div>
+    <div class="menu-item" data-section="movies">الأفلام</div>
+    <div class="menu-item" data-section="series">المسلسلات</div>
+    <div class="menu-item" data-section="favorites">المفضلة</div>
   </div>
 
+  <div class="content-area">
+    <div class="sub-bar" id="categories"></div>
+    
+    <div class="main-content">
+      <div id="channels" class="grid"></div>
+    </div>
+  </div>
 </div>
 
 <script src="js/app.js"></script>
-
 </body>
 </html>
