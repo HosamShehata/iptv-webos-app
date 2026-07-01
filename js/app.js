@@ -3,6 +3,22 @@ let filtered = [];
 let categories = ["All", "Sports", "Movies", "News"];
 let currentCategory = "All";
 
+// بيانات EPG تجريبية
+const epgData = {
+  "Sports": [
+    { time: "10:00", title: "Football Live" },
+    { time: "12:00", title: "Sports News" }
+  ],
+  "Movies": [
+    { time: "11:00", title: "Action Movie" },
+    { time: "13:00", title: "Comedy Film" }
+  ],
+  "News": [
+    { time: "09:00", title: "Morning News" },
+    { time: "18:00", title: "Evening Update" }
+  ]
+};
+
 // تحميل M3U
 function loadPlaylist() {
 
@@ -17,6 +33,7 @@ function loadPlaylist() {
 
       renderCategories();
       renderChannels();
+      renderEPG();
 
     });
 
@@ -35,8 +52,8 @@ function parseM3U(data) {
       const name = lines[i].split(",")[1];
       const url = lines[i + 1];
 
-      // تصنيف بسيط (تجريبي)
       let category = "Movies";
+
       if (name.toLowerCase().includes("sport")) category = "Sports";
       if (name.toLowerCase().includes("news")) category = "News";
 
@@ -49,7 +66,7 @@ function parseM3U(data) {
   return result;
 }
 
-// Categories
+// عرض الأقسام
 function renderCategories() {
 
   const box = document.getElementById("categories");
@@ -65,6 +82,7 @@ function renderCategories() {
     div.onclick = function () {
       currentCategory = cat;
       renderChannels();
+      renderEPG();
     };
 
     box.appendChild(div);
@@ -73,10 +91,10 @@ function renderCategories() {
 
 }
 
-// Channels
+// عرض القنوات
 function renderChannels() {
 
-  const search = document.getElementById("search")?.value || "";
+  const search = document.getElementById("search").value.toLowerCase();
 
   const container = document.getElementById("channels");
   container.innerHTML = "";
@@ -84,7 +102,7 @@ function renderChannels() {
   filtered = channels.filter(ch => {
 
     const matchCategory = currentCategory === "All" || ch.category === currentCategory;
-    const matchSearch = ch.name.toLowerCase().includes(search.toLowerCase());
+    const matchSearch = ch.name.toLowerCase().includes(search);
 
     return matchCategory && matchSearch;
 
@@ -93,8 +111,9 @@ function renderChannels() {
   filtered.forEach(ch => {
 
     const div = document.createElement("div");
+
     div.className = "channel";
-    div.innerText = ch.name;
+    div.innerText = "▶ " + ch.name;
 
     div.onclick = function () {
       localStorage.setItem("current", JSON.stringify(ch));
@@ -102,6 +121,26 @@ function renderChannels() {
     };
 
     container.appendChild(div);
+
+  });
+
+}
+
+// عرض EPG
+function renderEPG() {
+
+  const box = document.getElementById("epg");
+  box.innerHTML = "";
+
+  const data = epgData[currentCategory] || [];
+
+  data.forEach(item => {
+
+    const div = document.createElement("div");
+    div.className = "epg-item";
+    div.innerText = `${item.time} - ${item.title}`;
+
+    box.appendChild(div);
 
   });
 
