@@ -68,16 +68,73 @@ function clickSidebarItem(idx) {
   renderContentGrid(viewId);
 }
 
+function saveIPTVServer() {
+  const name = document.getElementById('server-name').value.trim();
+  const user = document.getElementById('server-user').value.trim();
+  const pass = document.getElementById('server-pass').value.trim();
+  const url = document.getElementById('server-url').value.trim();
+  const status = document.getElementById('pl_status');
+
+  if (!name || !url || !user) {
+    status.innerText = "برجاء كتابة البيانات كاملة كما بالصورة!";
+    status.style.color = "red";
+    return;
+  }
+
+  const serverData = { name, user, pass, url };
+  let saved = JSON.parse(localStorage.getItem('iptv_playlists_lg')) || [];
+  saved.push(serverData);
+  localStorage.setItem('iptv_playlists_lg', JSON.stringify(saved));
+  
+  status.innerText = "ADD USER SUCCESS: Server Content Synchronized!";
+  status.style.color = "#00c851";
+  
+  document.getElementById('server-name').value = '';
+  document.getElementById('server-user').value = '';
+  document.getElementById('server-pass').value = '';
+  document.getElementById('server-url').value = '';
+  
+  // تفعيل وسحب الداتا فوراً وتحديث المتغيرات العامة
+  if (window.generateServerPlaylistContent) window.generateServerPlaylistContent();
+  
+  // إعادة قراءة البيانات من الـ LocalStorage للتأكد أن المصفوفات ممتلئة
+  filteredLive = JSON.parse(localStorage.getItem("stored_live")) || [];
+  filteredMovies = JSON.parse(localStorage.getItem("stored_movies")) || [];
+  filteredSeries = JSON.parse(localStorage.getItem("stored_series")) || [];
+  
+  if (window.loadPlaylists) window.loadPlaylists();
+  
+  // الانتقال للرئيسية وإجبار الشاشة على إعادة الرسم بالداتا الجديدة
+  clickSidebarItem(0);
+}
+
 function renderContentGrid(viewId) {
   let gridId = "home-main-grid";
-  let list = [...filteredLive, ...filteredMovies, ...filteredSeries];
+  let list = [];
   
-  if (viewId === "view-live") { gridId = "live-grid"; list = filteredLive; }
+  // التأكد من أن المصفوفات بها داتا، وإذا كانت فارغة نقرأها من الـ LocalStorage فوراً
+  if (!filteredLive || filteredLive.length === 0) {
+    filteredLive = JSON.parse(localStorage.getItem("stored_live")) || [];
+    filteredMovies = JSON.parse(localStorage.getItem("stored_movies")) || [];
+    filteredSeries = JSON.parse(localStorage.getItem("stored_series")) || [];
+  }
+
+  if (viewId === "view-home") {
+    gridId = "home-main-grid";
+    list = [...filteredLive, ...filteredMovies, ...filteredSeries];
+  }
+  else if (viewId === "view-live") { gridId = "live-grid"; list = filteredLive; }
   else if (viewId === "view-movies") { gridId = "movies-grid"; list = filteredMovies; }
   else if (viewId === "view-series") { gridId = "series-grid"; list = filteredSeries; }
   
   const container = document.getElementById(gridId);
-  if (!container) return; container.innerHTML = "";
+  if (!container) return; 
+  container.innerHTML = "";
+
+  if (list.length === 0) {
+    container.innerHTML = '<p style="color:#666; text-align:center; width:100%; grid-column: 1/-1; padding:2rem; font-size:1.3rem;">لم يتم العثور على محتوى، تأكد من إضافة حساب IPTV نشط.</p>';
+    return;
+  }
 
   list.forEach(item => {
     const card = document.createElement("div");
@@ -91,6 +148,8 @@ function renderContentGrid(viewId) {
     card.onclick = () => openDetailsView(item);
     container.appendChild(card);
   });
+  
+  if (window.updateFocusableElements) window.updateFocusableElements();
 }
 
 function openDetailsView(item) {
@@ -157,9 +216,9 @@ function playMediaDirectly(item) {
 
 function triggerGlobalSearch(query) {
   query = query.toLowerCase().trim();
-  filteredLive = liveChannels.filter(c => c.name.toLowerCase().includes(query));
-  filteredMovies = moviesList.filter(m => m.name.toLowerCase().includes(query));
-  filteredSeries = seriesList.filter(s => s.name.toLowerCase().includes(query));
+  filteredLive = (JSON.parse(localStorage.getItem("stored_live")) || []).filter(c => c.name.toLowerCase().includes(query));
+  filteredMovies = (JSON.parse(localStorage.getItem("stored_movies")) || []).filter(m => m.name.toLowerCase().includes(query));
+  filteredSeries = (JSON.parse(localStorage.getItem("stored_series")) || []).filter(s => s.name.toLowerCase().includes(query));
   renderContentGrid(currentViewId);
 }
 
@@ -167,7 +226,7 @@ function toggleLanguage() {
   currentLang = currentLang === "ar" ? "en" : "ar";
   localStorage.setItem("app_lang", currentLang);
   applyLanguage();
-  generateServerPlaylistContent();
+  if (window.generateServerPlaylistContent) window.generateServerPlaylistContent();
   clickSidebarItem(0);
 }
 
@@ -193,8 +252,13 @@ function switchSettingsTab(idx) { document.querySelectorAll('.pane-tab').forEach
 function togglePasswordVisibility() { const p = document.getElementById('server-pass'); p.type = p.type==='password'?'text':'password'; }
 
 window.onload = () => {
-  generateServerPlaylistContent();
-  loadPlaylists();
+  if (window.generateServerPlaylistContent) window.generateServerPlaylistContent();
+  
+  filteredLive = JSON.parse(localStorage.getItem("stored_live")) || [];
+  filteredMovies = JSON.parse(localStorage.getItem("stored_movies")) || [];
+  filteredSeries = JSON.parse(localStorage.getItem("stored_series")) || [];
+
+  if (window.loadPlaylists) window.loadPlaylists();
   applyTheme(localStorage.getItem('selected-theme') || 'theme-netflix');
   applyLanguage();
   clickSidebarItem(0);
