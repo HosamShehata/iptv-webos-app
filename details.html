@@ -6,40 +6,41 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
     body {
-      margin: 0; background: #0b0b0b; color: white;
+      margin: 0; background: #06070d; color: white;
       font-family: 'Segoe UI', Arial, sans-serif; overflow: hidden; user-select: none;
     }
     .hero-blur {
       position: absolute; top: 0; left: 0; width: 100%; height: 100vh;
       background-size: cover; background-position: center;
-      filter: blur(25px) brightness(0.2); z-index: -1;
+      filter: blur(30px) brightness(0.18); z-index: -1;
     }
     .container { display: flex; padding: 60px; height: calc(100vh - 120px); gap: 60px; align-items: flex-start; }
-    .poster-box { width: 280px; height: 420px; object-fit: cover; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.7); border: 1px solid #333; }
+    .poster-box { width: 290px; height: 430px; object-fit: cover; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.08); }
     
     .details-side { flex: 1; display: flex; flex-direction: column; }
-    .main-title { font-size: 38px; font-weight: bold; margin-bottom: 8px; }
-    .meta-row { display: flex; gap: 15px; align-items: center; color: #1f6feb; font-size: 15px; font-weight: bold; margin-bottom: 20px; }
-    .meta-badge { background: #222; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; border: 1px solid #444; }
-    .plot { font-size: 16px; color: #cccccc; line-height: 1.6; margin-bottom: 25px; max-width: 750px; }
+    .main-title { font-size: 42px; font-weight: 900; margin-bottom: 10px; }
+    .meta-row { display: flex; gap: 15px; align-items: center; color: #1f6feb; font-size: 15px; font-weight: bold; margin-bottom: 25px; }
+    .meta-badge { background: rgba(255,255,255,0.05); color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 12px; border: 1px solid rgba(255,255,255,0.1); }
+    .plot { font-size: 16px; color: #b9c4d7; line-height: 1.7; margin-bottom: 30px; max-width: 750px; }
     
     .button-group { display: flex; gap: 15px; margin-bottom: 35px; }
     .action-btn {
-      padding: 12px 28px; font-size: 16px; font-weight: bold; border: none; border-radius: 6px;
-      cursor: pointer; color: white; background: #1c1c1c; border: 1px solid #444; display: flex; align-items: center; gap: 8px;
+      padding: 14px 32px; font-size: 16px; font-weight: bold; border: none; border-radius: 10px;
+      cursor: pointer; color: white; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 8px; transition: all 0.2s;
     }
-    .action-btn.primary-play { background: #1f6feb; border: none; }
-    .action-btn.focused { outline: 4px solid #fff; transform: scale(1.05); }
+    .action-btn.primary-play { background: #1f6feb; border: none; box-shadow: 0 4px 15px rgba(31,111,235,0.3); }
+    .action-btn.focused { outline: 4px solid #fff; transform: scale(1.04); }
 
     .episodes-section { display: none; flex-direction: column; width: 100%; }
-    .section-title { font-size: 18px; color: #1f6feb; margin-bottom: 10px; font-weight: bold; }
-    .episodes-scroll { display: flex; gap: 12px; overflow-x: auto; padding: 10px 0; width: 100%; }
+    .section-title { font-size: 18px; color: #1f6feb; margin-bottom: 12px; font-weight: bold; letter-spacing: 0.5px; }
+    .episodes-scroll { display: flex; gap: 14px; overflow-x: auto; padding: 10px 0; width: 100%; }
+    .episodes-scroll::-webkit-scrollbar { display: none; }
     
     .ep-card {
-      background: #161616; border: 1px solid #222; padding: 12px 20px; border-radius: 6px;
-      min-width: 160px; text-align: center; font-size: 14px; color: #aaa; position: relative; cursor: pointer; white-space: nowrap;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 14px 24px; border-radius: 10px;
+      min-width: 170px; text-align: center; font-size: 14px; color: #b9c4d7; position: relative; cursor: pointer; white-space: nowrap; transition: all 0.2s;
     }
-    .ep-card.focused { outline: 3px solid #1f6feb; background: #222; color: #fff; }
+    .ep-card.focused { outline: 3px solid #1f6feb; background: rgba(31,111,235,0.1); color: #fff; border-color: transparent; }
     .ep-card.last-watched-badge::after {
       content: '👁️ الأخيرة'; position: absolute; top: -8px; right: 5px; background: #1f6feb;
       color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold;
@@ -61,7 +62,7 @@
       <span id="media-rating">⭐ 8.9</span>
       <span class="meta-badge">4K ULTRA HD</span>
       <span class="meta-badge" id="media-year">2026</span>
-      <span style="color:#aaa;" id="media-genre">Drama, Action</span>
+      <span style="color:#8fa0b5;" id="media-genre">Drama, Sci-Fi</span>
     </div>
 
     <div class="plot" id="media-plot">جاري تحميل الوصف...</div>
