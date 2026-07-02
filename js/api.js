@@ -1,7 +1,15 @@
-// كائن إدارة البلاليست بصيغة متوافقة 100% مع شاشات LG القديمة والحديثة
+// دالة بناء الـ Authentication والروابط المطابقة للمصدر الأصلي تماماً
+function _auth(cfg) {
+    return "username=" + encodeURIComponent(cfg.username) +
+           "&password=" + encodeURIComponent(cfg.password);
+}
+
+function _base(cfg) {
+    return (cfg.server_url || "").replace(/\/+$/, "");
+}
+
 var PlaylistManager = {
-    
-    // 1. التخزين بنظام البروفايلات المتوافق مع المصدر
+    // محاكاة نظام حفظ البروفايل المتعدد المعتمد في السورس
     saveProfile: function(host, username, password, name) {
         var profileId = "prof_" + Date.now().toString(36);
         var profileData = [{
@@ -17,7 +25,7 @@ var PlaylistManager = {
         localStorage.setItem('iptv_source_type', JSON.stringify("xtream"));
     },
 
-    // 2. استرجاع البروفايل
+    // استرجاع البيانات المخزنة للتشغيل التلقائي عند فتح البرنامج
     getActiveProfile: function() {
         try {
             var profiles = JSON.parse(localStorage.getItem('iptv_profiles'));
@@ -26,60 +34,78 @@ var PlaylistManager = {
         return null;
     },
 
-    // 3. دالة فحص وتوصيل السيرفر باستخدام XHR التقليدي (بدون Fetch أو Async) لضمان عمل الزر
-    xtreamLoginCheck: function(profile, onSuccess, onError) {
-        var cleanHost = profile.server_urls[0].replace(/\/+$/, "");
-        var authSign = "username=" + encodeURIComponent(profile.username) + "&password=" + encodeURIComponent(profile.password);
-        var url = cleanHost + "/player_api.php?" + authSign;
-
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", url, true);
-        xhr.timeout = 15000;
-
-        xhr.onload = function() {
-            if (xhr.status >= 200 && xhr.status < 300) {
-                try {
-                    var result = JSON.parse(xhr.responseText);
-                    localStorage.setItem('iptv_active_resolved_url', JSON.stringify(cleanHost));
-                    onSuccess(cleanHost, result);
-                } catch (e) {
-                    onError("خطأ في قراءة بيانات السيرفر (JSON Parse)");
+    // دالة تسجيل الدخول المطابقة تماماً لدالة xtreamLogin في المصدر
+    xtreamLogin: function(cfg, onSuccess, onError) {
+        var entered = [cfg.server_url];
+        var urls = [];
+        
+        // بناء قائمة الروابط البديلة (HTTP / HTTPS) كما يفعل المصدر تماماً لتفادي حظر الشاشة
+        for (var i = 0; i < entered.length; i++) {
+            var u = entered[i];
+            if (u) {
+                urls.push(u);
+                if (/^https:/i.test(u)) {
+                    var alt = u.replace(/^https:/i, "http:");
+                    if (urls.indexOf(alt) === -1) urls.push(alt);
                 }
-            } else {
-                onError("السيرفر أعاد استجابة خاطئة: " + xhr.status);
             }
-        };
+        }
 
-        xhr.onerror = function() {
-            // إذا فشل الـ HTTPS أو حدثت مشكلة أمان، نحاول عبر HTTP الصافي كما يفعل المصدر
-            if (cleanHost.indexOf("https:") === 0) {
-                var fallbackHost = cleanHost.replace("https:", "http:");
-                var fallbackUrl = fallbackHost + "/player_api.php?" + authSign;
-                var fallbackXhr = new XMLHttpRequest();
-                fallbackXhr.open("GET", fallbackUrl, true);
-                fallbackXhr.timeout = 15000;
-                fallbackXhr.onload = function() {
-                    if (fallbackXhr.status >= 200 && fallbackXhr.status < 300) {
-                        try {
-                            var res = JSON.parse(fallbackXhr.responseText);
-                            localStorage.setItem('iptv_active_resolved_url', JSON.stringify(fallbackHost));
-                            onSuccess(fallbackHost, res);
-                        } catch(e) { onError("خطأ في قراءة البيانات."); }
-                    } else { onError("فشل الاتصال التلقائي."); }
-                };
-                fallbackXhr.onerror = function() { onError("تعذر الاتصال بالسيرفر، تأكد من الروابط."); };
-                fallbackXhr.send();
-            } else {
-                onError("فشل الاتصال بالشبكة، تأكد من الرابط.");
+        var currentIndex = 0;
+        function tryNextUrl() {
+            if (currentIndex >= urls.length) {
+                onError("ERR: Login failed — check credentials or server status");
+                return;
             }
-        };
 
-        xhr.ontimeout = function() { onError("انتهت مهلة الاتصال بالسيرفر (Timeout)."); };
-        xhr.send();
+            var currentUrl = urls[currentIndex];
+            var baseClean = currentUrl.replace(/\/+$/, "");
+            var testUrl = baseClean + "/player_api.php?" + _auth({ username: cfg.username, password: cfg.password });
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", testUrl, true);
+            xhr.timeout = 12000;
+
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    try {
+                        var result = JSON.parse(xhr.responseText);
+                        if (result && (result.user_info || result.auth === 1 || result.valid === true)) {
+                            // حفظ الرابط الفعلي الشغال بنجاح في الذاكرة الموحدة كما يفعل المصدر
+                            localStorage.setItem('iptv_active_resolved_url', JSON.stringify(baseClean));
+                            onSuccess(baseClean, result);
+                        } else {
+                            currentIndex++;
+                            tryNextUrl();
+                        }
+                    } catch (e) {
+                        currentIndex++;
+                        tryNextUrl();
+                    }
+                } else {
+                    currentIndex++;
+                    tryNextUrl();
+                }
+            };
+
+            xhr.onerror = function() {
+                currentIndex++;
+                tryNextUrl();
+            };
+
+            xhr.ontimeout = function() {
+                currentIndex++;
+                tryNextUrl();
+            };
+
+            xhr.send();
+        }
+
+        tryNextUrl();
     },
 
-    // 4. دالة جلب القنوات الحيّة الفعليّة (get_live_streams) المأخوذة من المصدر
-    fetchLiveStreams: function(workingHost, username, password, onSuccess, onError) {
+    // دالة سحب القنوات الحية المطابقة لـ xtreamGetLiveChannels في المصدر
+    xtreamGetLiveChannels: function(workingHost, username, password, onSuccess, onError) {
         var authSign = "username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password);
         var url = workingHost + "/player_api.php?" + authSign + "&action=get_live_streams";
 
@@ -93,12 +119,14 @@ var PlaylistManager = {
                     var data = JSON.parse(xhr.responseText);
                     var channels = Array.isArray(data) ? data : (data && data.data || []);
                     onSuccess(channels);
-                } catch(e) { onError("خطأ في معالجة القنوات الحية."); }
+                } catch(e) {
+                    onError("ERR: Error parsing channels data");
+                }
             } else {
-                onError("خطأ سيرفر رقم: " + xhr.status);
+                onError("ERR: Server returned status " + xhr.status);
             }
         };
-        xhr.onerror = function() { onError("خطأ في سحب القنوات الحية."); };
+        xhr.onerror = function() { onError("ERR: Network error fetching streams"); };
         xhr.send();
     }
 };
