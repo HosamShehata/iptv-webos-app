@@ -1,23 +1,20 @@
 /* ==========================================================================
-   Sciensta Premium IPTV Custom OS - Global Base Tones & Dynamic Scaling
+   Sciensta Premium IPTV Custom OS - Modern Flat Solid Theme
    ========================================================================== */
 
 :root {
-    /* لوحة ألوان الباستيل المودرن المريحة للعين لمنع الإجهاد ليلاً */
-    --bg-dark: #0f1115;
-    --pastel-blue: #a2c2e8;
-    --pastel-green: #b2ebd4;
-    --pastel-orange: #fbcbb4;
-    --pastel-yellow: #f9e7b9;
-    --text-main: #f5f6f8;
-    --text-muted: #a0a5b5;
+    --bg-main: #0f1115;          /* أسود داكن ملكي للخلفية */
+    --card-bg: #161a22;          /* أسود فحم صلب للمربعات */
+    --text-white: #f5f6f8;
+    --text-gray: #a0a5b5;
     
-    /* الفوكس وتحديد الريموت */
-    --focus-border: #ffffff;
-    --focus-bg: rgba(255, 255, 255, 0.15);
+    /* ألوان الباستيل الصريحة والمطفية */
+    --pastel-blue: #a2c2e8;      /* البث المباشر */
+    --pastel-green: #b2ebd4;     /* المسلسلات */
+    --pastel-orange: #fbcbb4;    /* الأفلام */
+    --pastel-yellow: #f9e7b9;    /* المفضلة */
 }
 
-/* ضبط إعدادات الشاشة بالكامل ديناميكياً */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -28,12 +25,12 @@
 }
 
 body {
-    background-color: var(--bg-dark);
-    color: var(--text-main);
+    background-color: var(--bg-main);
+    color: var(--text-white);
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    direction: rtl; /* اتجاه الواجهة عربي بدائي */
+    direction: rlt; /* اتجاه الواجهة عربي */
 }
 
 #home {
@@ -42,7 +39,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 3vh 4vw; /* أبعاد مرنة حسب حجم الشاشة */
+    padding: 4vh 4vw;
 }
 
 /* ── الهيدر العلوي (Header) ──────────────────────────────────────────────── */
@@ -51,24 +48,19 @@ body {
     justify-content: space-between;
     align-items: center;
     height: 10vh;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.05);
-    padding-bottom: 1vh;
 }
 
 .header-date {
-    font-size: 2.2vw; /* حجم خط كبير وواضح من بعيد */
+    font-size: 2vw;
     color: var(--pastel-blue);
     font-weight: 500;
 }
 
 .header-clock {
-    font-size: 3vw; /* حجم الساعة ضخم وعصري في المنتصف */
-    color: var(--text-main);
+    font-size: 3vw;
+    color: var(--text-white);
     font-weight: bold;
-    letter-spacing: 2px;
-    background: rgba(255, 255, 255, 0.03);
-    padding: 0.5vh 2vw;
-    border-radius: 15px;
+    letter-spacing: 1px;
 }
 
 .header-branding {
@@ -78,64 +70,78 @@ body {
 }
 
 .app-logo {
-    font-size: 2.8vw;
+    font-size: 2.6vw;
     font-weight: 800;
-    color: var(--pastel-yellow);
+    color: var(--text-white);
 }
 
 .app-logo span {
     color: var(--pastel-orange);
+    margin-right: 0.3vw;
 }
 
 .lang-toggle-btn {
     background: transparent;
-    border: 2px solid var(--pastel-blue);
-    color: var(--pastel-blue);
-    padding: 0.3vh 1vw;
-    border-radius: 8px;
-    font-size: 1.2vw;
+    border: 1.5px solid var(--text-gray);
+    color: var(--text-gray);
+    padding: 0.2vh 0.8vw;
+    border-radius: 12px;
+    font-size: 1.1vw;
     margin-top: 0.5vh;
-    cursor: pointer;
 }
 
-/* ── البانر السينمائي العريض (Hero Banner) ───────────────────────────────── */
+/* ── علامة اللودنج الانسيابية الحديثة (Gradient Spinner) ─────────────────── */
+.loading-spinner {
+    width: 3vw;
+    height: 3vw;
+    border: 3px solid rgba(162, 194, 232, 0.1);
+    border-top: 3px solid var(--pastel-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-left: 2vw;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ── البانر الرئيسي ──────────────────────────────────────────────────────── */
 .cinematic-banner {
-    height: 40vh;
-    background: linear-gradient(90deg, rgba(15,17,21,0.95) 0%, rgba(30,40,55,0.6) 100%), url('hero-bg.jpg');
+    height: 38vh;
+    background: linear-gradient(90deg, #161a22 40%, rgba(22,26,34,0.6) 100%), url('hero-bg.jpg');
     background-size: cover;
     background-position: center;
-    border-radius: 24px;
+    border-radius: 28px;
     display: flex;
     align-items: center;
     padding: 4vw;
-    border: 2px solid rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255,255,255,0.02);
 }
 
 .banner-content h2 {
-    font-size: 3.5vw;
+    font-size: 3.2vw;
     color: var(--pastel-orange);
     margin-bottom: 1vh;
 }
 
 .banner-content p {
-    font-size: 1.8vw;
-    color: var(--text-muted);
+    font-size: 1.6vw;
+    color: var(--text-gray);
     margin-bottom: 3vh;
 }
 
 .play-btn {
     background-color: var(--pastel-green);
-    color: #121418;
+    color: #0f1115;
     border: none;
-    padding: 1.5vh 3vw;
-    font-size: 1.8vw;
+    padding: 1.2vh 2.5vw;
+    font-size: 1.6vw;
     font-weight: bold;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: transform 0.2s;
+    border-radius: 16px;
 }
 
-/* ── القائمة الرئيسية للأقسام (Main Navbar) ────────────────────────────── */
+/* ── أزرار القائمة الرئيسية (Main Navbar) ────────────────────────────────── */
 .main-navbar {
     display: flex;
     justify-content: space-between;
@@ -146,74 +152,101 @@ body {
 
 .nav-item {
     flex: 1;
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--card-bg) !important;
     border: 2px solid transparent;
-    border-radius: 20px;
+    border-radius: 24px;
     height: 14vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-size: 1.8vw; /* الخطوط كبيرة للأزرار */
+    font-size: 1.6vw;
     font-weight: 600;
-    color: var(--text-main);
-    transition: all 0.2s ease-in-out;
-    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .nav-item .icon {
-    font-size: 2.8vw; /* حجم الأيقونات داخل الأزرار كبير وواضح */
+    font-size: 2.6vw;
     margin-bottom: 0.8vh;
 }
 
-/* تلوين حواف الأزرار بألوان الباستيل لتسهيل التمييز */
-.tile-livetv { border-bottom: 4px solid var(--pastel-blue); }
-.tile-series { border-bottom: 4px solid var(--pastel-green); }
-.tile-movies { border-bottom: 4px solid var(--pastel-orange); }
-.tile-favs { border-bottom: 4px solid var(--pastel-yellow); }
+/* الألوان الافتراضية لكل كارت وهو غير نشط */
+.tile-livetv { color: var(--pastel-blue); }
+.tile-series { color: var(--pastel-green); }
+.tile-movies { color: var(--pastel-orange); }
+.tile-favs   { color: var(--pastel-yellow); }
+.tile-continue, .tile-search, .tile-settings { color: var(--text-white); }
 
-/* تأثير الفوكس وحركة الريموت (D-Pad Focus) */
-.tv-focus-visible, .nav-item:focus {
-    transform: scale(1.08); /* الكارت يكبر عند الوقوف عليه بالريموت */
-    background-color: var(--focus-bg) !important;
-    border: 3px solid var(--focus-border) !important;
-    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.5);
+/* ==========================================================================
+   💥 حركة الريموت والتأثير العكسي الكامل (Focus Inversion)
+   ========================================================================== */
+
+.tile-livetv.tv-focus-visible {
+    background: var(--pastel-blue) !important;
+    color: var(--bg-main) !important;
+    transform: scale(1.06);
+    box-shadow: 0px 15px 30px rgba(162, 194, 232, 0.25);
 }
 
-/* ── الفوتر وعداد السرعة الحقيقي (Footer & Speedtest) ───────────────────── */
+.tile-series.tv-focus-visible {
+    background: var(--pastel-green) !important;
+    color: var(--bg-main) !important;
+    transform: scale(1.06);
+    box-shadow: 0px 15px 30px rgba(178, 235, 212, 0.25);
+}
+
+.tile-movies.tv-focus-visible {
+    background: var(--pastel-orange) !important;
+    color: var(--bg-main) !important;
+    transform: scale(1.06);
+    box-shadow: 0px 15px 30px rgba(251, 203, 180, 0.25);
+}
+
+.tile-favs.tv-focus-visible {
+    background: var(--pastel-yellow) !important;
+    color: var(--bg-main) !important;
+    transform: scale(1.06);
+    box-shadow: 0px 15px 30px rgba(249, 231, 185, 0.25);
+}
+
+/* الكروت العادية عند الفوكس */
+.tile-continue.tv-focus-visible, 
+.tile-search.tv-focus-visible, 
+.tile-settings.tv-focus-visible {
+    background: var(--text-white) !important;
+    color: var(--bg-main) !important;
+    transform: scale(1.06);
+}
+
+/* ── الفوتر وعداد السرعة ────────────────────────────────────────────────── */
 .app-footer {
     display: flex;
-    justify-content: flex-start;
+    justify-content: flex-end;
     align-items: center;
     height: 8vh;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .speedtest-container {
     display: flex;
     align-items: center;
-    background: rgba(255, 255, 255, 0.02);
-    padding: 1vh 2vw;
-    border-radius: 50px;
-    border: 2px solid transparent;
-    cursor: pointer;
+    background: var(--card-bg);
+    padding: 1vh 1.8vw;
+    border-radius: 20px;
 }
 
 .wifi-icon {
-    font-size: 2vw;
-    color: var(--pastel-blue);
-    margin-left: 0.8vw;
-    transition: color 0.3s;
+    font-size: 1.8vw;
+    color: var(--pastel-green);
+    margin-left: 0.6vw;
 }
 
 .speed-value {
-    font-size: 2.2vw;
+    font-size: 2vw;
     font-weight: bold;
-    color: var(--text-main);
 }
 
 .speed-unit {
-    font-size: 1.3vw;
-    color: var(--text-muted);
-    margin-right: 0.4vw;
+    font-size: 1.2vw;
+    color: var(--text-gray);
+    margin-right: 0.3vw;
 }
