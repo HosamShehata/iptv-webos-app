@@ -1,99 +1,212 @@
-// ── Homepage navigation ───────────────────────────────────────────────────────
-//
-// Tile order for D-pad: [livetv, vod, catchup, settings]
-// Layout:  [livetv]  [vod]  [catchup ]
-//                           [settings]
-//
-// LEFT/RIGHT moves between the three columns.
-// UP/DOWN moves within the small-tile column (catchup ↔ settings).
+// ── Custom Cinematic Nav & Utilities (Sciensta Premium IPTV Custom OS) ───────
 
-const TILES = ["tile-livetv", "tile-vod", "tile-catchup", "tile-settings"];
+// الأزرار الجديدة المتاحة للتنقل بالترتيب الأفقي من اليمين إلى اليسار
+const TILES = [
+    "tile-livetv", 
+    "tile-series", 
+    "tile-movies", 
+    "tile-favs", 
+    "tile-continue", 
+    "tile-search", 
+    "tile-settings"
+];
+
+// الصفحات المرتبطة بكل زر عند الضغط عليه (ENTER)
 const PAGES = {
-    "tile-livetv":  "pages/livetv.html",
-    "tile-vod":     "pages/vod.html",
-    "tile-catchup": "pages/catchup.html",
-    "tile-settings":"pages/settings.html",
+    "tile-livetv":   "pages/livetv.html",
+    "tile-series":   "pages/vod.html", // يوجه لقسم المسلسلات
+    "tile-movies":   "pages/vod.html", // يوجه لقسم الأفلام
+    "tile-favs":     "pages/livetv.html", // يوجه للمفضلة
+    "tile-continue": "pages/vod.html",
+    "tile-search":   "pages/vod.html",
+    "tile-settings": "pages/settings.html"
 };
 
-// Column map — which tile is in which column
-// Col 0: livetv, Col 1: vod, Col 2: catchup/settings
-const COL = { "tile-livetv": 0, "tile-vod": 1, "tile-catchup": 2, "tile-settings": 2 };
-const COL_FIRST = { 0: "tile-livetv", 1: "tile-vod", 2: "tile-catchup" };
+let _focusedTileIndex = 0; // نبرمج مؤشر التركيز البدائي على البث المباشر
+let isTesting = false;
+let downloadController = null; 
 
-let _focusedTile = "tile-livetv";
-
-function _setFocus(id) {
+function _setFocus(index) {
+    // إزالة الفوكس من جميع العناصر
     TILES.forEach(t => document.getElementById(t)?.classList.remove("tv-focus-visible"));
-    _focusedTile = id;
-    document.getElementById(id)?.classList.add("tv-focus-visible");
+    
+    // التأكد من أن المؤشر لا يخرج عن حدود المصفوفة
+    if (index < 0) index = 0;
+    if (index >= TILES.length) index = TILES.length - 1;
+    
+    _focusedTileIndex = index;
+    const activeId = TILES[_focusedTileIndex];
+    document.getElementById(activeId)?.classList.add("tv-focus-visible");
 }
 
 function _navigate(id) {
     window.location.href = PAGES[id];
 }
 
+// ==========================================
+// 1. إدارة حركة أزرار الريموت (D-Pad) للثيم الأفقي
+// ==========================================
 function _handleKey(e) {
     const kc = e.keyCode || e.which;
 
-    if (kc === 461) { // Back (webOS) — homepage is the root, so exit the app
+    if (kc === 461) { // Back (webOS) - الخروج من التطبيق من القائمة الرئيسية
         e.preventDefault();
-        // tvGoBack lives in dpad.js/settings.js which aren't loaded here, so
-        // call the platform directly with a guard.
         if (typeof webOS !== "undefined" && webOS.platformBack) webOS.platformBack();
         return;
     }
     if (kc === 13) { // ENTER
         e.preventDefault();
-        _navigate(_focusedTile);
+        _navigate(TILES[_focusedTileIndex]);
         return;
     }
-    const col = COL[_focusedTile];
-    if (kc === 37) { // LEFT
+    if (kc === 37) { // LEFT (الانتقال للزر التالي يساراً)
         e.preventDefault();
-        if (col > 0) _setFocus(COL_FIRST[col - 1]);
+        if (_focusedTileIndex < TILES.length - 1) {
+            _setFocus(_focusedTileIndex + 1);
+        }
         return;
     }
-    if (kc === 39) { // RIGHT
+    if (kc === 39) { // RIGHT (الانتقال للزر السابق يميناً)
         e.preventDefault();
-        if (col < 2) _setFocus(COL_FIRST[col + 1]);
-        return;
-    }
-    if (kc === 38) { // UP
-        e.preventDefault();
-        if (_focusedTile === "tile-settings") _setFocus("tile-catchup");
-        return;
-    }
-    if (kc === 40) { // DOWN
-        e.preventDefault();
-        if (_focusedTile === "tile-catchup") _setFocus("tile-settings");
+        if (_focusedTileIndex > 0) {
+            _setFocus(_focusedTileIndex - 1);
+        }
         return;
     }
 }
 
-function _updateDate() {
-    const el = document.getElementById("home-date");
-    if (!el) return;
-    el.textContent = new Date().toLocaleDateString([], { weekday: "long", day: "numeric", month: "long" });
+// ==========================================
+// 2. كود تشغيل الساعة والتاريخ الحقيقيين
+// ==========================================
+function updateClockAndDate() {
+    const now = new Date();
+    
+    // تشغيل الساعة بنظام 12 ساعة رقمي عصري
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; 
+    
+    const timeElement = document.getElementById('current-time');
+    if (timeElement) {
+        timeElement.innerText = `${hours}:${minutes}:${seconds} ${ampm}`;
+    }
+    
+    // تشغيل التاريخ العربي التلقائي بالكامل
+    const dateElement = document.getElementById('current-date');
+    if (dateElement) {
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        dateElement.innerText = now.toLocaleDateString('ar-EG', options);
+    }
+}
+setInterval(updateClockAndDate, 1000);
+
+// ==========================================
+// 3. كود سحب سرعة الإنترنت الذكي (إيقاف وتشغيل فوري بضغطة واحدة)
+// ==========================================
+function toggleSpeedTest() {
+    const wifiIcon = document.getElementById("wifi-status");
+    const speedText = document.getElementById("internet-speed");
+
+    if (!wifiIcon || !speedText) return;
+
+    if (isTesting) {
+        if (downloadController) {
+            downloadController.abort(); 
+        }
+        isTesting = false;
+        wifiIcon.style.color = "#FF5722"; 
+        speedText.innerText = "Stopped";
+        return;
+    }
+
+    runRealSpeedTest();
 }
 
+function runRealSpeedTest() {
+    isTesting = true;
+    downloadController = new AbortController();
+    const signal = downloadController.signal;
+
+    const wifiIcon = document.getElementById("wifi-status");
+    const speedText = document.getElementById("internet-speed");
+
+    if (!wifiIcon || !speedText) return;
+
+    wifiIcon.style.color = "#2196F3"; 
+    speedText.innerText = "...";
+
+    const imageAddr = "https://upload.wikimedia.org/wikipedia/commons/2/2d/Snake_River_%28just_after_grand_teton_national_park%29_educational_use_only.jpg?t=" + new Date().getTime();
+    const downloadSize = 5242880; 
+    let startTime = new Date().getTime();
+
+    fetch(imageAddr, { signal })
+        .then(response => {
+            if (!response.ok) throw new Error('Network error');
+            return response.blob();
+        })
+        .then(() => {
+            let endTime = new Date().getTime();
+            let duration = (endTime - startTime) / 1000; 
+            
+            let bitsLoaded = downloadSize * 8;
+            let speedBps = bitsLoaded / duration;
+            let speedMbps = (speedBps / (1024 * 1024)).toFixed(1);
+
+            speedText.innerText = speedMbps;
+            wifiIcon.style.color = "#4CAF50"; 
+            isTesting = false;
+        })
+        .catch(error => {
+            if (error.name === 'AbortError') return; 
+            speedText.innerText = "Error";
+            wifiIcon.style.color = "#FF5722";
+            isTesting = false;
+        });
+}
+
+// دالة وهمية مبدئية لاستكمال مشاهدة آخر مادة
+function resumeLastWatched() {
+    console.log("استئناف مشاهدة العرض الأخير...");
+    _navigate("tile-livetv");
+}
+
+// دالة تبديل اللغة السريعة المبدئية
+function toggleLanguage() {
+    const btn = document.getElementById("lang-btn");
+    if (btn) {
+        btn.innerText = btn.innerText === "English" ? "العربية" : "English";
+    }
+}
+
+// ==========================================
+// 4. تهيئة تشغيل الصفحة
+// ==========================================
 window.addEventListener("load", () => {
-    // Wire up click handlers
-    TILES.forEach(id => {
-        document.getElementById(id)?.addEventListener("click", () => _navigate(id));
+    // تفعيل الضغط بالماوس (Magic Remote Click) لجميع الأزرار
+    TILES.forEach((id, index) => {
+        document.getElementById(id)?.addEventListener("click", () => {
+            _setFocus(index);
+            _navigate(id);
+        });
     });
 
-    // D-pad
+    // الاستماع لريموت التحكم D-pad
     window.addEventListener("keydown", _handleKey, { capture: true });
 
-    // Initial focus
-    _setFocus("tile-livetv");
+    // تشغيل الفوكس البدائي على البث المباشر
+    _setFocus(0);
 
-    // Date display
-    _updateDate();
+    // تشغيل الساعة فوراً
+    updateClockAndDate();
 
-    // Notify webOS the app finished loading (hides the splash screen)
+    // تشغيل فحص السرعة التلقائي لمرة واحدة بعد ثانيتين من الفتح
+    setTimeout(runRealSpeedTest, 2000);
+
+    // إخطار نظام شاشة LG بإخفاء شاشة التحميل البيضاء (Splash Screen)
     if (typeof webOSSystem !== "undefined" && typeof webOSSystem.notifyAppLoaded === "function") {
         webOSSystem.notifyAppLoaded();
     }
 });
-
