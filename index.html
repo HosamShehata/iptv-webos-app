@@ -2,37 +2,29 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <title>Sciensta IPTV - Playlist Test</title>
-    <style>
-        body { background-color: #0c0c0e; color: #fff; font-family: sans-serif; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: #141416; padding: 20px; border-radius: 8px; }
-        input { width: 95%; padding: 10px; margin: 8px 0; border-radius: 4px; border: 1px solid #333; background: #222; color: #fff; }
-        button { width: 100%; padding: 12px; background: #ffaa00; border: none; color: #000; font-weight: bold; cursor: pointer; border-radius: 4px; }
-        #status { margin: 15px 0; padding: 10px; background: #222; border-left: 4px solid #ffaa00; color: #ffaa00; }
-        ul { list-style: none; padding: 0; max-height: 300px; overflow-y: auto; }
-        li { padding: 10px; border-bottom: 1px solid #333; }
-    </style>
+    <title>Sciensta IPTV - Test</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
-    <h2>اختبار البلايليست (نظام المصدر الأصلي)</h2>
-    
-    <input type="text" id="prof-name" placeholder="اسم البروفايل (مثال: سيرفر السعادة)" />
-    <input type="text" id="prof-username" placeholder="Username" />
-    <input type="password" id="prof-password" placeholder="Password" />
-    <input type="text" id="server-url" placeholder="Host URL (http://domain.com:8080)" />
-    
-    <button id="save-profile-btn">حفظ وتوصيل البلايليست</button>
+    <div id="login-container" style="max-width: 500px; margin: 20px auto; padding: 20px; background: #141416; color: #fff; border-radius: 8px;">
+        <h2>إدخال بيانات البلايليست</h2>
+        <input type="text" id="prof-name" placeholder="اسم البروفايل أو السيرفر" style="width:100%; padding:8px; margin:5px 0;" /><br>
+        <input type="text" id="prof-username" placeholder="Username" style="width:100%; padding:8px; margin:5px 0;" /><br>
+        <input type="password" id="prof-password" placeholder="Password" style="width:100%; padding:8px; margin:5px 0;" /><br>
+        <input type="text" id="server-url" placeholder="Host URL (e.g., http://domain.com:8080)" style="width:100%; padding:8px; margin:5px 0;" /><br>
+        <button id="save-profile-btn" style="width:100%; padding:10px; background:#ffaa00; font-weight:bold; margin-top:10px;">حفظ وتشغيل</button>
+    </div>
 
-    <div id="status">الحالة: في انتظار البيانات...</div>
+    <div id="status" style="max-width: 500px; margin: 10px auto; color: yellow; background: #222; padding: 10px;">الحالة: في انتظار البيانات...</div>
 
-    <h3>عينة من القنوات المستدعاة:</h3>
-    <ul id="channels-list"></ul>
-</div>
+    <div style="max-width: 500px; margin: 10px auto; color: #fff;">
+        <h3>القنوات المستدعاة بنجاح:</h3>
+        <ul id="channels-list" style="max-height: 200px; overflow-y: auto;"></ul>
+    </div>
 
-<script src="polyfills.js"></script>
-<script src="api.js"></script>
-<script src="app.js"></script>
+    <script src="api.js"></script>
+    <script src="remote.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
