@@ -1,68 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1920,height=1080">
-    <title>LG WebOS Player</title>
-
-    <link rel="stylesheet" href="style.css">
+    <title>Sciensta IPTV - Playlist Test</title>
+    <style>
+        body { background-color: #0c0c0e; color: #fff; font-family: sans-serif; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: #141416; padding: 20px; border-radius: 8px; }
+        input { width: 95%; padding: 10px; margin: 8px 0; border-radius: 4px; border: 1px solid #333; background: #222; color: #fff; }
+        button { width: 100%; padding: 12px; background: #ffaa00; border: none; color: #000; font-weight: bold; cursor: pointer; border-radius: 4px; }
+        #status { margin: 15px 0; padding: 10px; background: #222; border-left: 4px solid #ffaa00; color: #ffaa00; }
+        ul { list-style: none; padding: 0; max-height: 300px; overflow-y: auto; }
+        li { padding: 10px; border-bottom: 1px solid #333; }
+    </style>
 </head>
-
 <body>
 
-<div id="loginPage">
+<div class="container">
+    <h2>اختبار البلايليست (نظام المصدر الأصلي)</h2>
+    
+    <input type="text" id="prof-name" placeholder="اسم البروفايل (مثال: سيرفر السعادة)" />
+    <input type="text" id="prof-username" placeholder="Username" />
+    <input type="password" id="prof-password" placeholder="Password" />
+    <input type="text" id="server-url" placeholder="Host URL (http://domain.com:8080)" />
+    
+    <button id="save-profile-btn">حفظ وتوصيل البلايليست</button>
 
-    <h1>Connect</h1>
+    <div id="status">الحالة: في انتظار البيانات...</div>
 
-    <input
-        id="playlistName"
-        type="text"
-        placeholder="Playlist Name"
-        autofocus
-    >
-
-    <input
-        id="host"
-        type="text"
-        placeholder="Host URL"
-    >
-
-    <input
-        id="username"
-        type="text"
-        placeholder="Username"
-    >
-
-    <input
-        id="password"
-        type="password"
-        placeholder="Password"
-    >
-
-    <button id="connectBtn">
-        Connect
-    </button>
-
+    <h3>عينة من القنوات المستدعاة:</h3>
+    <ul id="channels-list"></ul>
 </div>
 
-<div id="loadingPage" style="display:none">
-
-    <h2>Loading...</h2>
-
-</div>
-
-<div id="channelsPage" style="display:none">
-
-    <ul id="channelList">
-
-    </ul>
-
-</div>
-
+<script src="polyfills.js"></script>
 <script src="api.js"></script>
-<script src="player.js"></script>
-<script src="remote.js"></script>
 <script src="app.js"></script>
-
 </body>
 </html>
