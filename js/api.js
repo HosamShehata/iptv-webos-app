@@ -4,18 +4,14 @@ function _auth(cfg) {
            "&password=" + encodeURIComponent(cfg.password);
 }
 
-function _base(cfg) {
-    return (cfg.server_url || "").replace(/\/+$/, "");
-}
-
 var PlaylistManager = {
-    // محاكاة نظام حفظ البروفايل المتعدد المعتمد في السورس
+    // التخزين بنظام البروفايل الأصلي ليتعرف عليه البرنامج والمشغل تلقائياً
     saveProfile: function(host, username, password, name) {
         var profileId = "prof_" + Date.now().toString(36);
         var profileData = [{
             id: profileId,
             type: "xtream",
-            server_urls: [host.replace(/\/+$/, "")],
+            server_urls: [host.replace(/\/+$/, "")], // المصدر يتوقعها مصفوفة دائماً
             username: username,
             password: password,
             name: name
@@ -25,7 +21,7 @@ var PlaylistManager = {
         localStorage.setItem('iptv_source_type', JSON.stringify("xtream"));
     },
 
-    // استرجاع البيانات المخزنة للتشغيل التلقائي عند فتح البرنامج
+    // استرجاع البروفايل المحفوظ
     getActiveProfile: function() {
         try {
             var profiles = JSON.parse(localStorage.getItem('iptv_profiles'));
@@ -34,12 +30,12 @@ var PlaylistManager = {
         return null;
     },
 
-    // دالة تسجيل الدخول المطابقة تماماً لدالة xtreamLogin في المصدر
+    // دالة تسجيل الدخول المنقولة والمطابقة لـ xtreamLogin في المصدر
     xtreamLogin: function(cfg, onSuccess, onError) {
-        var entered = [cfg.server_url];
+        // التأكد من تحويل الروابط إلى مصفوفة تماماً مثل المصدر الأصلي
+        var entered = cfg.server_urls && cfg.server_urls.length ? cfg.server_urls : [cfg.server_url];
         var urls = [];
         
-        // بناء قائمة الروابط البديلة (HTTP / HTTPS) كما يفعل المصدر تماماً لتفادي حظر الشاشة
         for (var i = 0; i < entered.length; i++) {
             var u = entered[i];
             if (u) {
@@ -54,7 +50,7 @@ var PlaylistManager = {
         var currentIndex = 0;
         function tryNextUrl() {
             if (currentIndex >= urls.length) {
-                onError("ERR: Login failed — check credentials or server status");
+                onError("ERR: Login failed — check credentials");
                 return;
             }
 
@@ -70,8 +66,8 @@ var PlaylistManager = {
                 if (xhr.status >= 200 && xhr.status < 300) {
                     try {
                         var result = JSON.parse(xhr.responseText);
-                        if (result && (result.user_info || result.auth === 1 || result.valid === true)) {
-                            // حفظ الرابط الفعلي الشغال بنجاح في الذاكرة الموحدة كما يفعل المصدر
+                        // الفحص الأصلي للمصدر للتأكد من نجاح تسجيل الدخول
+                        if (result && (result.user_info || result.auth === 1)) {
                             localStorage.setItem('iptv_active_resolved_url', JSON.stringify(baseClean));
                             onSuccess(baseClean, result);
                         } else {
@@ -88,23 +84,15 @@ var PlaylistManager = {
                 }
             };
 
-            xhr.onerror = function() {
-                currentIndex++;
-                tryNextUrl();
-            };
-
-            xhr.ontimeout = function() {
-                currentIndex++;
-                tryNextUrl();
-            };
-
+            xhr.onerror = function() { currentIndex++; tryNextUrl(); };
+            xhr.ontimeout = function() { currentIndex++; tryNextUrl(); };
             xhr.send();
         }
 
         tryNextUrl();
     },
 
-    // دالة سحب القنوات الحية المطابقة لـ xtreamGetLiveChannels في المصدر
+    // دالة سحب القنوات الحية الأصلية (get_live_streams)
     xtreamGetLiveChannels: function(workingHost, username, password, onSuccess, onError) {
         var authSign = "username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password);
         var url = workingHost + "/player_api.php?" + authSign + "&action=get_live_streams";
