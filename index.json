@@ -1,0 +1,19 @@
+
+{
+  "paging": {
+    "page": 1,
+    "count": 1,
+    "maxPage": 1,
+    "itemsTotal": 1
+  },
+  "packages": [
+    {
+      "id": "com.sharktie.iptv",
+      "title": "IPTV player",
+      "iconUri": "https://raw.githubusercontent.com/sharktie/lg-iptv/main/icon.png",
+      "manifestUrl": "https://github.com/sharktie/lg-iptv/releases/latest/download/manifest.json",
+      "pool": "main",
+      "shortDescription": "IPTV player for webOS."
+    }
+  ]
+}
