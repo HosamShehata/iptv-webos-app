@@ -7,78 +7,86 @@ document.addEventListener("DOMContentLoaded", function() {
     var statusDiv = document.getElementById("status");
     var channelsList = document.getElementById("channels-list");
 
-    // الفحص التلقائي عند فتح الواجهة
+    // الفحص والتشغيل التلقائي عند فتح التطبيق إذا كان هناك سيرفر مسجل سابقاً
     var savedProfile = PlaylistManager.getActiveProfile();
     if (savedProfile) {
-        statusDiv.innerText = "تم العثور على بروفايل محفوظ: " + savedProfile.name + ". جاري جلب القنوات...";
-        startPipeline(savedProfile);
+        statusDiv.innerText = "Loading config from profile: " + savedProfile.name + "…";
+        executeAppPipeline(savedProfile);
     }
 
-    // تشغيل الأحداث عند الضغط على زر الحفظ والتوصيل
     if (saveBtn) {
         saveBtn.addEventListener("click", function() {
-            var host = hostInput.value.trim();
-            var username = userInput.value.trim();
-            var password = passInput.value.trim();
-            var name = nameInput.value.trim() || "My IPTV";
+            var host = hostInput ? hostInput.value.trim() : "";
+            var username = userInput ? userInput.value.trim() : "";
+            var password = passInput ? passInput.value.trim() : "";
+            var name = nameInput ? nameInput.value.trim() : "My IPTV Service";
 
             if (!host || !username || !password) {
-                statusDiv.innerText = "تنبيه: يرجى كتابة البيانات كاملة أولاً!";
+                statusDiv.innerText = "تنبيه: يرجى ملء الحقول المطلوبة أولاً!";
                 return;
             }
 
-            // الحفظ بالنظام الموحد
+            // المزامنة والحفظ بنظام المصدر الموحد
             PlaylistManager.saveProfile(host, username, password, name);
-            statusDiv.innerText = "جاري الاتصال واختبار منافذ الخادم...";
+            statusDiv.innerText = "Logging in…";
 
             var currentProfile = PlaylistManager.getActiveProfile();
-            startPipeline(currentProfile);
+            executeAppPipeline(currentProfile);
         });
     }
 
-    // بدء خط المعالجة وسحب البيانات
-    function startPipeline(profile) {
+    // خط المعالجة التنفيذي المتطابق مع منطق المصدر الأصلي
+    function executeAppPipeline(profile) {
         if (!channelsList) return;
-        channelsList.innerHTML = "<li>جاري فحص بروتوكولات الأمان والربط...</li>";
+        channelsList.innerHTML = "<li>Fetching channels…</li>";
 
-        PlaylistManager.xtreamLoginCheck(profile, function(workingHost, loginInfo) {
-            // في حال نجاح تسجيل الدخول
-            statusDiv.innerText = "نجح الاتصال! جاري الآن سحب القنوات المباشرة قيد التشغيل...";
+        var loginCfg = {
+            server_url: profile.server_urls[0],
+            username: profile.username,
+            password: profile.password
+        };
 
-            PlaylistManager.fetchLiveStreams(workingHost, profile.username, profile.password, function(channels) {
+        // 1. استدعاء فحص تسجيل الدخول القياسي للمصدر
+        PlaylistManager.xtreamLogin(loginCfg, function(workingHost, loginData) {
+            statusDiv.innerText = "Fetching channels…";
+
+            // 2. عند النجاح، نقوم بسحب دفق القنوات الحية مباشرة
+            PlaylistManager.xtreamGetLiveChannels(workingHost, profile.username, profile.password, function(channels) {
                 channelsList.innerHTML = "";
+                
                 if (channels.length === 0) {
-                    statusDiv.innerText = "نجح التوصيل، ولكن البلاليست لا تحتوي على قنوات حية حالياً.";
+                    statusDiv.innerText = "ERR: 0 channels returned from server";
                     return;
                 }
 
-                statusDiv.innerText = "رائع! البلاليست سمعت بنجاح. تم جلب " + channels.length + " قناة.";
+                statusDiv.innerText = channels.length + " channels loaded successfully!";
 
-                // عمل كاش محلي مخفف لمزامنة باقي الواجهات
+                // 3. كتابة حزمة الكاش الـ Slim لحفظ ذاكرة شاشات LG للتطبيقات الأخرى
                 try {
-                    var slimCache = channels.slice(0, 50).map(function(ch) {
+                    var slimCache = channels.map(function(ch) {
                         return { stream_id: ch.stream_id, name: ch.name, category_id: ch.category_id };
                     });
                     localStorage.setItem("iptv_ch_v2", JSON.stringify({ ts: Date.now(), data: slimCache }));
                 } catch (_) {}
 
-                // عرض عينة من أول 20 قناة للتأكد العيني المباشر من التشغيل
-                var previewList = channels.slice(0, 20);
-                for (var i = 0; i < previewList.length; i++) {
-                    var item = document.createElement("li");
-                    item.innerText = previewList[i].name || "قناة مجهولة";
-                    channelsList.appendChild(item);
+                // 4. عرض أول 20 قناة فوراً للتأكد التام أن البلاليست سمعت وتعمل
+                var preview = channels.slice(0, 20);
+                for (var i = 0; i < preview.length; i++) {
+                    var li = document.createElement("li");
+                    li.innerText = preview[i].name || "Unnamed Stream";
+                    li.style.padding = "6px";
+                    li.style.borderBottom = "1px solid #333";
+                    channelsList.appendChild(li);
                 }
 
             }, function(chanError) {
                 statusDiv.innerText = chanError;
-                channelsList.innerHTML = "<li>تعذر تحميل القنوات المباشرة.</li>";
+                channelsList.innerHTML = "<li>" + chanError + "</li>";
             });
 
         }, function(loginError) {
-            // في حال فشل تسجيل الدخول
             statusDiv.innerText = loginError;
-            channelsList.innerHTML = "<li>فشل الاتصال بالسيرفر.</li>";
+            channelsList.innerHTML = "<li>Login Failed. Check server URL.</li>";
         });
     }
 });
