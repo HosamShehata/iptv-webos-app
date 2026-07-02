@@ -1,75 +1,230 @@
 /* ── Reset & box model ───────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ── Design tokens ───────────────────────────────────────────────────────────── */
+/* ── ثيمات الألوان المتطورة (Pastel & Doodle Style) ────────────────────────────── */
 :root {
-    --accent:     #e5001e;
-    --accent-dim: #b0001a;
-    --gold:       #f5c518;
-    --gold-dim:   #c9990a;
-    --bg:         #0c0c0e;
-    --bg2:        #131316;
-    --bg3:        #1b1b20;
-    --bg4:        #242428;
-    --bg5:        #2e2e34;
-    --text:       #f0f0f5;
-    --text-dim:   #80808c;
-    --text-faint: #4a4a56;
-    --sidebar-w:  420px;
-    --pip-w:      620px;
-    --pip-h:      349px;
-    --logo-w:     84px;
-    --name-w:     260px;
-    --row-h:      96px;
-    --radius:     10px;
-    --border:     1px solid #22222a;
-    --focus-ring: 0 0 0 3px var(--accent);
+    /* الثيم الافتراضي: باستيل مريح للعين */
+    --accent:       #8ab4f8;       /* أزرق باستيل ناعم للفوكس */
+    --accent-dim:   #669df6;
+    --gold:         #fde293;       /* أصفر باستيل هايلايتر */
+    --gold-dim:     #fdd663;
+    --bg:           #f8f9fa;       /* خلفية ورقية فاتحة ونظيفة */
+    --bg2:          #ffffff;       /* كروت بيضاء ناصعة */
+    --bg3:          #e8eaed;       /* رمادي باستيل ناعم للفواصل */
+    --bg4:          #dadde1;
+    --bg5:          #bdc1c6;
+    --text:         #202124;       /* خط داكن مريح للقراءة */
+    --text-dim:     #5f6368;
+    --text-faint:   #80868b;
+    
+    /* أبعاد ديناميكية مخصصة لتكبير الواجهة بالكامل */
+    --radius:       20px;          /* حواف دائرية ناعمة جداً تفاعلية */
+    --border:       2.5px solid #202124; /* خطوط يد محدودة وواضحة */
+    --sidebar-w:    25vw;
+    --pip-w:        35vw;
+    --pip-h:        20vh;
 }
 
-/* ── Base ─────────────────────────────────────────────────────────────────────── */
+/* التبديل للثيمات الأخرى (سنحتاجها عند تعديل صفحة الإعدادات) */
+body.theme-dark {
+    --bg: #121214; --bg2: #1a1a1e; --bg3: #26262b; --bg4: #33333a; --bg5: #40404a;
+    --text: #f1f3f4; --text-dim: #9aa0a6; --accent: #fdd663;
+}
+body.theme-mint {
+    --bg: #e6f4ea; --bg2: #ffffff; --bg3: #ceead6; --bg4: #a8dab5; --text: #137333;
+    --accent: #81c995;
+}
+
+/* ── الهيكل الأساسي والخطوط الكبيرة الديناميكية ───────────────────────────────── */
 html, body {
-    height: 100%; overflow: hidden;
-    background: var(--bg); color: var(--text);
-    font-family: system-ui, -apple-system, 'LG Display', sans-serif;
-    font-size: 22px;
+    height: 100%; 
+    overflow: hidden;
+    background: var(--bg); 
+    color: var(--text);
+    /* الاعتماد على وحدات الكوميك والخطوط العريضة الواضحة من بُعد */
+    font-family: 'Comic Sans MS', 'Comic Neue', system-ui, -apple-system, sans-serif;
+    /* تكبير الخط الأساسي بناءً على حجم الشاشة (حوالي 32 بكسل لشاشات FHD وتكبر تلقائياً مع 4K) */
+    font-size: 1.65vw; 
+    line-height: 1.5;
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
-*:focus:not(:focus-visible) { outline: none; }
-*:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+/* ── تصميم عناصر الهيدر والفوتر الجديد (index.html) ─────────────────────────── */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5vh 3vw;
+    background: var(--bg2);
+    border-bottom: var(--border);
+    height: 12vh;
+}
 
-/* ── D-pad input active state (shared) ───────────────────────────────────────── */
-.tv-input-active {
-    border-color: var(--gold) !important;
-    box-shadow: 0 0 0 3px rgba(197,153,10,0.35) !important;
+.header-date {
+    font-size: 1.1vw;
+    font-weight: bold;
+    color: var(--text-dim);
+}
+
+.header-clock {
+    font-size: 1.8vw;
+    font-weight: 800;
+    color: var(--text);
+    background: var(--gold);
+    padding: 5px 20px;
+    border-radius: var(--radius);
+    border: var(--border);
+    box-shadow: 4px 4px 0px #202124; /* تأثير ظلال الـ Doodle */
+}
+
+.header-branding {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.app-logo {
+    font-size: 1.6vw;
+    font-weight: 900;
+    color: var(--text);
+}
+.app-logo span {
+    color: var(--accent-dim);
+}
+
+.lang-toggle-btn {
+    background: var(--bg3);
+    border: 1.5px solid var(--text);
+    padding: 2px 10px;
+    font-size: 0.8vw;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 4px;
+}
+
+/* البانر السينمائي العريض المطور */
+.cinematic-banner {
+    height: 40vh;
+    margin: 3vh 3vw;
+    background: linear-gradient(135deg, #d2e3fc, #e8f0fe); /* أزرق باستيل ناعم */
+    border: var(--border);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    padding: 0 4vw;
+    box-shadow: 6px 6px 0px #202124;
+}
+
+.banner-content h2 {
+    font-size: 2.2vw;
+    margin-bottom: 1vh;
+}
+
+.banner-content p {
+    font-size: 1.2vw;
+    color: var(--text-dim);
+    margin-bottom: 2vh;
+}
+
+.play-btn {
+    font-size: 1.3vw;
+    padding: 12px 30px;
+    background: var(--gold);
+    border: var(--border);
+    border-radius: var(--radius);
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 3px 3px 0px #202124;
+}
+
+/* القائمة الرئيسية الأفقية */
+.main-navbar {
+    display: flex;
+    justify-content: space-around;
+    padding: 0 3vw;
+    height: 18vh;
+    gap: 1.5vw;
+}
+
+.nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: var(--bg2);
+    border: var(--border);
+    border-radius: var(--radius);
+    font-size: 1.2vw;
+    font-weight: bold;
+    padding: 10px;
+    box-shadow: 4px 4px 0px #202124;
+    transition: transform 0.1s ease;
+}
+
+.nav-item .icon {
+    font-size: 2vw;
+    margin-bottom: 5px;
+}
+
+/* ── حالة التركيز الحركي للريموت (Focus State) ────────────────────────────────── */
+.tv-focus-visible, *.tv-focus-visible {
     outline: none !important;
+    border-color: #202124 !important;
+    background: var(--gold-dim) !important;
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px #202124 !important;
 }
 
-/* ── Modals (shared) ─────────────────────────────────────────────────────────── */
+/* الفوتر السفلي وأداة قياس السرعة الخفية */
+.app-footer {
+    position: fixed;
+    bottom: 3vh;
+    right: 3vw;
+    z-index: 100;
+}
+
+.speedtest-container {
+    display: flex;
+    align-items: center;
+    background: var(--bg2);
+    border: var(--border);
+    padding: 8px 20px;
+    border-radius: var(--radius);
+    box-shadow: 3px 3px 0px #202124;
+    cursor: pointer;
+}
+
+.wifi-icon {
+    font-size: 1.5vw;
+    margin-left: 10px;
+    transition: color 0.3s ease;
+}
+
+.speed-value {
+    font-size: 1.4vw;
+    font-weight: 800;
+}
+
+.speed-unit {
+    font-size: 0.9vw;
+    color: var(--text-dim);
+    margin-right: 5px;
+}
+
+/* حالة الفوكس للفوتر */
+.speedtest-container.tv-focus-visible {
+    background: var(--gold-dim) !important;
+}
+
+/* ── Modals المشتركة ─────────────────────────────────────────────────────────── */
 .modal-overlay {
     position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 700;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0.5);
     display: flex; align-items: center; justify-content: center;
 }
 .modal-box {
-    background: var(--bg3); border: var(--border);
-    border-radius: 14px; padding: 34px 36px;
-    box-shadow: 0 16px 48px rgba(0,0,0,0.7); min-width: 480px; max-width: 580px; width: 90%;
+    background: var(--bg2); border: var(--border);
+    border-radius: var(--radius); padding: 40px;
+    box-shadow: 8px 8px 0px #202124; min-width: 35vw;
 }
-.modal-heading { font-size: 22px; font-weight: 700; margin-bottom: 22px; }
-.modal-input {
-    width: 100%; padding: 16px 18px;
-    background: var(--bg4); border: var(--border);
-    border-radius: var(--radius); color: var(--text);
-    font-size: 20px; outline: none; margin-bottom: 22px;
-}
-.modal-input:focus { border-color: var(--gold); }
-.modal-btns { display: flex; gap: 12px; justify-content: flex-end; }
-.modal-btn {
-    padding: 16px 34px; border-radius: var(--radius);
-    font-size: 19px; font-weight: 600; cursor: pointer;
-    background: var(--bg5); border: var(--border); color: var(--text-dim);
-}
-.modal-btn:hover, .modal-btn.tv-focus-visible { background: var(--bg4); color: var(--text); }
-.modal-btn-ok       { background: var(--gold-dim); border-color: var(--gold-dim); color: #fff; }
-.modal-btn-ok:hover { background: var(--gold); border-color: var(--gold); }
-.modal-btn.tv-focus-visible { outline: 3px solid var(--gold) !important; outline-offset: 2px !important; }
