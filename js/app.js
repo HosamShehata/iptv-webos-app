@@ -7,10 +7,10 @@ document.addEventListener("DOMContentLoaded", function() {
     var statusDiv = document.getElementById("status");
     var channelsList = document.getElementById("channels-list");
 
-    // الفحص والتشغيل التلقائي عند فتح التطبيق إذا كان هناك سيرفر مسجل سابقاً
+    // الفحص التلقائي عند فتح التطبيق
     var savedProfile = PlaylistManager.getActiveProfile();
     if (savedProfile) {
-        statusDiv.innerText = "Loading config from profile: " + savedProfile.name + "…";
+        if (statusDiv) statusDiv.innerText = "Loading config from profile: " + savedProfile.name + "…";
         executeAppPipeline(savedProfile);
     }
 
@@ -22,46 +22,44 @@ document.addEventListener("DOMContentLoaded", function() {
             var name = nameInput ? nameInput.value.trim() : "My IPTV Service";
 
             if (!host || !username || !password) {
-                statusDiv.innerText = "تنبيه: يرجى ملء الحقول المطلوبة أولاً!";
+                if (statusDiv) statusDiv.innerText = "تنبيه: يرجى ملء الحقول المطلوبة أولاً!";
                 return;
             }
 
-            // المزامنة والحفظ بنظام المصدر الموحد
+            // حفظ البروفايل أولاً بنظام الكور
             PlaylistManager.saveProfile(host, username, password, name);
-            statusDiv.innerText = "Logging in…";
+            if (statusDiv) statusDiv.innerText = "Logging in…";
 
             var currentProfile = PlaylistManager.getActiveProfile();
             executeAppPipeline(currentProfile);
         });
     }
 
-    // خط المعالجة التنفيذي المتطابق مع منطق المصدر الأصلي
     function executeAppPipeline(profile) {
         if (!channelsList) return;
         channelsList.innerHTML = "<li>Fetching channels…</li>";
 
+        // بناء كائن الإعدادات بنفس تركيبة المصدر تماماً لتفادي الـ Crash
         var loginCfg = {
-            server_url: profile.server_urls[0],
+            server_urls: profile.server_urls,
             username: profile.username,
             password: profile.password
         };
 
-        // 1. استدعاء فحص تسجيل الدخول القياسي للمصدر
         PlaylistManager.xtreamLogin(loginCfg, function(workingHost, loginData) {
-            statusDiv.innerText = "Fetching channels…";
+            if (statusDiv) statusDiv.innerText = "Fetching channels…";
 
-            // 2. عند النجاح، نقوم بسحب دفق القنوات الحية مباشرة
             PlaylistManager.xtreamGetLiveChannels(workingHost, profile.username, profile.password, function(channels) {
                 channelsList.innerHTML = "";
                 
                 if (channels.length === 0) {
-                    statusDiv.innerText = "ERR: 0 channels returned from server";
+                    if (statusDiv) statusDiv.innerText = "ERR: 0 channels returned from server";
                     return;
                 }
 
-                statusDiv.innerText = channels.length + " channels loaded successfully!";
+                if (statusDiv) statusDiv.innerText = channels.length + " channels loaded successfully!";
 
-                // 3. كتابة حزمة الكاش الـ Slim لحفظ ذاكرة شاشات LG للتطبيقات الأخرى
+                // كتابة الكاش لحفظ الأداء
                 try {
                     var slimCache = channels.map(function(ch) {
                         return { stream_id: ch.stream_id, name: ch.name, category_id: ch.category_id };
@@ -69,7 +67,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     localStorage.setItem("iptv_ch_v2", JSON.stringify({ ts: Date.now(), data: slimCache }));
                 } catch (_) {}
 
-                // 4. عرض أول 20 قناة فوراً للتأكد التام أن البلاليست سمعت وتعمل
+                // عرض القنوات
                 var preview = channels.slice(0, 20);
                 for (var i = 0; i < preview.length; i++) {
                     var li = document.createElement("li");
@@ -80,12 +78,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
 
             }, function(chanError) {
-                statusDiv.innerText = chanError;
+                if (statusDiv) statusDiv.innerText = chanError;
                 channelsList.innerHTML = "<li>" + chanError + "</li>";
             });
 
         }, function(loginError) {
-            statusDiv.innerText = loginError;
+            if (statusDiv) statusDiv.innerText = loginError;
             channelsList.innerHTML = "<li>Login Failed. Check server URL.</li>";
         });
     }
