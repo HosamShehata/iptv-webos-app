@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
         statusDiv.innerText = `تم العثور على البلاليست المحفوظة: ${savedProfile.name}. جاري تحميل القنوات...`;
         runPipeline(savedProfile);
     }
-
+ 
     // عند الضغط على زر الحفظ والتوصيل
     saveBtn.addEventListener("click", () => {
         const host = hostInput.value.trim();
