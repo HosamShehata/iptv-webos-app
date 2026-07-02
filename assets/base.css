@@ -1,80 +1,74 @@
-/* ── Reset & box model ───────────────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ==========================================================================
+   Sciensta Premium IPTV Custom OS - Global Base Tones & Dynamic Scaling
+   ========================================================================== */
 
-/* ── ثيمات الألوان المتطورة (Pastel & Doodle Style) ────────────────────────────── */
 :root {
-    /* الثيم الافتراضي: باستيل مريح للعين */
-    --accent:       #8ab4f8;       /* أزرق باستيل ناعم للفوكس */
-    --accent-dim:   #669df6;
-    --gold:         #fde293;       /* أصفر باستيل هايلايتر */
-    --gold-dim:     #fdd663;
-    --bg:           #f8f9fa;       /* خلفية ورقية فاتحة ونظيفة */
-    --bg2:          #ffffff;       /* كروت بيضاء ناصعة */
-    --bg3:          #e8eaed;       /* رمادي باستيل ناعم للفواصل */
-    --bg4:          #dadde1;
-    --bg5:          #bdc1c6;
-    --text:         #202124;       /* خط داكن مريح للقراءة */
-    --text-dim:     #5f6368;
-    --text-faint:   #80868b;
+    /* لوحة ألوان الباستيل المودرن المريحة للعين لمنع الإجهاد ليلاً */
+    --bg-dark: #0f1115;
+    --pastel-blue: #a2c2e8;
+    --pastel-green: #b2ebd4;
+    --pastel-orange: #fbcbb4;
+    --pastel-yellow: #f9e7b9;
+    --text-main: #f5f6f8;
+    --text-muted: #a0a5b5;
     
-    /* أبعاد ديناميكية مخصصة لتكبير الواجهة بالكامل */
-    --radius:       20px;          /* حواف دائرية ناعمة جداً تفاعلية */
-    --border:       2.5px solid #202124; /* خطوط يد محدودة وواضحة */
-    --sidebar-w:    25vw;
-    --pip-w:        35vw;
-    --pip-h:        20vh;
+    /* الفوكس وتحديد الريموت */
+    --focus-border: #ffffff;
+    --focus-bg: rgba(255, 255, 255, 0.15);
 }
 
-/* التبديل للثيمات الأخرى (سنحتاجها عند تعديل صفحة الإعدادات) */
-body.theme-dark {
-    --bg: #121214; --bg2: #1a1a1e; --bg3: #26262b; --bg4: #33333a; --bg5: #40404a;
-    --text: #f1f3f4; --text-dim: #9aa0a6; --accent: #fdd663;
-}
-body.theme-mint {
-    --bg: #e6f4ea; --bg2: #ffffff; --bg3: #ceead6; --bg4: #a8dab5; --text: #137333;
-    --accent: #81c995;
+/* ضبط إعدادات الشاشة بالكامل ديناميكياً */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
-/* ── الهيكل الأساسي والخطوط الكبيرة الديناميكية ───────────────────────────────── */
-html, body {
-    height: 100%; 
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    width: 100vw;
+    height: 100vh;
     overflow: hidden;
-    background: var(--bg); 
-    color: var(--text);
-    /* الاعتماد على وحدات الكوميك والخطوط العريضة الواضحة من بُعد */
-    font-family: 'Comic Sans MS', 'Comic Neue', system-ui, -apple-system, sans-serif;
-    /* تكبير الخط الأساسي بناءً على حجم الشاشة (حوالي 32 بكسل لشاشات FHD وتكبر تلقائياً مع 4K) */
-    font-size: 1.65vw; 
-    line-height: 1.5;
-    transition: background 0.3s ease, color 0.3s ease;
+    direction: rtl; /* اتجاه الواجهة عربي بدائي */
 }
 
-/* ── تصميم عناصر الهيدر والفوتر الجديد (index.html) ─────────────────────────── */
+#home {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 3vh 4vw; /* أبعاد مرنة حسب حجم الشاشة */
+}
+
+/* ── الهيدر العلوي (Header) ──────────────────────────────────────────────── */
 .app-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5vh 3vw;
-    background: var(--bg2);
-    border-bottom: var(--border);
-    height: 12vh;
+    height: 10vh;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 1vh;
 }
 
 .header-date {
-    font-size: 1.1vw;
-    font-weight: bold;
-    color: var(--text-dim);
+    font-size: 2.2vw; /* حجم خط كبير وواضح من بعيد */
+    color: var(--pastel-blue);
+    font-weight: 500;
 }
 
 .header-clock {
-    font-size: 1.8vw;
-    font-weight: 800;
-    color: var(--text);
-    background: var(--gold);
-    padding: 5px 20px;
-    border-radius: var(--radius);
-    border: var(--border);
-    box-shadow: 4px 4px 0px #202124; /* تأثير ظلال الـ Doodle */
+    font-size: 3vw; /* حجم الساعة ضخم وعصري في المنتصف */
+    color: var(--text-main);
+    font-weight: bold;
+    letter-spacing: 2px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.5vh 2vw;
+    border-radius: 15px;
 }
 
 .header-branding {
@@ -84,147 +78,142 @@ html, body {
 }
 
 .app-logo {
-    font-size: 1.6vw;
-    font-weight: 900;
-    color: var(--text);
+    font-size: 2.8vw;
+    font-weight: 800;
+    color: var(--pastel-yellow);
 }
+
 .app-logo span {
-    color: var(--accent-dim);
+    color: var(--pastel-orange);
 }
 
 .lang-toggle-btn {
-    background: var(--bg3);
-    border: 1.5px solid var(--text);
-    padding: 2px 10px;
-    font-size: 0.8vw;
+    background: transparent;
+    border: 2px solid var(--pastel-blue);
+    color: var(--pastel-blue);
+    padding: 0.3vh 1vw;
     border-radius: 8px;
+    font-size: 1.2vw;
+    margin-top: 0.5vh;
     cursor: pointer;
-    margin-top: 4px;
 }
 
-/* البانر السينمائي العريض المطور */
+/* ── البانر السينمائي العريض (Hero Banner) ───────────────────────────────── */
 .cinematic-banner {
     height: 40vh;
-    margin: 3vh 3vw;
-    background: linear-gradient(135deg, #d2e3fc, #e8f0fe); /* أزرق باستيل ناعم */
-    border: var(--border);
-    border-radius: var(--radius);
+    background: linear-gradient(90deg, rgba(15,17,21,0.95) 0%, rgba(30,40,55,0.6) 100%), url('hero-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    border-radius: 24px;
     display: flex;
     align-items: center;
-    padding: 0 4vw;
-    box-shadow: 6px 6px 0px #202124;
+    padding: 4vw;
+    border: 2px solid rgba(255, 255, 255, 0.03);
 }
 
 .banner-content h2 {
-    font-size: 2.2vw;
+    font-size: 3.5vw;
+    color: var(--pastel-orange);
     margin-bottom: 1vh;
 }
 
 .banner-content p {
-    font-size: 1.2vw;
-    color: var(--text-dim);
-    margin-bottom: 2vh;
+    font-size: 1.8vw;
+    color: var(--text-muted);
+    margin-bottom: 3vh;
 }
 
 .play-btn {
-    font-size: 1.3vw;
-    padding: 12px 30px;
-    background: var(--gold);
-    border: var(--border);
-    border-radius: var(--radius);
+    background-color: var(--pastel-green);
+    color: #121418;
+    border: none;
+    padding: 1.5vh 3vw;
+    font-size: 1.8vw;
     font-weight: bold;
+    border-radius: 12px;
     cursor: pointer;
-    box-shadow: 3px 3px 0px #202124;
+    transition: transform 0.2s;
 }
 
-/* القائمة الرئيسية الأفقية */
+/* ── القائمة الرئيسية للأقسام (Main Navbar) ────────────────────────────── */
 .main-navbar {
     display: flex;
-    justify-content: space-around;
-    padding: 0 3vw;
+    justify-content: space-between;
+    gap: 1.2vw;
     height: 18vh;
-    gap: 1.5vw;
+    align-items: center;
 }
 
 .nav-item {
     flex: 1;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px solid transparent;
+    border-radius: 20px;
+    height: 14vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: var(--bg2);
-    border: var(--border);
-    border-radius: var(--radius);
-    font-size: 1.2vw;
-    font-weight: bold;
-    padding: 10px;
-    box-shadow: 4px 4px 0px #202124;
-    transition: transform 0.1s ease;
+    font-size: 1.8vw; /* الخطوط كبيرة للأزرار */
+    font-weight: 600;
+    color: var(--text-main);
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
 }
 
 .nav-item .icon {
-    font-size: 2vw;
-    margin-bottom: 5px;
+    font-size: 2.8vw; /* حجم الأيقونات داخل الأزرار كبير وواضح */
+    margin-bottom: 0.8vh;
 }
 
-/* ── حالة التركيز الحركي للريموت (Focus State) ────────────────────────────────── */
-.tv-focus-visible, *.tv-focus-visible {
-    outline: none !important;
-    border-color: #202124 !important;
-    background: var(--gold-dim) !important;
-    transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0px #202124 !important;
+/* تلوين حواف الأزرار بألوان الباستيل لتسهيل التمييز */
+.tile-livetv { border-bottom: 4px solid var(--pastel-blue); }
+.tile-series { border-bottom: 4px solid var(--pastel-green); }
+.tile-movies { border-bottom: 4px solid var(--pastel-orange); }
+.tile-favs { border-bottom: 4px solid var(--pastel-yellow); }
+
+/* تأثير الفوكس وحركة الريموت (D-Pad Focus) */
+.tv-focus-visible, .nav-item:focus {
+    transform: scale(1.08); /* الكارت يكبر عند الوقوف عليه بالريموت */
+    background-color: var(--focus-bg) !important;
+    border: 3px solid var(--focus-border) !important;
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.5);
 }
 
-/* الفوتر السفلي وأداة قياس السرعة الخفية */
+/* ── الفوتر وعداد السرعة الحقيقي (Footer & Speedtest) ───────────────────── */
 .app-footer {
-    position: fixed;
-    bottom: 3vh;
-    right: 3vw;
-    z-index: 100;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: 8vh;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .speedtest-container {
     display: flex;
     align-items: center;
-    background: var(--bg2);
-    border: var(--border);
-    padding: 8px 20px;
-    border-radius: var(--radius);
-    box-shadow: 3px 3px 0px #202124;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 1vh 2vw;
+    border-radius: 50px;
+    border: 2px solid transparent;
     cursor: pointer;
 }
 
 .wifi-icon {
-    font-size: 1.5vw;
-    margin-left: 10px;
-    transition: color 0.3s ease;
+    font-size: 2vw;
+    color: var(--pastel-blue);
+    margin-left: 0.8vw;
+    transition: color 0.3s;
 }
 
 .speed-value {
-    font-size: 1.4vw;
-    font-weight: 800;
+    font-size: 2.2vw;
+    font-weight: bold;
+    color: var(--text-main);
 }
 
 .speed-unit {
-    font-size: 0.9vw;
-    color: var(--text-dim);
-    margin-right: 5px;
-}
-
-/* حالة الفوكس للفوتر */
-.speedtest-container.tv-focus-visible {
-    background: var(--gold-dim) !important;
-}
-
-/* ── Modals المشتركة ─────────────────────────────────────────────────────────── */
-.modal-overlay {
-    position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 700;
-    background: rgba(0,0,0,0.5);
-    display: flex; align-items: center; justify-content: center;
-}
-.modal-box {
-    background: var(--bg2); border: var(--border);
-    border-radius: var(--radius); padding: 40px;
-    box-shadow: 8px 8px 0px #202124; min-width: 35vw;
+    font-size: 1.3vw;
+    color: var(--text-muted);
+    margin-right: 0.4vw;
 }
