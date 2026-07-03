@@ -4,109 +4,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sciensta IPTV — Series</title>
-    <meta name="theme-color" content="#08090d" />
     <link rel="stylesheet" href="../assets/base.css" />
     <link rel="stylesheet" href="../assets/series.css" />
 </head>
 <body>
- 
-<div id="vod-app">
-    <!-- ── القائمة الجانبية الذكية لمنصة شاهد ── -->
-    <nav id="vod-sidebar">
-        <div id="vod-sidebar-inner">
-            <div id="vod-nav-top">
-                <button class="vod-nav-item" data-action="search">
-                    <span class="vod-nav-emoji">🔍</span><span class="vod-nav-label">بحث المسلسلات</span>
-                </button>
-                <button class="vod-nav-item active" data-action="series">
-                    <span class="vod-nav-emoji">📺</span><span class="vod-nav-label">الرئيسية</span>
-                </button>
-                <button class="vod-nav-item" data-action="settings">
-                    <span class="vod-nav-emoji">⚙️</span><span class="vod-nav-label">الإعدادات</span>
-                </button>
+    <div id="vod-app">
+        <nav id="vod-sidebar">
+            <div id="vod-sidebar-inner">
+                <button class="vod-nav-item active" data-action="series">📺 مسلسلات</button>
+                <div id="vod-nav-cats"></div>
             </div>
-            <!-- تصنيفات المسلسلات المسحوبة من السيرفر -->
-            <div id="vod-nav-cats"></div>
-        </div>
-    </nav>
-
-    <!-- ── عرض صفوف المسلسلات (Rails) ── -->
-    <div id="vod-content">
-        <div id="vod-rails"></div>
-        <div id="vod-status" class="vod-status">
-            <div class="vod-spinner"></div>
-            <span id="vod-status-text">جاري تحميل مكتبة المسلسلات...</span>
-        </div>
+        </nav>
+        <main id="vod-content">
+            <div id="vod-rails"></div>
+        </main>
     </div>
-</div>
-
-<!-- ── واجهة البحث المتقدم داخل المسلسلات فقط ── -->
-<div id="vod-search-overlay" hidden>
-    <div id="vod-search-bar">
-        <svg class="vod-search-icon" width="20" height="20" viewBox="0 0 18 18" fill="none">
-            <circle cx="8" cy="8" r="5.2" stroke="currentColor" stroke-width="2"/>
-            <path d="M12.5 12.5L16 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        <input id="vod-search-input" type="text" placeholder="ابحث عن اسم المسلسل..." spellcheck="false" autocomplete="off" />
-        <button id="vod-search-close" class="vod-icon-btn" title="إغلاق">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M2 2L14 14M14 2L2 14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
-            </svg>
-        </button>
-    </div>
-    <div id="vod-search-hint" class="vod-search-hint">اكتب اسم المسلسل للبحث الفوري في السيرفر.</div>
-    <div id="vod-search-grid" class="vod-grid"></div>
-</div>
-
-<!-- ── نافذة تفاصيل المسلسل والمواسم والحلقات ── -->
-<div id="vod-detail" hidden role="dialog" aria-modal="true">
-    <div id="vod-detail-backdrop"></div>
-    <div id="vod-detail-scrim"></div>
-
-    <button id="vod-detail-close" class="vod-icon-btn" title="رجوع">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M2 2L14 14M14 2L2 14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
-        </svg>
-    </button>
-
-    <div id="vod-detail-inner">
-        <div id="vod-detail-poster-wrap">
-            <img id="vod-detail-poster" src="" alt="" />
-        </div>
-
-        <div id="vod-detail-main">
-            <h1 id="vod-detail-title"></h1>
-            <div id="vod-detail-meta"></div>
-            <p id="vod-detail-plot"></p>
-
-            <div id="vod-detail-credits">
-                <div class="vod-credit-row" id="vod-detail-cast-row">
-                    <span class="vod-credit-label">طاقم العمل</span>
-                    <span id="vod-detail-cast"></span>
-                </div>
-            </div>
-
-            <div id="vod-detail-actions">
-                <button id="vod-list-btn" class="vod-btn vod-btn-secondary">
-                    <svg id="vod-list-icon" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-                        <path d="M9 3v12M3 9h12"/>
-                    </svg>
-                    <span id="vod-list-label">قائمتي</span>
-                </button>
-            </div>
-
-            <!-- مبرمج ومخصص بالكامل لعرض المواسم والحلقات داخل المسلسل -->
-            <div id="vod-seasons">
-                <div id="vod-season-tabs"></div>
-                <div id="vod-episode-list"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script src="../dist/js/polyfills.js"></script>
-<script src="../dist/js/iptv-core.js"></script>
-<script src="../config/config.js"></script>
-<script src="../dist/js/series.js"></script>
+    <script src="../dist/js/polyfills.js"></script>
+    <script src="../dist/js/iptv-core.js"></script>
+    <script src="../dist/js/series.js"></script>
 </body>
 </html>
