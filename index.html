@@ -10,34 +10,34 @@
 </head>
 <body>
     <div id="home">
-        <!-- الهيدر العلوي المطور للتطبيق -->
+        <!-- هيدر نتفليكس المطور الحامي من الاختفاء والتداخل -->
         <header class="app-header" id="home-header">
-            <!-- الجهة اليمنى: التاريخ واليوم -->
-            <div class="header-date" id="current-date">جاري تحميل التاريخ...</div>
-
-            <!-- المنتصف: الساعة الرقمية العصرية وجنبها حلقة اللودنج الحديثة -->
-            <div style="display: flex; align-items: center; justify-content: center; gap: 1.5vw;">
-                <div class="header-clock" id="current-time">00:00:00 PM</div>
-                <div class="loading-spinner" id="main-loader"></div>
-            </div>
-
-            <!-- الجهة اليسرى: اللوجو بالإنجليزية وزر تغيير اللغة السريع -->
+            <!-- اليمين: البراند المودرن بالإنجليزية وزر تبديل اللغة -->
             <div class="header-branding" id="home-brand">
                 <div class="app-logo">Sciensta <span>IPTV</span></div>
                 <button class="lang-toggle-btn" onclick="toggleLanguage()" id="lang-btn" tabindex="-1">English</button>
             </div>
+
+            <!-- المنتصف: الساعة الدقيقة الفخمة وجنبها حلقة التحميل الانسيابية -->
+            <div style="display: flex; align-items: center; gap: 25px;">
+                <div class="header-clock" id="current-time">00:00:00 PM</div>
+                <div class="loading-spinner" id="main-loader"></div>
+            </div>
+
+            <!-- اليسار: التاريخ واليوم المستقر -->
+            <div class="header-date" id="current-date">جاري تحميل التاريخ...</div>
         </header>
 
-        <!-- البانر السينمائي العريض (متابعة المشاهدة) -->
+        <!-- البانر السينمائي الضخم الثابت حوافه الدائرية -->
         <section class="cinematic-banner" id="hero-banner">
             <div class="banner-content">
-                <h2 id="banner-title">أكمل المشاهدة</h2>
+                <h2>أكمل المشاهدة</h2>
                 <p id="banner-sub">اضغط للاستمرار من حيث توقفت في العرض الأخير</p>
                 <button class="play-btn" onclick="resumeLastWatched()" id="btn-resume" tabindex="-1">▶ أكمل الآن</button>
             </div>
         </section>
 
-        <!-- القائمة الرئيسية الأفقية المطورة للأقسام -->
+        <!-- القائمة الرئيسية الأفقية بنفس الترتيب البرمجي المعتمد -->
         <nav class="main-navbar" id="home-grid">
             <div class="nav-item active tile-livetv" id="tile-livetv" data-target="live" tabindex="-1">
                 <span class="icon">📺</span> البث المباشر
@@ -62,7 +62,7 @@
             </div>
         </nav>
 
-        <!-- الفوتر السفلي (أداة قياس سرعة الإنترنت الذكية والخفية) -->
+        <!-- الفوتر السفلي لسرعة الـ Internet وبداخله العداد الحقيقي لفاست -->
         <footer class="app-footer">
             <div class="speedtest-container" onclick="toggleSpeedTest()" id="speed-container" tabindex="-1">
                 <span class="wifi-icon" id="wifi-status">🌐</span>
@@ -72,7 +72,7 @@
         </footer>
     </div>
 
-    <!-- ملفات النظام البرمجية الأصلية المحفوظة -->
+    <!-- مكتبات النظام المحفوظة دون أي تعديل منطقي -->
     <script src="dist/js/polyfills.js"></script>
     <script src="dist/js/iptv-core.js"></script>
     <script src="dist/js/home.js"></script>
