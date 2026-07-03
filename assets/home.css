@@ -1,38 +1,26 @@
-/* إصلاح التداخل وجعل الواجهة Responsive بالكامل */
-#home {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    width: 100vw;
-    background: #07080a;
-}
+/* home.css - التصميم المعتمد */
+#home { display: flex; flex-direction: column; height: 100vh; width: 100vw; background: #07080a; padding: 20px; }
 
-#home-grid {
-    display: flex;
-    justify-content: center; /* توسيط الكروت */
-    align-items: center;
-    gap: 2vw;
-    flex: 1;
-    padding: 0 2vw;
-}
+#home-header { display: flex; justify-content: space-between; align-items: flex-start; height: 120px; }
 
-/* الأزرار: تصميم الفلات المودرن */
-.home-tile-main {
-    width: 200px;
-    height: 200px;
-    background: #161a22;
-    border-radius: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-}
+/* Sciensta IPTV + اللغة تحتها */
+#branding-wrap { display: flex; flex-direction: column; align-items: flex-start; }
+#home-brand { font-size: 32px; font-weight: 800; color: #fff; }
+#lang-btn { margin-top: 10px; cursor: pointer; padding: 5px 15px; border-radius: 10px; background: #222; color: #fff; border: none; }
 
-/* تأثير النيون (Glowing Neon Effect) عند الوقوف */
+/* الساعة في المنتصف */
+#home-clock { font-size: 3vw; font-weight: bold; position: absolute; left: 50%; transform: translateX(-50%); }
+
+/* التاريخ واليوم في الجانب (يتحرك حسب RTL/LTR) */
+#home-date { font-size: 1.5vw; color: #7cb0e6; }
+
+/* الشبكة (الصفوف والأعمدة) */
+#home-grid { display: flex; justify-content: center; align-items: center; gap: 20px; flex: 1; }
+.home-tile-main { width: 160px; height: 200px; background: #161a22; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; border: 2px solid transparent; }
+
+/* تأثير النيون الديناميكي */
 .home-tile-main.tv-focus-visible {
     transform: scale(1.1);
-    border-color: var(--theme-color); /* متغير للون الثيم */
-    box-shadow: 0 0 20px var(--theme-color); /* توهج نيون */
+    border-color: var(--neon-color);
+    box-shadow: 0 0 20px var(--neon-color);
 }
