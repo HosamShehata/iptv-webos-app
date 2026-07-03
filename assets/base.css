@@ -1,222 +1,189 @@
 /* ==========================================================================
-   Sciensta Premium IPTV Custom OS - Glassy Skeuomorphic UI
+   Shahid Premium Style - Custom OS For LG webOS
    ========================================================================== */
 
 :root {
-    --bg-main: #0a0c10;
-    --text-white: #f5f6f8;
-    --text-gray: #8a90a0;
-    
-    /* تدرجات ألوان الباستيل المجسمة */
-    --grad-blue: linear-gradient(145deg, #b2d4f5, #7cb0e6);
-    --grad-green: linear-gradient(145deg, #c6f3e0, #8edcb8);
-    --grad-orange: linear-gradient(145deg, #fddbc9, #f9ae8a);
-    --grad-yellow: linear-gradient(145deg, #fbf0cf, #f6da8a);
-    --grad-dark: linear-gradient(145deg, #202632, #12161f);
+    --bg-dark: #07080a;
+    --card-bg: rgba(22, 26, 34, 0.8);
+    --pastel-blue: #7cb0e6;
+    --pastel-green: #8edcb8;
+    --pastel-orange: #f9ae8a;
+    --pastel-yellow: #f6da8a;
 }
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 body {
-    background-color: var(--bg-main);
-    color: var(--text-white);
+    background-color: var(--bg-dark);
+    color: #ffffff;
     width: 100vw;
     height: 100vh;
     overflow: hidden;
 }
 
-/* تفعيل اتجاه اللغة ديناميكياً */
 body.rtl-dir { direction: rtl; }
 body.ltr-dir { direction: ltr; }
 
 #home {
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 4vh 4vw;
+    padding: 2vh 3vw;
+    position: relative;
+    z-index: 2;
 }
 
-/* ── الهيدر العلوي ──────────────────────────────────────────────────────── */
-.app-header {
+/* ── الهيدر الاحترافي ────────────────────────────────────────────────────── */
+#home-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 10vh;
+    height: 8vh;
 }
 
-.header-date {
-    font-size: 1.8vw;
-    color: #7cb0e6;
-    font-weight: 500;
-}
-
-.header-clock {
-    font-size: 2.8vw;
-    font-weight: bold;
-    text-shadow: 0 0 15px rgba(255,255,255,0.2);
-}
-
-.header-branding {
-    display: flex;
-    flex-direction: column;
-}
-
-.rtl-dir .header-branding { align-items: flex-end; }
-.ltr-dir .header-branding { align-items: flex-start; }
-
-.app-logo {
+#home-brand {
     font-size: 2.5vw;
-    font-weight: 800;
-    letter-spacing: 1px;
+    font-weight: 900;
+    color: #ffffff;
 }
+#home-brand span { color: var(--pastel-orange); }
 
-.lang-toggle-btn {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.15);
-    color: var(--text-white);
-    padding: 0.4vh 1.2vw;
-    border-radius: 20px;
-    font-size: 1vw;
-    margin-top: 0.6vh;
-    cursor: pointer;
-    box-shadow: inset 0 1px 3px rgba(255,255,255,0.1);
-}
-
-/* ── البانر السينمائي (سحب البوستر والخلفية المجسمة) ────────────────────── */
-.cinematic-banner {
-    height: 42vh;
-    background: linear-gradient(180deg, rgba(10,12,16,0.2) 0%, #0a0c10 100%), url('hero-bg.jpg'); /* يسحب برمجياً */
-    background-size: cover;
-    background-position: center;
-    border-radius: 32px;
+#home-clock-container {
     display: flex;
-    align-items: flex-end;
-    padding: 3vw;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.7), inset 0 1px 2px rgba(255,255,255,0.2);
-    border: 1px solid rgba(255,255,255,0.05);
+    align-items: center;
+    gap: 1.5vw;
+}
+#home-clock { font-size: 2.2vw; font-weight: bold; color: #ffffff; }
+#home-date { font-size: 1.4vw; color: var(--pastel-blue); }
+
+#lang-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #ffffff;
+    padding: 0.5vh 1.5vw;
+    border-radius: 20px;
+    font-size: 1.1vw;
+    cursor: pointer;
 }
 
-.banner-content h2 {
-    font-size: 3vw;
-    color: #f9ae8a;
-    margin-bottom: 0.5vh;
+/* ── البانر السينمائي الخلفي (شاهد وتفليكس ليدعم البوستر) ────────────────── */
+#hero-banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 70vh; /* يغطي الجزء العلوي بالكامل كخلفية */
+    background-image: url('hero-bg.jpg'); /* سيتم سحب بوستر الفيلم هنا */
+    background-size: cover;
+    background-position: center top;
+    z-index: -1;
 }
 
-.banner-content p {
+.banner-gradient {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(7,8,10,0.1) 0%, rgba(7,8,10,0.8) 60%, #07080a 100%);
+}
+
+.banner-content {
+    position: absolute;
+    bottom: 5vh;
+    right: 4vw;
+    z-index: 5;
+    max-width: 40vw;
+}
+.ltr-dir .banner-content { right: auto; left: 4vw; }
+
+.banner-content h1 { font-size: 3.5vw; font-weight: 800; margin-bottom: 0.5vh; }
+.banner-content p { font-size: 1.6vw; color: #b3b3b3; margin-bottom: 2vh; }
+
+.play-btn {
+    background: #ffffff;
+    color: #000000;
+    border: none;
+    padding: 1vh 2.5vw;
     font-size: 1.4vw;
-    color: var(--text-gray);
+    font-weight: bold;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+/* ── شبكة الأزرار الأفقية العملاقة ────────────────────────────────────────── */
+#home-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 1vw;
+    height: 20vh;
+    align-items: flex-end;
     margin-bottom: 2vh;
 }
 
-.play-btn {
-    background: var(--grad-green);
-    color: #0a0c10;
-    border: none;
-    padding: 1.2vh 2.8vw;
-    font-size: 1.5vw;
-    font-weight: bold;
-    border-radius: 20px;
-    box-shadow: 0 8px 20px rgba(142, 220, 184, 0.3), inset 0 2px 4px rgba(255,255,255,0.4);
-}
-
-/* ── الأزرار المجسمة واللامعة (Skeuomorphic Tabs) ────────────────────────── */
-.main-navbar {
-    display: flex;
-    justify-content: space-between;
-    gap: 1.5vw;
-    height: 18vh;
-    align-items: center;
-}
-
-.nav-item {
+.home-tile-main {
     flex: 1;
-    background: var(--grad-dark);
-    border-radius: 28px;
+    background: var(--card-bg);
     height: 14vh;
+    border-radius: 20px; /* حواف دائرية أكثر */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-size: 1.5vw;
-    font-weight: 700;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.05);
-    border: 1px solid rgba(0,0,0,0.2);
-    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.2s;
 }
 
-.nav-item .icon {
-    font-size: 2.6vw;
-    margin-bottom: 0.5vh;
+.home-tile-icon { font-size: 2.5vw; margin-bottom: 0.5vh; }
+.home-tile-label { font-size: 1.3vw; font-weight: bold; color: #ffffff; }
+
+/* الألوان الافتراضية الموحدة للأيقونات لتجنب بهتان الشكل القديم */
+#tile-livetv .home-tile-icon { color: var(--pastel-blue); }
+#tile-series .home-tile-icon { color: var(--pastel-green); }
+#tile-movies .home-tile-icon { color: var(--pastel-orange); }
+#tile-favs .home-tile-icon { color: var(--pastel-yellow); }
+
+/* ── تفعيل حركة الماوس (Hover) والريموت (Focus) معاً بالتأثير العكسي ── */
+.home-tile-main:hover, .tv-focus-visible {
+    transform: scale(1.1) translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+    border-color: #ffffff !important;
 }
 
-/* تخصيص تلوين الأيقونات والنصوص بالتدرجات بشكل دائم */
-.tile-livetv { color: #a2c2e8; }
-.tile-series { color: #b2ebd4; }
-.tile-movies { color: #fbcbb4; }
-.tile-favs   { color: #f9e7b9; }
+.tile-livetv:hover, #tile-livetv.tv-focus-visible { background: var(--pastel-blue) !important; }
+.tile-series:hover, #tile-series.tv-focus-visible { background: var(--pastel-green) !important; }
+.tile-movies:hover, #tile-movies.tv-focus-visible { background: var(--pastel-orange) !important; }
+.tile-favs:hover, #tile-favs.tv-focus-visible { background: var(--pastel-yellow) !important; }
 
-/* ── تأثير السهم المطور (Focus State): التوهج المجسم واللمعة الكاملة ── */
-.tile-livetv.tv-focus-visible {
-    background: var(--grad-blue) !important;
-    color: #0a0c10 !important;
-    transform: translateY(-8px) scale(1.04);
-    box-shadow: 0 15px 30px rgba(124, 176, 230, 0.4), inset 0 2px 4px rgba(255,255,255,0.6);
+/* عند الفوكس، النصوص والأيقونات تتحول لأسود داكن لزيادة التباين */
+.home-tile-main:hover .home-tile-label, .tv-focus-visible .home-tile-label,
+.home-tile-main:hover .home-tile-icon, .tv-focus-visible .home-tile-icon {
+    color: #07080a !important;
 }
 
-.tile-series.tv-focus-visible {
-    background: var(--grad-green) !important;
-    color: #0a0c10 !important;
-    transform: translateY(-8px) scale(1.04);
-    box-shadow: 0 15px 30px rgba(142, 220, 184, 0.4), inset 0 2px 4px rgba(255,255,255,0.6);
+/* ── الفوتر وعداد السرعة ────────────────────────────────────────────────── */
+#home-footer {
+    display: flex;
+    height: 4vh;
 }
+body.rtl-dir #home-footer { justify-content: flex-start; }
+body.ltr-dir #home-footer { justify-content: flex-end; }
 
-.tile-movies.tv-focus-visible {
-    background: var(--grad-orange) !important;
-    color: #0a0c10 !important;
-    transform: translateY(-8px) scale(1.04);
-    box-shadow: 0 15px 30px rgba(249, 174, 138, 0.4), inset 0 2px 4px rgba(255,255,255,0.6);
-}
-
-.tile-favs.tv-focus-visible {
-    background: var(--grad-yellow) !important;
-    color: #0a0c10 !important;
-    transform: translateY(-8px) scale(1.04);
-    box-shadow: 0 15px 30px rgba(246, 218, 138, 0.4), inset 0 2px 4px rgba(255,255,255,0.6);
-}
-
-.tile-continue.tv-focus-visible, .tile-search.tv-focus-visible, .tile-settings.tv-focus-visible {
-    background: linear-gradient(145deg, #ffffff, #d5d8e0) !important;
-    color: #0a0c10 !important;
-    transform: translateY(-8px) scale(1.04);
-    box-shadow: 0 15px 30px rgba(255,255,255,0.25);
-}
-
-/* ── الفوتر وعداد السرعة الحقيقي ────────────────────────────────────────── */
-.app-footer {
+#speed-container {
     display: flex;
     align-items: center;
-    height: 6vh;
+    background: var(--card-bg);
+    padding: 0.5vh 1.5vw;
+    border-radius: 15px;
+    cursor: pointer;
 }
-.rtl-dir .app-footer { justify-content: flex-start; }
-.ltr-dir .app-footer { justify-content: flex-end; }
-
-.speedtest-container {
-    display: flex;
-    align-items: center;
-    background: var(--grad-dark);
-    padding: 0.8vh 1.8vw;
-    border-radius: 24px;
-    box-shadow: inset 0 1px 2px rgba(255,255,255,0.05);
-    border: 1px solid rgba(0,0,0,0.1);
-}
-
-.wifi-icon { font-size: 1.6vw; color: #8edcb8; margin-left: 0.5vw; }
-.speed-value { font-size: 1.8vw; font-weight: bold; }
-.speed-unit { font-size: 1.1vw; color: var(--text-gray); margin-right: 0.2vw; }
+#wifi-status { font-size: 1.3vw; color: var(--pastel-green); margin-left: 0.5vw; }
+#internet-speed { font-size: 1.4vw; font-weight: bold; }
+#speed-unit { font-size: 1vw; color: #8a90a0; margin-right: 0.2vw; }
