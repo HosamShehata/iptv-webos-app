@@ -1,13 +1,13 @@
 {
   "id": "com.sharktie.iptv",
   "title": "IPTV Player",
-  "version": "1.0.85",
+  "version": "1.0.86",
   "appDescription": "Free and efficient IPTV app for LG TVs",
   "iconUri": "https://raw.githubusercontent.com/HosamShehata/iptv-webos-app/main/icon.png",
   "sourceUrl": "https://github.com/HosamShehata/iptv-webos-app",
   "rootRequired": false,
-  "ipkUrl": "https://github.com/HosamShehata/iptv-webos-app/releases/download/v1.0.85/com.sharktie.iptv_1.0.85_all.ipk",
+  "ipkUrl": "https://github.com/HosamShehata/iptv-webos-app/releases/download/v1.0.86/com.sharktie.iptv_1.0.86_all.ipk",
   "ipkHash": {
-    "sha256": "829f98bd6f64dc97ca9d95ddb8608a3821f4ed0781a705bfb88a829dc5268003"
+    "sha256": "683a6e5702897867666c4bd67e238d931e5fca5ead58f81b8481899433f0a4f7"
   }
 }
