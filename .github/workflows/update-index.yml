@@ -35,7 +35,7 @@ jobs:
           sed -i "s/IPTV <small>v[0-9]*\.[0-9]*\.[0-9]*<\/small>/IPTV <small>v$NEW_VERSION<\/small>/g" index.html pages/livetv.html
           echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
           echo "Bumped $CURRENT → $NEW_VERSION"
-
+ 
       # Install dependencies (including Babel) from package.json
       - name: Setup Node
         uses: actions/setup-node@v4
