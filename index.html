@@ -8,10 +8,10 @@
 <body>
     <div id="home">
         <header id="home-header">
-            <div id="home-date">الجمعة، ٣ يوليو ٢٠٢٦</div>
-            <div id="home-clock">12:00:00 PM</div>
+            <div id="home-date">--</div>
+            <div id="home-clock">--:-- --</div>
             <div id="brand-lang">
-                <span>Sciensta IPTV</span>
+                <div id="home-brand">Sciensta IPTV</div>
                 <button id="lang-btn" onclick="toggleLanguage()">العربية / EN</button>
             </div>
         </header>
@@ -25,14 +25,12 @@
         </section>
 
         <main id="home-grid">
-            <div class="tile" id="tile-livetv">📺 البث المباشر</div>
-            <div class="tile" id="tile-series">🎬 المسلسلات</div>
-            <div class="tile" id="tile-movies">🎥 الأفلام</div>
-            <div class="tile-col">
-                <div id="tile-favs">⭐ المفضلة</div>
-                <div id="tile-search">🔍 البحث</div>
-                <div id="tile-settings">⚙️ الإعدادات</div>
-            </div>
+            <div class="tile" id="tile-livetv" tabindex="0">📺 البث المباشر</div>
+            <div class="tile" id="tile-series" tabindex="0">🎬 المسلسلات</div>
+            <div class="tile" id="tile-movies" tabindex="0">🎥 الأفلام</div>
+            <div class="tile" id="tile-favs" tabindex="0">⭐ المفضلة</div>
+            <div class="tile" id="tile-search" tabindex="0">🔍 البحث</div>
+            <div class="tile" id="tile-settings" tabindex="0">⚙️ الإعدادات</div>
         </main>
 
         <footer id="speed-container">🌐 <span id="internet-speed">--</span></footer>
