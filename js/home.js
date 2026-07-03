@@ -1,12 +1,12 @@
-// مصفوفة التنقل المحدثة بأسماء الأقسام الأصلية لعدم تعطيل النظام
+// مصفوفة التنقل المحدثة بالفصل الكامل للأفلام والمسلسلات المستقلة
 const TILES = ["tile-livetv", "tile-series", "tile-movies", "tile-favs", "tile-continue", "tile-search", "tile-settings"];
 const PAGES = {
     "tile-livetv": "pages/livetv.html",
-    "tile-series": "pages/vod.html",
-    "tile-movies": "pages/vod.html",
+    "tile-series": "pages/series.html",  // يوجه لصفحة المسلسلات المستقلة الجديدة
+    "tile-movies": "pages/movies.html",  // يوجه لصفحة الأفلام المستقلة الجديدة
     "tile-favs": "pages/livetv.html",
-    "tile-continue": "pages/vod.html",
-    "tile-search": "pages/vod.html",
+    "tile-continue": "pages/movies.html",
+    "tile-search": "pages/movies.html",
     "tile-settings": "pages/settings.html"
 };
 
@@ -42,7 +42,7 @@ function _handleKey(e) {
     if (kc === 39) { e.preventDefault(); if (_focusedTileIndex > 0) _setFocus(_focusedTileIndex - 1); return; } // RIGHT
 }
 
-// تشغيل الساعة والتاريخ الحقيقيين وإصلاح التوقف
+// تشغيل الساعة والتاريخ الحقيقيين بشكل متزامن وثابت
 function updateClockAndDate() {
     const now = new Date();
     let hours = now.getHours();
@@ -61,7 +61,7 @@ function updateClockAndDate() {
     }
 }
 
-// التبديل الفوري والكامل للغة مع الاتجاه
+// التبديل الفوري والكامل للغة مع الاتجاه للواجهة الرئيسية
 function toggleLanguage() {
     currentLang = currentLang === "ar" ? "en" : "ar";
     const data = TRANSLATIONS[currentLang];
@@ -84,7 +84,7 @@ function toggleLanguage() {
     updateClockAndDate();
 }
 
-// فحص السرعة الفعلي لمرة واحدة دون تعطيل البث
+// قياس سرعة الإنترنت الحقيقي لمرة واحدة عند الإقلاع
 function runRealSpeedTest() {
     if (isTesting) return;
     isTesting = true;
@@ -117,7 +117,7 @@ window.addEventListener("load", () => {
     TILES.forEach((id, idx) => {
         const el = document.getElementById(id);
         el?.addEventListener("click", () => { _setFocus(idx); _navigate(id); });
-        el?.addEventListener("mouseenter", () => _setFocus(idx)); // تفعيل حركة الماوس فوراً
+        el?.addEventListener("mouseenter", () => _setFocus(idx)); // فوكس فوري وسلس بمجرد مرور الماوس
     });
     window.addEventListener("keydown", _handleKey, { capture: true });
     _setFocus(0);
