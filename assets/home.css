@@ -1,24 +1,23 @@
-:root { --theme-neon: #ff0000; } /* لون الثيم الأحمر */
+/* home.css - التصميم الأصلي + التعديلات المطلوبة */
+:root { --theme-color: #ff0000; }
 
-#home { display: flex; flex-direction: column; height: 100vh; width: 100vw; background: #07080a; }
+body { margin: 0; padding: 0; background: #07080a; color: #fff; font-family: sans-serif; overflow: hidden; }
+#home { height: 100vh; width: 100vw; display: flex; flex-direction: column; padding: 20px 40px; }
 
-/* الهيدر المصحح: لغة يسار، ساعة منتصف، تاريخ يمين */
-#home-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; height: 100px; }
-#lang-btn { order: -1; }
-#home-clock { font-size: 2.5rem; font-weight: bold; position: absolute; left: 50%; transform: translateX(-50%); }
+#home-header { display: flex; justify-content: space-between; align-items: center; height: 100px; position: relative; }
+#home-clock { font-size: 3rem; font-weight: bold; position: absolute; left: 50%; transform: translateX(-50%); }
 #home-date { font-size: 1.2rem; color: #7cb0e6; }
+#lang-btn { cursor: pointer; padding: 8px 16px; background: rgba(255,255,255,0.1); border-radius: 8px; border: none; color: #fff; }
 
-/* الشبكة: إصلاح تداخل "أكمل المشاهدة" */
 #home-grid { display: flex; justify-content: center; align-items: center; gap: 20px; flex: 1; margin-top: 50px; }
 .home-tile-main { 
-    width: 140px; height: 170px; background: #161a22; border-radius: 15px;
+    width: 140px; height: 170px; background: rgba(255, 255, 255, 0.05); 
+    border-radius: 15px; border: 2px solid rgba(255,255,255,0.1);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    border: 2px solid transparent; transition: all 0.3s; cursor: pointer;
+    transition: all 0.3s ease; cursor: pointer;
 }
-
-/* تأثير النيون الثابت (يعمل على أي مربع تقف عليه) */
-.home-tile-main:hover, .home-tile-main:focus {
-    border-color: var(--theme-neon);
-    box-shadow: 0 0 20px var(--theme-neon);
-    transform: translateY(-10px);
+.home-tile-main:focus {
+    border-color: var(--theme-color);
+    box-shadow: 0 0 15px var(--theme-color), inset 0 0 10px var(--theme-color);
+    transform: scale(1.1);
 }
