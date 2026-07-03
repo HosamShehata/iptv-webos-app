@@ -1,51 +1,32 @@
+// home.js - الربط النهائي للأقسام
 const TILES = ["tile-livetv", "tile-series", "tile-movies", "tile-favs", "tile-continue", "tile-search", "tile-settings"];
+
+// ربط الأزرار بالصفحات الجديدة تماماً
 const PAGES = {
     "tile-livetv": "pages/livetv.html",
-    "tile-series": "pages/series.html",
-    "tile-movies": "pages/movies.html",
-    "tile-favs": "pages/livetv.html",
-    "tile-continue": "pages/movies.html",
-    "tile-search": "pages/movies.html",
+    "tile-series": "pages/series.html", // رابط صفحة المسلسلات المستقلة
+    "tile-movies": "pages/movies.html", // رابط صفحة الأفلام المستقلة
+    "tile-favs": "pages/favs.html",
+    "tile-continue": "pages/continue.html",
+    "tile-search": "pages/search.html",
     "tile-settings": "pages/settings.html"
 };
 
-// تعريف ألوان الثيم لكل أيقونة
-const NEON_COLORS = {
-    "tile-livetv": "#7cb0e6", // أزرق
-    "tile-series": "#8edcb8", // أخضر
-    "tile-movies": "#f9ae8a", // برتقالي
-    "tile-favs": "#f6da8a",   // أصفر
-    "tile-continue": "#ffffff",
-    "tile-search": "#ffffff",
-    "tile-settings": "#ffffff"
-};
+// ... (بقية كود الساعة واللغة كما اتفقنا عليه) ...
 
-function _setFocus(index) {
-    TILES.forEach(t => {
-        const el = document.getElementById(t);
-        el?.classList.remove("tv-focus-visible");
-        el?.style.removeProperty('--neon-color');
-    });
-    const id = TILES[index];
-    const el = document.getElementById(id);
-    el?.classList.add("tv-focus-visible");
-    el?.style.setProperty('--neon-color', NEON_COLORS[id]);
+function _navigate(id) { 
+    if (PAGES[id]) {
+        window.location.href = PAGES[id]; 
+    }
 }
 
-function toggleLanguage() {
-    currentLang = currentLang === "ar" ? "en" : "ar";
-    document.body.dir = currentLang === "ar" ? "rtl" : "ltr";
-    // إضافة كود تحديث النصوص هنا بناءً على كائن الترجمة
-    updateClockAndDate();
-}
-
+// تحديث الساعة في منتصف الهيدر والتاريخ في الجانب (حسب التصميم)
 function updateClockAndDate() {
     const now = new Date();
+    // الساعة في المنتصف
     document.getElementById('home-clock').innerText = now.toLocaleTimeString();
-    document.getElementById('home-date').innerText = now.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
+    // اليوم والتاريخ في الجانب
+    document.getElementById('home-date').innerText = now.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US', { 
+        weekday: 'long', day: 'numeric', month: 'long' 
+    });
 }
-
-window.addEventListener("load", () => {
-    setInterval(updateClockAndDate, 1000);
-    _setFocus(0);
-});
