@@ -1,154 +1,111 @@
 /* ── Homepage layout ─────────────────────────────────────────────────────────── */
 #home {
-    display: flex; flex-direction: column;
-    height: 100vh; width: 100vw; overflow: hidden;
-    background: var(--bg);
+    display: flex; 
+    flex-direction: column;
+    height: 100vh; 
+    width: 100vw; 
+    overflow: hidden;
+    background: #07080a;
 }
 
 #home-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 36px 60px 28px;
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between;
+    padding: 4vh 5vw 2vh;
     flex-shrink: 0;
 }
 
 #home-brand {
-    font-size: 34px; font-weight: 700; color: var(--accent);
-    display: flex; align-items: center; gap: 14px;
+    font-size: 34px; 
+    font-weight: 900; 
+    color: #ffffff;
+    display: flex; 
+    align-items: center; 
+    gap: 10px;
 }
-#home-brand span { color: var(--text); }
-#home-brand small {
-    font-size: 18px; font-weight: 400; color: var(--text-dim);
+#home-brand span { color: #f9ae8a; }
+
+#home-clock-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }
 
-#home-date {
-    font-size: 20px; color: var(--text-dim);
-}
-
-/* ── Tile grid ───────────────────────────────────────────────────────────────── */
+/* ── Tile grid (توزيع شاهد الفاخر) ────────────────────────────────────────── */
 #home-grid {
-    flex: 1; display: flex; align-items: center; justify-content: center;
-    gap: 40px; padding: 0 60px 60px;
+    flex: 1; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    gap: 25px; 
+    padding: 0 4vw 4vh;
 }
 
-/* ── Main tile (Live TV, VOD) ────────────────────────────────────────────────── */
+/* ── الأزرار الكبيرة المجسمة (البث، المسلسلات، الأفلام) ────────────────────── */
 .home-tile-main {
-    display: flex; flex-direction: column;
-    align-items: flex-start; justify-content: flex-end;
-    width: 480px; height: 340px;
-    background: var(--bg3); border: var(--border);
-    border-radius: 20px; padding: 32px 36px;
-    cursor: pointer; position: relative; overflow: hidden;
-    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
-    flex-shrink: 0;
-}
-.home-tile-main:hover,
-.home-tile-main.tv-focus-visible {
-    transform: scale(1.03);
-    border-color: var(--accent);
-    background: var(--bg4);
-    outline: none;
-}
-.home-tile-main.tv-focus-visible {
-    box-shadow: 0 0 0 4px var(--accent);
+    flex: 1;
+    background: rgba(22, 26, 34, 0.85);
+    height: 32vh;
+    max-height: 240px;
+    border-radius: 24px;
+    padding: 30px;
+    cursor: pointer; 
+    position: relative; 
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.05);
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.25s, box-shadow 0.25s;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .home-tile-icon {
-    font-size: 72px; line-height: 1;
-    margin-bottom: 20px;
-    position: absolute; top: 28px; left: 36px;
-    opacity: 0.9;
+    font-size: 4vw;
+    line-height: 1;
+    margin-bottom: 15px;
+    transition: color 0.2s, transform 0.2s;
 }
+
 .home-tile-label {
-    font-size: 32px; font-weight: 700; color: var(--text);
-    position: absolute; bottom: 32px; left: 36px;
-}
-.home-tile-sub {
-    font-size: 17px; color: var(--text-dim);
-    position: absolute; bottom: 10px; left: 36px;
+    font-size: 1.6vw; 
+    font-weight: 700; 
+    color: #ffffff;
+    transition: color 0.2s;
 }
 
-/* Live TV tile — accent red gradient */
-.home-tile-main.tile-livetv {
-    background: linear-gradient(135deg, #1a0508 0%, var(--bg3) 60%);
-    border-color: #2a0a10;
-}
-.home-tile-main.tile-livetv:hover,
-.home-tile-main.tile-livetv.tv-focus-visible {
-    background: linear-gradient(135deg, #2a080e 0%, var(--bg4) 60%);
-    border-color: var(--accent);
+/* ── تدرجات النيون الباستيلية الفاخرة لكل قسم بشكل مستقل ────────────────── */
+.home-tile-main.tile-livetv .home-tile-icon { color: #7cb0e6; }
+.home-tile-main.tile-series .home-tile-icon { color: #8edcb8; }
+.home-tile-main.tile-movies .home-tile-icon { color: #f9ae8a; }
+.home-tile-main.tile-favs .home-tile-icon   { color: #f6da8a; }
+
+/* ── الكروت الصغيرة الجانبية ──────────────────────────────────────────────── */
+.home-tile-main.tile-continue,
+.home-tile-main.tile-search,
+.home-tile-main.tile-settings {
+    background: rgba(18, 20, 26, 0.7);
+    border-color: rgba(255,255,255,0.01);
 }
 
-/* VOD tile — blue-ish tint */
-.home-tile-main.tile-vod {
-    background: linear-gradient(135deg, #070d1a 0%, var(--bg3) 60%);
-    border-color: #0d1525;
+/* ── الفوتر وعداد السرعة ────────────────────────────────────────────────── */
+#home-footer {
+    display: flex;
+    padding: 0 4vw 3vh;
+    height: 6vh;
 }
-.home-tile-main.tile-vod:hover,
-.home-tile-main.tile-vod.tv-focus-visible {
-    background: linear-gradient(135deg, #0a1220 0%, var(--bg4) 60%);
-    border-color: #2255aa;
-}
+body.rtl-dir #home-footer { justify-content: flex-start; }
+body.ltr-dir #home-footer { justify-content: flex-end; }
 
-/* ── Sub-tile column ─────────────────────────────────────────────────────────── */
-.home-tile-col {
-    display: flex; flex-direction: column;
-    gap: 24px;
-}
-
-/* ── Small tile (Catchup, Settings) ─────────────────────────────────────────── */
-.home-tile-small {
-    display: flex; align-items: center;
-    gap: 22px;
-    width: 320px; height: 148px;
-    background: var(--bg3); border: var(--border);
-    border-radius: 16px; padding: 0 28px;
-    cursor: pointer; position: relative; overflow: hidden;
-    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
-    flex-shrink: 0;
-}
-.home-tile-small:hover,
-.home-tile-small.tv-focus-visible {
-    transform: scale(1.03);
-    border-color: var(--accent);
-    background: var(--bg4);
-    outline: none;
-}
-.home-tile-small.tv-focus-visible {
-    box-shadow: 0 0 0 4px var(--accent);
-}
-
-.home-tile-small .home-tile-icon {
-    position: static; font-size: 44px; opacity: 0.85;
-    margin-bottom: 0; flex-shrink: 0;
-}
-.home-tile-small-text { display: flex; flex-direction: column; gap: 4px; }
-.home-tile-small .home-tile-label {
-    position: static; font-size: 24px;
-}
-.home-tile-small .home-tile-sub {
-    position: static; font-size: 15px;
-}
-
-/* Catchup tile */
-.home-tile-small.tile-catchup {
-    background: linear-gradient(135deg, #060e12 0%, var(--bg3) 70%);
-    border-color: #0c1a20;
-}
-.home-tile-small.tile-catchup:hover,
-.home-tile-small.tile-catchup.tv-focus-visible {
-    border-color: #1a8888;
-    background: linear-gradient(135deg, #081418 0%, var(--bg4) 70%);
-}
-
-/* Settings tile */
-.home-tile-small.tile-settings {
-    background: var(--bg3);
-}
-.home-tile-small.tile-settings:hover,
-.home-tile-small.tile-settings.tv-focus-visible {
-    border-color: var(--gold-dim);
-    background: var(--bg4);
-}
-.home-tile-small.tile-settings.tv-focus-visible {
-    box-shadow: 0 0 0 4px var(--gold-dim);
+#speed-container {
+    display: flex;
+    align-items: center;
+    background: rgba(22, 26, 34, 0.85);
+    padding: 8px 20px;
+    border-radius: 16px;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.02);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.05);
 }
