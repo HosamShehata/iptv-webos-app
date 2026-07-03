@@ -1,14 +1,16 @@
 /* ==========================================================================
-   Shahid Premium Style - Custom OS For LG webOS
+   Shahid & Netflix Style - Custom OS For LG webOS (Sciensta IPTV)
    ========================================================================== */
 
 :root {
     --bg-dark: #07080a;
-    --card-bg: rgba(22, 26, 34, 0.8);
-    --pastel-blue: #7cb0e6;
-    --pastel-green: #8edcb8;
-    --pastel-orange: #f9ae8a;
-    --pastel-yellow: #f6da8a;
+    --card-bg: rgba(22, 26, 34, 0.85);
+    
+    /* ألوان التدرجات الباستيلية المجسمة الفاخرة */
+    --pastel-blue-start: #b2d4f5;   --pastel-blue-end: #7cb0e6;   /* البث المباشر */
+    --pastel-green-start: #c6f3e0;  --pastel-green-end: #8edcb8;  /* المسلسلات */
+    --pastel-orange-start: #fddbc9; --pastel-orange-end: #f9ae8a; /* الأفلام */
+    --pastel-yellow-start: #fbf0cf; --pastel-yellow-end: #f6da8a; /* المفضلة */
 }
 
 * {
@@ -26,7 +28,7 @@ body {
     overflow: hidden;
 }
 
-body.rtl-dir { direction: rtl; }
+body.rtl-dir { direction: rlt; }
 body.ltr-dir { direction: ltr; }
 
 #home {
@@ -35,7 +37,7 @@ body.ltr-dir { direction: ltr; }
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 2vh 3vw;
+    padding: 3vh 4vw;
     position: relative;
     z-index: 2;
 }
@@ -49,80 +51,90 @@ body.ltr-dir { direction: ltr; }
 }
 
 #home-brand {
-    font-size: 2.5vw;
+    font-size: 2.4vw;
     font-weight: 900;
     color: #ffffff;
+    letter-spacing: 0.5px;
 }
-#home-brand span { color: var(--pastel-orange); }
+#home-brand span { color: #f9ae8a; }
 
 #home-clock-container {
     display: flex;
     align-items: center;
     gap: 1.5vw;
 }
-#home-clock { font-size: 2.2vw; font-weight: bold; color: #ffffff; }
-#home-date { font-size: 1.4vw; color: var(--pastel-blue); }
+#home-clock { 
+    font-size: 2.2vw; 
+    font-weight: bold; 
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(255,255,255,0.15);
+}
+#home-date { font-size: 1.3vw; color: #7cb0e6; font-weight: 500; }
 
 #lang-btn {
     background: rgba(255,255,255,0.06);
     border: 1px solid rgba(255,255,255,0.15);
     color: #ffffff;
-    padding: 0.5vh 1.5vw;
+    padding: 0.5vh 1.4vw;
     border-radius: 20px;
-    font-size: 1.1vw;
+    font-size: 1vw;
+    font-weight: 600;
     cursor: pointer;
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.1);
 }
 
-/* ── البانر السينمائي الخلفي (شاهد وتفليكس ليدعم البوستر) ────────────────── */
+/* ── البانر السينمائي الخلفي الممتد ────────────────────────────────────────── */
 #hero-banner {
     position: absolute;
     top: 0;
     left: 0;
     width: 100vw;
-    height: 70vh; /* يغطي الجزء العلوي بالكامل كخلفية */
-    background-image: url('hero-bg.jpg'); /* سيتم سحب بوستر الفيلم هنا */
+    height: 68vh;
+    background-image: url('hero-bg.jpg'); /* يتم سحب بوستر آخر مشاهدة تلقائياً */
     background-size: cover;
     background-position: center top;
     z-index: -1;
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.1);
 }
 
 .banner-gradient {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to bottom, rgba(7,8,10,0.1) 0%, rgba(7,8,10,0.8) 60%, #07080a 100%);
+    background: linear-gradient(to bottom, rgba(7,8,10,0.1) 0%, rgba(7,8,10,0.7) 55%, #07080a 100%);
 }
 
 .banner-content {
     position: absolute;
-    bottom: 5vh;
+    bottom: 4vh;
     right: 4vw;
     z-index: 5;
-    max-width: 40vw;
+    max-width: 45vw;
 }
-.ltr-dir .banner-content { right: auto; left: 4vw; }
+body.ltr-dir .banner-content { right: auto; left: 4vw; }
 
-.banner-content h1 { font-size: 3.5vw; font-weight: 800; margin-bottom: 0.5vh; }
-.banner-content p { font-size: 1.6vw; color: #b3b3b3; margin-bottom: 2vh; }
+.banner-content h1 { font-size: 3.2vw; font-weight: 800; margin-bottom: 0.5vh; color: #ffffff; }
+.banner-content p { font-size: 1.5vw; color: #b3b3b3; margin-bottom: 2vh; }
 
 .play-btn {
     background: #ffffff;
     color: #000000;
     border: none;
-    padding: 1vh 2.5vw;
-    font-size: 1.4vw;
+    padding: 0.8vh 2.4vw;
+    font-size: 1.3vw;
     font-weight: bold;
-    border-radius: 30px;
+    border-radius: 24px;
     cursor: pointer;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.5);
+    transition: transform 0.15s;
 }
 
-/* ── شبكة الأزرار الأفقية العملاقة ────────────────────────────────────────── */
+/* ── شبكة الأزرار الأفقية والعمق المجسم ───────────────────────────────────── */
 #home-grid {
     display: flex;
     justify-content: space-between;
     gap: 1vw;
-    height: 20vh;
+    height: 18vh;
     align-items: flex-end;
     margin-bottom: 2vh;
 }
@@ -130,42 +142,64 @@ body.ltr-dir { direction: ltr; }
 .home-tile-main {
     flex: 1;
     background: var(--card-bg);
-    height: 14vh;
-    border-radius: 20px; /* حواف دائرية أكثر */
+    height: 13vh;
+    border-radius: 24px; /* حواف دائرية أكبر وانسيابية */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    border: 1px solid rgba(255,255,255,0.05);
-    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.2s;
+    border: 1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.05);
+    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.2s, box-shadow 0.2s;
 }
 
-.home-tile-icon { font-size: 2.5vw; margin-bottom: 0.5vh; }
-.home-tile-label { font-size: 1.3vw; font-weight: bold; color: #ffffff; }
+.home-tile-icon { font-size: 2.4vw; margin-bottom: 0.4vh; transition: color 0.2s; }
+.home-tile-label { font-size: 1.2vw; font-weight: bold; color: #ffffff; transition: color 0.2s; }
 
-/* الألوان الافتراضية الموحدة للأيقونات لتجنب بهتان الشكل القديم */
-#tile-livetv .home-tile-icon { color: var(--pastel-blue); }
-#tile-series .home-tile-icon { color: var(--pastel-green); }
-#tile-movies .home-tile-icon { color: var(--pastel-orange); }
-#tile-favs .home-tile-icon { color: var(--pastel-yellow); }
+/* الألوان الافتراضية اللامعة للأيقونات وهي واقفة مكانها */
+#tile-livetv .home-tile-icon { color: #7cb0e6; }
+#tile-series .home-tile-icon { color: #8edcb8; }
+#tile-movies .home-tile-icon { color: #f9ae8a; }
+#tile-favs .home-tile-icon   { color: #f6da8a; }
 
-/* ── تفعيل حركة الماوس (Hover) والريموت (Focus) معاً بالتأثير العكسي ── */
-.home-tile-main:hover, .tv-focus-visible {
-    transform: scale(1.1) translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+/* ── سحر حركة الماوس (Hover) والريموت (Focus) بالتأثير العكسي والمجسم ── */
+.home-tile-main:hover, .home-tile-main.tv-focus-visible {
+    transform: scale(1.08) translateY(-6px);
     border-color: #ffffff !important;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.6);
 }
 
-.tile-livetv:hover, #tile-livetv.tv-focus-visible { background: var(--pastel-blue) !important; }
-.tile-series:hover, #tile-series.tv-focus-visible { background: var(--pastel-green) !important; }
-.tile-movies:hover, #tile-movies.tv-focus-visible { background: var(--pastel-orange) !important; }
-.tile-favs:hover, #tile-favs.tv-focus-visible { background: var(--pastel-yellow) !important; }
+.tile-livetv:hover, #tile-livetv.tv-focus-visible { 
+    background: linear-gradient(145deg, var(--pastel-blue-start), var(--pastel-blue-end)) !important; 
+    box-shadow: 0 15px 30px rgba(124, 176, 230, 0.35);
+}
+.tile-series:hover, #tile-series.tv-focus-visible { 
+    background: linear-gradient(145deg, var(--pastel-green-start), var(--pastel-green-end)) !important; 
+    box-shadow: 0 15px 30px rgba(142, 220, 184, 0.35);
+}
+.tile-movies:hover, #tile-movies.tv-focus-visible { 
+    background: linear-gradient(145deg, var(--pastel-orange-start), var(--pastel-orange-end)) !important; 
+    box-shadow: 0 15px 30px rgba(249, 174, 138, 0.35);
+}
+.tile-favs:hover, #tile-favs.tv-focus-visible { 
+    background: linear-gradient(145deg, var(--pastel-yellow-start), var(--pastel-yellow-end)) !important; 
+    box-shadow: 0 15px 30px rgba(246, 218, 138, 0.35);
+}
 
-/* عند الفوكس، النصوص والأيقونات تتحول لأسود داكن لزيادة التباين */
+/* الكروت العادية عند التصفح */
+.tile-continue.tv-focus-visible, .tile-continue:hover,
+.tile-search.tv-focus-visible, .tile-search:hover,
+.tile-settings.tv-focus-visible, .tile-settings:hover {
+    background: linear-gradient(145deg, #ffffff, #d5d8e0) !important;
+    box-shadow: 0 15px 30px rgba(255,255,255,0.2);
+}
+
+/* عند الفوكس العكسي: النصوص والأيقونات تنقلب لأسود فحم صلب لزيادة التباين */
 .home-tile-main:hover .home-tile-label, .tv-focus-visible .home-tile-label,
 .home-tile-main:hover .home-tile-icon, .tv-focus-visible .home-tile-icon {
     color: #07080a !important;
+    text-shadow: none !important;
 }
 
 /* ── الفوتر وعداد السرعة ────────────────────────────────────────────────── */
@@ -180,10 +214,11 @@ body.ltr-dir #home-footer { justify-content: flex-end; }
     display: flex;
     align-items: center;
     background: var(--card-bg);
-    padding: 0.5vh 1.5vw;
-    border-radius: 15px;
+    padding: 0.5vh 1.4vw;
+    border-radius: 16px;
     cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.02);
 }
-#wifi-status { font-size: 1.3vw; color: var(--pastel-green); margin-left: 0.5vw; }
-#internet-speed { font-size: 1.4vw; font-weight: bold; }
-#speed-unit { font-size: 1vw; color: #8a90a0; margin-right: 0.2vw; }
+#wifi-status { font-size: 1.2vw; color: #8edcb8; margin-left: 0.4vw; }
+#internet-speed { font-size: 1.3vw; font-weight: bold; }
+#speed-unit { font-size: 0.9vw; color: #8a90a0; margin-right: 0.2vw; }
