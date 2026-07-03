@@ -10,68 +10,74 @@
 </head>
 <body>
     <div id="home">
-        <!-- الهيدر المطور بستايل نتفليكس (نظيف وبدون لودنج عشوائي) -->
-        <header class="app-header" id="home-header">
-            <!-- اليمين: البراند المودرن بالإنجليزية وزر تبديل اللغة -->
-            <div class="header-branding" id="home-brand">
-                <div class="app-logo">Sciensta <span>IPTV</span></div>
-                <button class="lang-toggle-btn" onclick="toggleLanguage()" id="lang-btn" tabindex="-1">English</button>
+        <!-- هيدر منصة شاهد العصري -->
+        <div id="home-header">
+            <div id="home-brand">Sciensta <span>IPTV</span></div>
+            <div id="home-clock-container">
+                <span id="home-clock">00:00:00 PM</span>
+                <span id="home-date">جاري التحميل...</span>
             </div>
+            <button id="lang-btn" onclick="toggleLanguage()">English</button>
+        </div>
 
-            <!-- المنتصف: الساعة الدقيقة الفخمة المدمجة -->
-            <div class="header-clock" id="current-time">00:00:00 PM</div>
-
-            <!-- اليسار: التاريخ واليوم المستقر -->
-            <div class="header-date" id="current-date">جاري تحميل التاريخ...</div>
-        </header>
-
-        <!-- البانر السينمائي وبداخله علامة التحميل العصرية المدمجة بشكل ذكي -->
-        <section class="cinematic-banner" id="hero-banner">
+        <!-- البانر السينمائي الضخم خلفية كاملة -->
+        <div id="hero-banner">
+            <div class="banner-gradient"></div>
             <div class="banner-content">
-                <h2>أكمل المشاهدة</h2>
-                <p id="banner-sub">اضغط للاستمرار من حيث توقفت في العرض الأخير</p>
-                <button class="play-btn" onclick="resumeLastWatched()" id="btn-resume" tabindex="-1">▶ أكمل الآن</button>
+                <h1 id="banner-title">أكمل المشاهدة</h1>
+                <p id="banner-sub">فيلم جبال الصمت</p>
+                <button class="play-btn" onclick="resumeLastWatched()">▶ اكمل الآن</button>
             </div>
-            <!-- اللودنج العصري يظهر هنا بشكل مركزي أنيق عند بدء التطبيق فقط -->
-            <div class="loading-spinner" id="main-loader"></div>
-        </section>
+        </div>
 
-        <!-- القائمة الرئيسية الأفقية مفصولة بالكامل لصفحات مخصصة لكل قسم -->
-        <nav class="main-navbar" id="home-grid">
-            <div class="nav-item active tile-livetv" id="tile-livetv" data-target="live" tabindex="-1">
-                <span class="icon">📺</span> البث المباشر
+        <!-- القائمة الرئيسية الأفقية العملاقة -->
+        <div id="home-grid">
+            <div class="home-tile-main tile-livetv" id="tile-livetv" tabindex="-1">
+                <div class="home-tile-icon">📺</div>
+                <div class="home-tile-label">البث المباشر</div>
             </div>
-            <div class="nav-item tile-series" id="tile-series" data-target="series" tabindex="-1">
-                <span class="icon">🎬</span> المسلسلات
-            </div>
-            <div class="nav-item tile-movies" id="tile-movies" data-target="movies" tabindex="-1">
-                <span class="icon">🎥</span> الأفلام
-            </div>
-            <div class="nav-item tile-favs" id="tile-favs" data-target="favs" tabindex="-1">
-                <span class="icon">⭐</span> المفضلة
-            </div>
-            <div class="nav-item tile-continue" id="tile-continue" data-target="continue" tabindex="-1">
-                <span class="icon">⏱️</span> متابعة المشاهدة
-            </div>
-            <div class="nav-item tile-search" id="tile-search" data-target="search" tabindex="-1">
-                <span class="icon">🔍</span> البحث المتقدم
-            </div>
-            <div class="nav-item tile-settings" id="tile-settings" data-target="settings" tabindex="-1">
-                <span class="icon">⚙️</span> الإعدادات
-            </div>
-        </nav>
 
-        <!-- الفوتر السفلي لسرعة الـ Internet الحقيقية بدون أخطاء اتصال -->
-        <footer class="app-footer">
-            <div class="speedtest-container" onclick="toggleSpeedTest()" id="speed-container" tabindex="-1">
-                <span class="wifi-icon" id="wifi-status">🌐</span>
-                <span class="speed-value" id="internet-speed">--</span>
-                <span class="speed-unit" id="speed-unit">Mbps</span>
+            <div class="home-tile-main tile-series" id="tile-series" tabindex="-1">
+                <div class="home-tile-icon">🎬</div>
+                <div class="home-tile-label">المسلسلات</div>
             </div>
-        </footer>
+
+            <div class="home-tile-main tile-movies" id="tile-movies" tabindex="-1">
+                <div class="home-tile-icon">🎥</div>
+                <div class="home-tile-label">الأفلام</div>
+            </div>
+
+            <div class="home-tile-main tile-favs" id="tile-favs" tabindex="-1">
+                <div class="home-tile-icon">⭐</div>
+                <div class="home-tile-label">المفضلة</div>
+            </div>
+
+            <div class="home-tile-main tile-continue" id="tile-continue" tabindex="-1">
+                <div class="home-tile-icon">⏱️</div>
+                <div class="home-tile-label">متابعة المشاهدة</div>
+            </div>
+
+            <div class="home-tile-main tile-search" id="tile-search" tabindex="-1">
+                <div class="home-tile-icon">🔍</div>
+                <div class="home-tile-label">البحث المتقدم</div>
+            </div>
+
+            <div class="home-tile-main tile-settings" id="tile-settings" tabindex="-1">
+                <div class="home-tile-icon">⚙️</div>
+                <div class="home-tile-label">الإعدادات</div>
+            </div>
+        </div>
+
+        <!-- الفوتر الخفي لسرعة الإنترنت -->
+        <div id="home-footer">
+            <div id="speed-container" onclick="toggleSpeedTest()">
+                <span id="wifi-status">🌐</span>
+                <span id="internet-speed">--</span>
+                <span id="speed-unit">Mbps</span>
+            </div>
+        </div>
     </div>
 
-    <!-- مكتبات النظام المحفوظة -->
     <script src="dist/js/polyfills.js"></script>
     <script src="dist/js/iptv-core.js"></script>
     <script src="dist/js/home.js"></script>
