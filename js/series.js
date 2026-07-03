@@ -1,6 +1,6 @@
 (function () {
     'use strict';
-
+ 
     var cfg = IPTVCore.resolveConfig();
     var activeCategory = "all";
     var RAIL_CAP = 20;
