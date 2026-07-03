@@ -1,4 +1,4 @@
-// مصفوفة التنقل المحدثة بالفصل الكامل للأفلام والمسلسلات المستقلة
+// مصفوفة التنقل المحدثة بالفصل الكامل للأفلام والمسلسلات المستقلة لمنع أي تداخل
 const TILES = ["tile-livetv", "tile-series", "tile-movies", "tile-favs", "tile-continue", "tile-search", "tile-settings"];
 const PAGES = {
     "tile-livetv": "pages/livetv.html",
