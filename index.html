@@ -2,85 +2,27 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sciensta IPTV</title>
-    <meta name="theme-color" content="#0c0c0e" />
-    <link rel="stylesheet" href="assets/base.css" />
     <link rel="stylesheet" href="assets/home.css" />
 </head>
 <body>
     <div id="home">
-        <!-- هيدر منصة شاهد العصري -->
-        <div id="home-header">
-            <div id="home-brand">Sciensta <span>IPTV</span></div>
-            <div id="home-clock-container">
-                <span id="home-clock">00:00:00 PM</span>
-                <span id="home-date">جاري التحميل...</span>
+        <header id="home-header">
+            <div id="brand-lang">
+                <div id="home-brand">Sciensta <span>IPTV</span></div>
+                <button id="lang-btn" onclick="toggleLanguage()">English</button>
             </div>
-            <button id="lang-btn" onclick="toggleLanguage()">English</button>
-        </div>
+            <div id="home-clock">00:00 AM</div>
+            <div id="home-date">--</div>
+        </header>
 
-        <!-- البانر السينمائي الضخم خلفية كاملة -->
-        <div id="hero-banner">
-            <div class="banner-gradient"></div>
-            <div class="banner-content">
-                <h1 id="banner-title">أكمل المشاهدة</h1>
-                <p id="banner-sub">فيلم جبال الصمت</p>
-                <button class="play-btn" onclick="resumeLastWatched()">▶ اكمل الآن</button>
-            </div>
-        </div>
-
-        <!-- القائمة الرئيسية الأفقية المحدثة بفصل المسلسلات والأفلام -->
-        <div id="home-grid">
-            <div class="home-tile-main tile-livetv" id="tile-livetv" tabindex="-1">
-                <div class="home-tile-icon">📺</div>
-                <div class="home-tile-label">البث المباشر</div>
-            </div>
-
-            <div class="home-tile-main tile-series" id="tile-series" tabindex="-1">
-                <div class="home-tile-icon">🎬</div>
-                <div class="home-tile-label">المسلسلات</div>
-            </div>
-
-            <div class="home-tile-main tile-movies" id="tile-movies" tabindex="-1">
-                <div class="home-tile-icon">🎥</div>
-                <div class="home-tile-label">الأفلام</div>
-            </div>
-
-            <div class="home-tile-main tile-favs" id="tile-favs" tabindex="-1">
-                <div class="home-tile-icon">⭐</div>
-                <div class="home-tile-label">المفضلة</div>
-            </div>
-
-            <div class="home-tile-main tile-continue" id="tile-continue" tabindex="-1">
-                <div class="home-tile-icon">⏱️</div>
-                <div class="home-tile-label">متابعة المشاهدة</div>
-            </div>
-
-            <div class="home-tile-main tile-search" id="tile-search" tabindex="-1">
-                <div class="home-tile-icon">🔍</div>
-                <div class="home-tile-label">البحث المتقدم</div>
-            </div>
-
-            <div class="home-tile-main tile-settings" id="tile-settings" tabindex="-1">
-                <div class="home-tile-icon">⚙️</div>
-                <div class="home-tile-label">الإعدادات</div>
-            </div>
-        </div>
-
-        <!-- الفوتر الخفي لسرعة الإنترنت -->
-        <div id="home-footer">
-            <div id="speed-container" onclick="toggleSpeedTest()">
-                <span id="wifi-status">🌐</span>
-                <span id="internet-speed">--</span>
-                <span id="speed-unit">Mbps</span>
-            </div>
-        </div>
+        <main id="home-grid">
+            <div class="home-tile-main" id="tile-livetv" tabindex="0">📺 البث المباشر</div>
+            <div class="home-tile-main" id="tile-series" tabindex="0">📺 المسلسلات</div>
+            <div class="home-tile-main" id="tile-movies" tabindex="0">🎬 الأفلام</div>
+            <div class="home-tile-main" id="tile-favs" tabindex="0">⭐ المفضلة</div>
+        </main>
     </div>
-
-    <script src="dist/js/polyfills.js"></script>
-    <script src="dist/js/iptv-core.js"></script>
     <script src="dist/js/home.js"></script>
-    <script defer src="dist/js/prewarm.js"></script>
 </body>
 </html>
